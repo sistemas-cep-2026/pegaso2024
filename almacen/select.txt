@@ -1,0 +1,38 @@
+select * from seg_perfil;
+select * from seg_modulo where mod_nivel='1'   order by cc_modulo cc_modulo like '100005%'
+update seg_modulo set mod_url='hono_index.php'  where cc_modulo='400005';
+select * from seg_modulo_pagina;
+select * from seg_modulo_perfil; 
+
+
+select * from gen_parametro;
+select * from gen_parametro_det where cc_par_det='3';
+select * from gen_parametro_tabla;
+
+drop table guias_de_salida
+
+
+
+select * from guias_de_salida
+select * from items_guias_de_salida
+
+
+SELECT *
+INTO items_guias_de_salida
+FROM CEP2023SSD.dbo.items_guias_de_salida;
+
+
+/*ALTER TABLE items_guias_de_salida
+ADD cc_guiadetall int NULL;*/
+
+
+ALTER TABLE items_guias_de_salida DROP COLUMN cc_guiadetall;
+
+ALTER TABLE NombreTabla
+ALTER COLUMN NombreColumna NuevoTipoDeDato [NULL | NOT NULL];
+
+
+EXEC sp_rename 'seg_usuarios.cc_rol', 'cc_perfil', 'COLUMN'; //cambiar bombre
+
+ALTER TABLE items_guias_de_salida
+ADD cc_guiadetall INT IDENTITY(1,1) PRIMARY KEY; ///primario

@@ -1,0 +1,40 @@
+INSERT INTO dbo.documentos_recibidos (c_expediente, c_tipo_de_documento,tipo_persona,c_persona,
+fecha_ingreso,num_documento,fecha_documento,asunto,cod_original,c_local,c_usuario,c_local_origen,destrinatario,c_persona_pf,
+c_cargo,asunto2,documento_enviado,f_archivado,flag,numerox,numero,c_usuario_origen,c_procedimiento,cod_documento_enviado,
+fecha_plazo,cod_referencia,cod_plazo,c_documento,remitente_externos)
+SELECT *
+FROM OPENQUERY([PRODUCCION13], 'SELECT c_expediente, c_tipo_de_documento,tipo_persona,c_persona,
+fecha_ingreso,num_documento,fecha_documento,asunto,cod_original,c_local,c_usuario,c_local_origen,destrinatario,c_persona_pf,
+c_cargo,asunto2,documento_enviado,f_archivado,flag,numerox,numero,c_usuario_origen,c_procedimiento,cod_documento_enviado,
+fecha_plazo,cod_referencia,cod_plazo,c_documento,remitente_externos
+FROM CEP2023SSD.dbo.documentos_recibidos
+');
+
+
+INSERT INTO dbo.seguimiento_documentos_recibid (cc_docrecibidos,c_expediente,c_area_adm,fecha_entrega,c_accion,cod_original,observacion,c_local,
+feha_respuesta,tipo_persona,fecha_verif,usu_recep,usu_atien,flag,linea,c_usuario_destino,accion_a_tomar)
+SELECT *
+FROM OPENQUERY([PRODUCCION13], 'SELECT cc_docrecibidos,c_expediente,c_area_adm,fecha_entrega,c_accion,cod_original,observacion,c_local,
+feha_respuesta,tipo_persona,fecha_verif,usu_recep,usu_atien,flag,linea,c_usuario_destino,accion_a_tomar
+FROM CEP2023SSD.dbo.seguimiento_documentos_recibid
+');
+
+-- truncate table documentos_recibidos;
+-- truncate table seguimiento_documentos_recibid;
+
+select top 500 * from documentos_recibidos;
+select * from seguimiento_documentos_recibid;
+
+UPDATE s
+SET s.cc_docrecibidos = d.cc_docrecibidos
+FROM seguimiento_documentos_recibid s
+INNER JOIN documentos_recibidos d
+    ON RTRIM(LTRIM(s.c_expediente)) = RTRIM(LTRIM(d.c_expediente))
+    AND s.c_local = d.c_local
+WHERE s.cc_docrecibidos IS NULL
+  AND d.cc_docrecibidos IS NOT NULL;
+
+-- update documentos_recibidos set flag='P' where flag='&' ;
+-- update documentos_recibidos set flag='A' where flag='*' ;
+
+-- update seguimiento_documentos_recibid set flag='P' where flag='&' ;

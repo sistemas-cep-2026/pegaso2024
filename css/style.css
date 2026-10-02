@@ -1,0 +1,285 @@
+@import url("../bootstrap/assets/css/bootstrap.min.css");
+@import url("../bootstrap/assets/css/icons.min.css");
+@import url("../bootstrap/assets/css/app.min.css");
+@import url("../bootstrap/assets/libs/sweetalert2/sweetalert2.min.css");
+
+@import url("../bootstrap/fontawesome/css/all.min.css");
+
+.btn.btn-icon {
+  padding: 0.415rem 0.736rem !important;
+}
+
+.dt-button-collection {
+  max-width: 150px;
+  transform: translate(-115px, 3px) !important;
+}
+
+.dt-down-arrow {
+  display: none;
+}
+
+table.table thead tr.align-middle th {
+  vertical-align: middle !important;
+}
+
+table.table thead tr.align-baseline th {
+  vertical-align: baseline !important;
+}
+
+table.table thead tr.align-top th {
+  vertical-align: top !important;
+}
+
+table.table thead tr.align-bottom th {
+  vertical-align: bottom !important;
+}
+
+table.table thead tr.align-text-top th {
+  vertical-align: text-top !important;
+}
+
+table .tt-menu {
+  position: static !important;
+  max-height: 125px;
+  overflow-y: auto;
+}
+
+.profile-wid-bg::before {
+  background: linear-gradient(to right, #405189, #4960ad) !important;
+}
+
+input.form-control:read-only {
+  background-color: #efefef;
+}
+
+/* .select2-container--default .select2-selection--single {
+  padding: 1.1rem 0.5rem !important;
+}
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__rendered {
+  transform: translate(-4px, -12px) !important;
+}
+
+.select2-container--default
+.select2-selection--single
+.select2-selection__arrow {
+  transform: translate(-4px, 5px) !important;
+} */
+
+.twitter-typeahead .tt-menu {
+  max-height: 180px;
+  overflow-y: auto;
+}
+/*td y texto para el estado de cuenta*/
+.table-sm-pequena td,
+.table-sm-pequena th {
+  padding: 0.1rem; /* Ajusta este valor según tus necesidades */
+  font-size: 10px;
+  color: black;
+}
+
+/*********************************************/
+.texto_printer {
+  display: none;
+}
+
+/* Mostrar el texto al imprimir */
+@media print {
+  .texto_printer {
+    display: block;
+  }
+  a {
+    display: none;
+  }
+}
+.no-print {
+  display: none !important;
+}
+
+/* Asegura que el Select2 se vea como parte del input group */
+.input-group .select2-container--default .select2-selection--single {
+  height: 38px; /* Coincide con el alto de un input de Bootstrap */
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Elimina el fondo azul y da uno blanco con borde gris claro */
+.select2-container--default .select2-selection--single {
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: border-color 0.3s;
+}
+
+/* Icono de flecha del dropdown */
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow {
+  height: 100%;
+  right: 10px;
+}
+
+/* Estilo del dropdown */
+.select2-container--default .select2-dropdown {
+  border: 1px solid #ced4da;
+  border-radius: 0 0 0.375rem 0.375rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-height: 250px;
+  z-index: 9999;
+}
+
+/* Opciones dentro del dropdown */
+.select2-container--default .select2-results__option {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: #212529;
+  transition: background-color 0.2s;
+}
+
+/* Seleccionada */
+.select2-container--default .select2-results__option--selected {
+  background-color: #f0f0f0;
+}
+
+/* Scrollbar estilizado */
+.select2-container--default .select2-results > .select2-results__options {
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f9f9f9;
+}
+
+.select2-container--default .select2-results__options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select2-container--default .select2-results__options::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+/* Alinea el contenedor select2 con los elementos del input-group */
+.input-group .select2-container--default {
+  flex: 1 1 auto;
+  width: 1% !important;
+}
+
+/* Asegura que se alinee como input normal */
+.input-group .select2-container--default .select2-selection--single {
+  height: 100%;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
+}
+
+/* Evita desplazamientos verticales por líneas internas */
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
+  padding: 0;
+  margin: 0;
+  line-height: inherit;
+}
+
+/* Asegura que el select2 tome el mismo alto del input group */
+.select2-container .select2-selection--single {
+  height: 38px; /* Ajusta según Bootstrap versión */
+}
+
+.input-group .select2-container--default .select2-selection--single.is-invalid {
+  border-color: #dc3545;
+}
+
+/* Posiciona el mensaje de error correctamente sin romper el layout */
+.input-group .error {
+  display: block;
+  font-size: 0.875em;
+  color: #dc3545;
+  margin-top: 0.25rem;
+  position: absolute;
+}
+
+/* Asegúrate de que el input-group tenga posición relativa para posicionar el error */
+.input-group {
+  position: relative;
+  margin-bottom: 2rem; /* espacio para el mensaje */
+}
+
+.dropdown-toggle.caret-off::after {
+  display: none;
+}
+.accordion-button.caret-off:not(.collapsed)::after {
+  display: none;
+}
+
+.accordion-button.caret-off.collapsed::after {
+  display: none;
+}
+
+input.calendar-toggle[type="date"] {
+  position: relative;
+}
+
+input.calendar-toggle[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  color: transparent;
+  background: transparent;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    line-height: 1.9!important;
+}
+
+.select2-container--bootstrap-5 .select2-selection,
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered .select2-selection__placeholder {
+  font-size: .8125rem!important;
+}
+
+/**********************/
+/* Igualar altura de Select2 a Bootstrap */
+.select2-container--default .select2-selection--single {
+    height: 38px !important; /* mismo que .form-control */
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 0.75rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Texto centrado verticalmente */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: normal !important;
+}
+
+/* Flecha alineada */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 10px !important;
+}
+
+.text-verde {
+  color: #096509 !important;
+}
+.text-rojo {
+  color: #ff0000 !important;
+}
+.text-amarillo {
+  color: #ffc107 !important;
+}

@@ -1,0 +1,76 @@
+CREATE TABLE [dbo].[tram_documentos_recibidos] (
+    [cc_docrecibidos] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [c_expediente] [varchar](11) NOT NULL,
+    [c_tipo_de_documento] [varchar](2) NULL,
+    [tipo_persona] [char](1) NULL,
+    [c_persona] [varchar](6) NULL,
+    [fecha_ingreso] [datetime] NULL,
+    [c_documento] [varchar](6) NULL,
+    [num_documento] [varchar](30) NULL,
+    [fecha_documento] [datetime] NULL,
+    [asunto] [varchar](MAX) NULL,
+    [cod_original] [varchar](2) NULL,
+    [cod_plazo] [char](1) NULL,
+    [fecha_plazo] [datetime] NULL,
+    [cod_referencia] [varchar](2) NULL,
+    [cod_documento_enviado] [varchar](2) NULL,
+    [documento_enviado] [varchar](30) NULL,
+    [flag] [char](1) NULL,
+    [c_local] [varchar](2) NOT NULL,
+    [c_usuario_origen] [varchar](7) NULL,
+    [c_usuario] [varchar](7) NULL,
+    [c_procedimiento] [int] NULL,
+    [numero] [varchar](11) NULL,
+    [c_local_origen] [varchar](2) NULL,
+    [destinatario] [varchar](100) NULL,
+    [f_archivado] [datetime] NULL,
+    [c_cargo] [varchar](6) NULL,
+    [remitente_externos] [varchar](100) NULL,
+    [c_persona_pf] [varchar](6) NULL,
+    [asunto2] [varchar](MAX) NULL, 
+    [tokenumero] [varchar](100) NULL
+);
+
+insert  into dbo.tram_documentos_recibidos(c_expediente, c_tipo_de_documento, tipo_persona, c_persona, fecha_ingreso, c_documento, num_documento, fecha_documento, asunto, cod_original, cod_plazo, fecha_plazo, cod_referencia, cod_documento_enviado, documento_enviado, flag, c_local, c_usuario_origen, c_usuario, c_procedimiento, numero, c_local_origen, destinatario, f_archivado, c_cargo, remitente_externos, c_persona_pf, asunto2, tokenumero)
+
+SELECT c_expediente, c_tipo_de_documento, tipo_persona, c_persona, fecha_ingreso, c_documento, num_documento, fecha_documento, asunto, cod_original, od_plazo, fecha_plazo, cod_referencia, cod_documento_enviado, documento_enviado, flag, c_local, c_usuario_origen, c_usuario, c_procedimiento, numero, c_local_origen, destinatario, f_archivado, c_cargo, remitente_externos, c_persona_pf, asunto2, tokenumero FROM dbo.documentos_recibidos order by c_expediente;
+
+CREATE TABLE [dbo].[tram_documentos_recibidos_seguimiento] (
+    [cc_docrecibidos_seg] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [cc_docrecibidos] [int] NULL,
+    [c_expediente] [varchar](11) NOT NULL,
+    [linea] [decimal](18, 0) NOT NULL,
+    [c_area_adm] [varchar](6) NULL,
+    [fecha_entrega] [datetime] NULL,
+    [cod_original] [varchar](2) NULL,
+    [accion_a_tomar] [varchar](MAX) NULL, 
+    [observacion] [varchar](MAX) NULL, 
+    [c_local] [varchar](2) NOT NULL,
+    [c_accion] [int] NULL,
+    [flag] [char](1) NULL,
+    [c_usuario] [varchar](7) NULL,
+    [c_local_destino] [varchar](2) NULL,
+    [c_usuario_destino] [varchar](7) NULL,
+    [fecha_respuesta] [datetime] NULL, 
+    [tipo_persona] [char](1) NULL,
+    [fecha_verif] [datetime] NULL,
+    [usu_recep] [varchar](7) NULL,
+    [usu_atien] [varchar](7) NULL 
+);
+
+insert into tram_documentos_recibidos_seguimiento(cc_docrecibidos,c_expediente, linea, c_area_adm, fecha_entrega, cod_original, accion_a_tomar, observacion, c_local, c_accion, flag,  c_usuario,  c_local_destino, 
+c_usuario_destino, fecha_respuesta, tipo_persona,fecha_verif, usu_recep, usu_atien)
+
+SELECT cc_docrecibidos,c_expediente, linea, c_area_adm, fecha_entrega, cod_original, accion_a_tomar, observacion, c_local, c_accion, flag,  c_usuario,  c_local_destino, 
+c_usuario_destino, feha_respuesta, tipo_persona,fecha_verif, usu_recep, usu_atien
+FROM dbo.seguimiento_documentos_recibid order by c_expediente;
+
+
+
+/************* para actualizar tram_documentos_recibidos_seguimiento cc_docrecibidos **********/
+UPDATE trs
+SET trs.cc_docrecibidos = tdr.cc_docrecibidos
+FROM dbo.tram_documentos_recibidos_seguimiento trs
+INNER JOIN dbo.tram_documentos_recibidos tdr
+ON trs.c_expediente = tdr.c_expediente;
+

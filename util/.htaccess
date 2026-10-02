@@ -1,0 +1,10 @@
+# Bloquea el acceso directo por navegador a esta carpeta (solo se usa vía
+# require/include desde PHP; aquí viven credenciales y configuración:
+# env.txt, sftp-config.json, etc.)
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

@@ -1,0 +1,41 @@
+function fn_segundaFirma(cod_anho, cod_mes, cc_local, opc) {
+  alertaMensaje('¿Desea Ratificar esta Conciliación?', () => {
+    const params = `cod_anho=${cod_anho}&cod_mes=${cod_mes}&cc_local=${cc_local}&opc=${opc}`;
+    
+    ajax("caja/concilia_coti_update", params)
+      .then((data) => {
+        if (data === '0') {
+          swalAdvertencia('No se pudo completar el proceso.');
+        } else {
+          swalCerrar(750);
+          fn_buscarRegistro();
+        }
+      })
+      .catch((error) => {
+        const mensaje = error?.responseText || error?.message || 'Ocurrió un error inesperado.';
+        swalError(mensaje);
+      });
+  });
+}
+
+/*<button type="button" class="btn btn-outline-info waves-effect waves-light shadow-none" onclick="fn_segundaFirma('<?= $cod_anho ?>','<?= $cod_mes?>','<?= $cc_local ?>','F')">
+    Segunda Firma
+</button>*/
+
+
+campo moneda
+
+<input type="text" class="form-control input-decimal" name="vmonto" id="vmonto" placeholder="S/. 0.00" required>
+
+  $('.input-decimal').inputmask({
+        alias: "decimal",
+        integerDigits: 10,
+        digits: 2,
+        allowMinus: false,
+        digitsOptional: false,
+        placeholder: "0.00",
+        groupSeparator: ',',
+        prefix: 'S/ ',
+        autoGroup: true,
+        rightAlign: false
+    });

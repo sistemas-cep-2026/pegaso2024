@@ -1,0 +1,16 @@
+tablas
+documentos_de_compras_recibos
+items_documentos_compras_art
+Items_documentos_de_compra_cue
+documentos_de_compras_recibos
+items_documentos_compras_art
+Items_documentos_de_compra_cue
+documentos_de_compras_recibos
+items_documentos_compras_art
+Items_documentos_de_compra_cue
+
+SELECT * INTO NuevaTabla FROM TablaOriginal;
+
+EXEC sp_rename 'NombreAntiguo', 'NombreNuevo';
+
+EXEC sp_rename 'NombreTabla.NombreColumnaActual', 'NuevoNombreColumna', 'COLUMN';

@@ -1,0 +1,13 @@
+{
+    "require": {
+        "greenter/lite": "^5.0",
+        "verot/class.upload.php": "^2.1",
+        "greenter/xml-parser": "^5.0",
+        "dompdf/dompdf": "^2.0",
+        "php": "^7.4",
+		"chillerlan/php-qrcode": "5.0",
+        "greenter/report": "^5.0",
+        "greenter/consulta-cpe": "^1.1"
+
+    }
+}
