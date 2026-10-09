@@ -94,11 +94,18 @@ $data_evento = array_slice($data_evento_todos, ($pagina - 1) * $por_pagina, $por
 						data-bs-toggle="tooltip" data-bs-placement="top" title="Modificar evento" aria-label="Modificar evento">
 						<i class="ri-edit-2-line align-middle me-1"></i> Editar
 					</a>
-					<?php if (!empty($row['img_certificado'])) { ?>
-						<a href="javascript:void(0);" onclick="fn_verdiploma('<?= url('capacitacion/img/' . $row['img_certificado']) ?>')"
+					<?php if (!empty($row['img_asistente'])) { ?>
+						<a href="javascript:void(0);" onclick="fn_verdiploma('<?= url('capacitacion/img/' . $row['img_asistente']) ?>')"
 							class="btn btn-soft-secondary btn-sm waves-effect waves-light"
-							data-bs-toggle="tooltip" data-bs-placement="top" title="Ver imagen" aria-label="Ver imagen">
+							data-bs-toggle="tooltip" data-bs-placement="top" title="Ver diploma asistente" aria-label="Ver diploma asistente">
 							<i class="ri-image-line"></i>
+						</a>
+					<?php } ?>
+					<?php if (!empty($row['img_ponente'])) { ?>
+						<a href="javascript:void(0);" onclick="fn_verdiploma('<?= url('capacitacion/img/' . $row['img_ponente']) ?>')"
+							class="btn btn-soft-secondary btn-sm waves-effect waves-light"
+							data-bs-toggle="tooltip" data-bs-placement="top" title="Ver diploma ponente" aria-label="Ver diploma ponente">
+							<i class="ri-user-star-line"></i>
 						</a>
 					<?php } ?>
 					<?php if (!$publicado) { ?>

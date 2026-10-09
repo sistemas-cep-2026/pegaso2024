@@ -30,15 +30,17 @@ if ($opc == 'U') {
         $ent_eventos->setTipo($row['tipo']);
         $ent_eventos->setFecha_ini($row['fecha_inicio']);
         $ent_eventos->setFecha_fin($row['fecha_fin']);
-        $ent_eventos->setHorascreditos_text($row['horascreditos_text']);
-        $ent_eventos->setImg_certificado($row['img_certificado']);
+        $ent_eventos->setImg_asistente($row['img_asistente']);
+        $ent_eventos->setImg_ponente($row['img_ponente']);
         $ent_eventos->setFecha_evento_text($row['fecha_evento_text']);
         $ent_eventos->setDetalle($row['detalle']);
+        $ent_eventos->setDetalle_ponente($row['detalle_ponente']);
         $ent_eventos->setPrint_documento($row['print_documento']);
         $ent_eventos->setText_documento($row['text_documento']);
         $ent_eventos->setPrint_documento($row['print_documento']);
         $ent_eventos->setFlag($row['flag']);
-        $img_fondo = $row['img_certificado'];
+        $img_asistente = $row['img_asistente'];
+        $img_ponente = $row['img_ponente'];
     }
     $option = "MODIFICAR EVENTO";
 }
@@ -123,7 +125,7 @@ if ($opc == 'U') {
                                 <div class="row">
                                     <div class="col-sm-11">
                                         <div class="mb-3">
-                                            <label for="detalle_ponente" class="form-label">Texto ponente </label>
+                                            <label for="detalle_ponente" class="form-label">Texto cuerpo ponente </label>
                                             <textarea class="form-control ckeditor-classic" name="detalle_ponente" id="detalle_ponente" rows="2" required><?php echo $ent_eventos->getDetalle_ponente() ?: ''; ?></textarea>
                                         </div>
                                     </div>
@@ -132,7 +134,7 @@ if ($opc == 'U') {
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="input-group mb-3 d-block">
-                                            <label for="detalle" class="form-label">Cuerpo del diploma : </label>
+                                            <label for="detalle" class="form-label">Texto cuerpo asistente : </label>
                                             <textarea class="form-control ckeditor-classic" name="detalle" id="detalle" rows="3" required><?php echo htmlspecialchars($ent_eventos->getDetalle() ?: '', ENT_QUOTES, 'UTF-8'); ?></textarea>
 
                                         </div>

@@ -20,16 +20,29 @@ try {
 
     $ruta_carpeta = __DIR__ . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR;
 
+    // Lista blanca: solo estos 2 campos pueden manejarse aquí.
+    $camposPermitidos = ['img_asistente', 'img_ponente'];
+
     if ($opc === 'UPLOAD') {
-        if (!isset($_FILES['img_fondo']) || $_FILES['img_fondo']['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception("Error al subir el archivo.");
+        $campo = null;
+        foreach ($camposPermitidos as $c) {
+            if (isset($_FILES[$c])) {
+                $campo = $c;
+                break;
+            }
         }
 
-        $archivo_cargado = $_FILES['img_fondo'];
+        if ($campo === null || $_FILES[$campo]['error'] !== UPLOAD_ERR_OK) {
+            $recibidos = empty($_FILES) ? '(ninguno)' : implode(', ', array_keys($_FILES));
+            $detalleError = ($campo !== null) ? " | código de error PHP: {$_FILES[$campo]['error']}" : '';
+            throw new Exception("Error al subir el archivo. [Diagnóstico temporal: campos recibidos en \$_FILES = {$recibidos}{$detalleError}]");
+        }
+
+        $archivo_cargado = $_FILES[$campo];
         $uploader = new Upload($archivo_cargado);
 
         if ($uploader->uploaded) {
-            $uploader->file_new_name_body = $cc_evento . '_' . date('dmYHis');
+            $uploader->file_new_name_body = $cc_evento . '_' . $campo . '_' . date('dmYHis');
             $uploader->file_overwrite     = true;
             $uploader->image_convert      = 'jpeg';
             $uploader->jpeg_quality       = 85;
@@ -43,10 +56,14 @@ try {
             $foto = $uploader->file_dst_name;
             $uploader->clean();
 
-            $ent_eventos->setImg_certificado($foto);
+            if ($campo === 'img_ponente') {
+                $ent_eventos->setImg_ponente($foto);
+            } else {
+                $ent_eventos->setImg_asistente($foto);
+            }
             $ent_eventos->setCc_evento($cc_evento);
 
-            if (!$bo_evento->control($ent_eventos, $opc)) {
+            if (!$bo_evento->control($ent_eventos, $opc, $campo)) {
                 throw new Exception($bo_evento->errores());
             }
 
@@ -58,7 +75,12 @@ try {
     }
 
     if ($opc === 'EA') {
-        $archivo = isset($_REQUEST['img_fondo']) ? $_REQUEST['img_fondo'] : '';
+        $campo = $_REQUEST['campo'] ?? '';
+        if (!in_array($campo, $camposPermitidos, true)) {
+            throw new Exception("Campo de imagen no válido.");
+        }
+
+        $archivo = isset($_REQUEST[$campo]) ? $_REQUEST[$campo] : '';
         if (empty($archivo)) {
             throw new Exception("Nombre del archivo no proporcionado.");
         }
@@ -68,10 +90,14 @@ try {
             unlink($ruta_archivo);
         }
 
-        $ent_eventos->setImg_certificado($archivo);
+        if ($campo === 'img_ponente') {
+            $ent_eventos->setImg_ponente($archivo);
+        } else {
+            $ent_eventos->setImg_asistente($archivo);
+        }
         $ent_eventos->setCc_evento($cc_evento);
 
-        if (!$bo_evento->control($ent_eventos, $opc)) {
+        if (!$bo_evento->control($ent_eventos, $opc, $campo)) {
             throw new Exception($bo_evento->errores());
         }
 
@@ -80,7 +106,6 @@ try {
     }
 
     throw new Exception("Opción inválida.");
-
 } catch (Exception $e) {
     echo $e->getMessage();
 }

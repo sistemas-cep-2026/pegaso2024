@@ -29,9 +29,9 @@ class dao_cap_eventos
                 '" . $obj->getTipo() . "',
                 '" . $obj->getFecha_ini() . "',
                 '" . $obj->getFecha_fin() . "',
-                '" . $obj->getHorascreditos_text() . "',
                 '" . $obj->getFecha_evento_text() . "',
                 '" . $obj->getDetalle() . "',
+                '" . $obj->getDetalle_ponente() . "',
                 '" . $obj->getPrint_documento() . "',
                 '" . $obj->getText_documento() . "',
                 '" . $obj->getUser_crea() . "'";
@@ -45,16 +45,20 @@ class dao_cap_eventos
         }
     }
 
-    public function actualizarArchivo(cap_eventos $obj)
+    public function actualizarArchivo(cap_eventos $obj, $campo = 'img_asistente')
     {
-        $sql = "UPDATE cap_eventos SET img_certificado = '{$obj->getImg_certificado()}'
+        // Lista blanca: nunca interpolar el nombre de columna directo desde afuera.
+        $columna = ($campo === 'img_ponente') ? 'img_ponente' : 'img_asistente';
+        $valor   = ($campo === 'img_ponente') ? $obj->getImg_ponente() : $obj->getImg_asistente();
+        $sql = "UPDATE cap_eventos SET {$columna} = '{$valor}'
         WHERE cc_evento = {$obj->getCc_evento()}";
         return $this->conecta->sql_query($sql);
     }
 
-    public function eliminarArchivo(cap_eventos $obj)
+    public function eliminarArchivo(cap_eventos $obj, $campo = 'img_asistente')
     {
-        $sql = "update cap_eventos SET img_certificado = NULL
+        $columna = ($campo === 'img_ponente') ? 'img_ponente' : 'img_asistente';
+        $sql = "update cap_eventos SET {$columna} = NULL
         WHERE cc_evento = {$obj->getCc_evento()}";
         //echo $sql;
         return $this->conecta->sql_query($sql);

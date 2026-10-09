@@ -21,9 +21,9 @@ function fn_guardarEvento() {
     });
 }
 
-function fn_subirArchivo() {
+function fn_subirArchivo(campo) {
   swalProcesando();
-  var str_files = new FormData($('#frmSubirArchivo')[0]);
+  var str_files = new FormData(document.getElementById('frmSubirArchivo_' + campo));
   ajaxArchivo(str_files, "capacitacion/eve_update_file")
     .then(function (data) {
       if (data !== "0") {
@@ -35,9 +35,9 @@ function fn_subirArchivo() {
     });
 }
 
-function fn_eliminarArchivo(...arreglo) {
+function fn_eliminarArchivo(cc_evento, opc, nombreArchivo, campo) {
   alertaMensaje('¿Estás seguro de eliminar esta imagen?', function () {
-    var str = `cc_evento=${arreglo[0]}&opc=${arreglo[1]}&img_fondo=${arreglo[2]}`;
+    var str = `cc_evento=${cc_evento}&opc=${opc}&campo=${campo}&${campo}=${encodeURIComponent(nombreArchivo)}`;
     return ajax("capacitacion/eve_update_file", str)
       .then(function (data) {
         if (data !== "0") {

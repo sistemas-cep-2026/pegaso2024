@@ -12,14 +12,14 @@ class bo_cap_eventos
     {
         return $this->dao->creaeventos($obj);
     }
-    public function control(cap_eventos $obj, $opc)
+    public function control(cap_eventos $obj, $opc, $campo = 'img_asistente')
     {
         switch ($opc) {
             case "UPLOAD":
-                return $this->dao->actualizarArchivo($obj);
+                return $this->dao->actualizarArchivo($obj, $campo);
                 break;
             case "EA":
-                return $this->dao->eliminarArchivo($obj);
+                return $this->dao->eliminarArchivo($obj, $campo);
                 break;
             case "PU":
                 return $this->dao->PublicarEvento($obj);
@@ -55,7 +55,8 @@ class bo_cap_eventos
         dbo.fc_fecha_texto(e.fecha_ini) as fecha_inicio,
         dbo.fc_fecha_texto(e.fecha_fin) as fecha_fin,
         e.horascreditos_text,
-        e.img_certificado,
+        e.img_asistente,
+        e.img_ponente,
         e.detalle,
         e.flag,
         dbo.fc_v1_parametro_valor('cap_eventos','flag',e.flag) as flag_text,
@@ -94,9 +95,11 @@ class bo_cap_eventos
         tipo, 
         dbo.fc_v1_parametro_valor('cap_eventos','tipo',tipo) as tipo_text,
         horascreditos_text, 
-        img_certificado, 
+        img_asistente, 
+        img_ponente,
         fecha_evento_text, 
-        detalle, 
+        detalle,
+        detalle_ponente, 
         print_documento, 
         text_documento,
         sala,

@@ -11,7 +11,8 @@ class cap_eventos extends Parse
     private $fecha_ini;
     private $fecha_fin;
     private $horascreditos_text;
-    private $img_certificado;
+    private $img_asistente;
+    private $img_ponente;
     private $fecha_evento_text;
     private $detalle;
     private $detalle_ponente;
@@ -49,10 +50,11 @@ class cap_eventos extends Parse
         $this->fecha_ini = '';
         $this->fecha_fin = '';
         $this->horascreditos_text = '';
-        $this->img_certificado = '';
+        $this->img_asistente = '';
+        $this->img_ponente = '';
         $this->fecha_evento_text = '';
-        $this-> = '';
-        $this->_ponente = '';
+        $this->detalle = '';
+        $this->detalle_ponente = '';
         $this->print_documento = '';
         $this->text_documento = '';
         $this->flag = '';
@@ -180,15 +182,25 @@ class cap_eventos extends Parse
         return $this->horascreditos_text;
     }
 
-    public function setImg_certificado($img_certificado)
+    public function setimg_asistente($img_asistente)
     {
-        if (empty($img_certificado)) return;
-        $this->img_certificado = self::Clean($img_certificado);
+        if (empty($img_asistente)) return;
+        $this->img_asistente = self::Clean($img_asistente);
     }
 
-    public function getImg_certificado()
+    public function getimg_asistente()
     {
-        return $this->img_certificado;
+        return $this->img_asistente;
+    }
+    public function setimg_ponente($img_ponente)
+    {
+        if (empty($img_ponente)) return;
+        $this->img_ponente = self::Clean($img_ponente);
+    }
+
+    public function getimg_ponente()
+    {
+        return $this->img_ponente;
     }
 
     public function setFecha_evento_text($fecha_evento_text)
@@ -217,7 +229,7 @@ class cap_eventos extends Parse
         return $this->detalle;
     }
 
-     public function setDetalle_ponente($detalle_ponente)
+    public function setDetalle_ponente($detalle_ponente)
     {
         if ($detalle_ponente === null || trim($detalle_ponente) === '') {
             $this->detalle_ponente = null;
