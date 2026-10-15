@@ -103,7 +103,7 @@ class bo_tram_documentos_recibidos
     where 1=1";
 
         if (strlen($obj->getGestion()) > 0) {
-            $sql .= " and c_expediente='" . $obj->getGestion() . "'";
+            $sql .= " and SUBSTRING(d.c_expediente, 3, 2)='" . $obj->getGestion() . "'";
         }
         if (strlen($obj->getNombre_remitente()) > 0) {
             $sql .= " and pf.nombre like '%" . $obj->getNombre_remitente() . "%'";
@@ -125,7 +125,7 @@ class bo_tram_documentos_recibidos
             $sql .= " AND d.c_expediente >= '" . $obj->getNum_desde() . "'";
         }
 
-        echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 

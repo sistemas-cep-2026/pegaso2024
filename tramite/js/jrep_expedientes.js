@@ -3,6 +3,10 @@ fn_buscarExp();
 function fn_buscarExp() {
     var str = $("#frmBuscarExp").serialize();
     obtenerDatos('divReporExp', 'tramite/rep_expe_lista', str, function () {
+        // Sin resultados la lista no trae tabla: no hay nada que ordenar.
+        if (!document.getElementById('table-reporte')) {
+            return;
+        }
         fn_listaDataTable('table-reporte', {
             searching: false,
             lengthChange: false,

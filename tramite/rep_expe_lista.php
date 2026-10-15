@@ -16,8 +16,7 @@ $ent_doc_recibidos = new tram_documentos_recibidos();
 $cc_local = s_local();
 $sede     = ($cc_local == '28') ? 'CN' : 'CR';
 
-$c_expediente     = isset($_REQUEST['c_expediente']) ? (int)$_REQUEST['c_expediente'] : '';
-$gestion          = isset($_REQUEST['gestion']) ? (int)$_REQUEST['gestion'] : 0;
+$c_expediente     = (int) ($_REQUEST['c_expediente'] ?? 0);
 $fecha_desde = u_fecha($_REQUEST["fecha_desde"] ?? '') . ' 01:00';
 $fecha_hasta = u_fecha($_REQUEST["fecha_hasta"] ?? '') . ' 23:59';
 $nombre_remitente = $_REQUEST["nombre_remitente"] ?? '';
@@ -47,30 +46,29 @@ $estadoMap = [
     'A' => ['Archivado', 'success'],
 ];
 ?>
-<div class="table-responsive">
-    <table class="table table-striped table-hover table-sm align-middle" id="table-reporte">
-        <thead>
-            <tr class="table-light">
-                <th>#</th>
-                <th>Fecha</th>
-                <th>Expediente</th>
-                <th>Nombre</th>
-                <th>Número</th>
-                <th>Fec. Doc.</th>
-                <th>Asunto</th>
-                <th>Usuario</th>
-                <th>Estado</th>
-                <th class="text-center">Opciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($data_exp)): ?>
-                <tr>
-                    <td colspan="10" class="text-center py-3 text-muted">
-                        <i class="ri-information-line me-1"></i> No hay expedientes para listar.
-                    </td>
+<?php if (empty($data_exp)): ?>
+    <?php /* Sin resultados NO se dibuja la tabla: DataTables falla si la unica fila usa colspan (_DT_CellIndex). */ ?>
+    <div class="text-center py-3 text-muted">
+        <i class="ri-information-line me-1"></i> No hay expedientes para listar.
+    </div>
+<?php else: ?>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm align-middle" id="table-reporte">
+            <thead>
+                <tr class="table-light">
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Expediente</th>
+                    <th>Nombre</th>
+                    <th>Número</th>
+                    <th>Fec. Doc.</th>
+                    <th>Asunto</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                    <th class="text-center">Opciones</th>
                 </tr>
-            <?php else: ?>
+            </thead>
+            <tbody>
                 <?php $i = 1; ?>
                 <?php foreach ($data_exp as $row): ?>
                     <?php
@@ -103,7 +101,7 @@ $estadoMap = [
                         </td>
                     </tr>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
+<?php endif; ?>

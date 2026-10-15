@@ -23,7 +23,7 @@ $data_gestion = $bo_general->listarGestionActiva();
                 <div class="row justify-content-center">
                     <form class="needs-validation" id="frmBuscarExp" action="javascript:fn_buscarExp()" method="post" novalidate>
                         <div class="mb-1 row justify-content-center align-items-center">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3 col-xl-2">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Gestión:</span>
                                     <select name="gestion" id="gestion" class="form-control">
@@ -35,13 +35,13 @@ $data_gestion = $bo_general->listarGestionActiva();
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Desde:</span>
                                     <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" placeholder="00/00/0000" value="<?php echo fecha_hoy() ?>">
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Hasta:</span>
                                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" placeholder="00/00/0000" value="<?php echo fecha_hoy() ?>">
@@ -49,19 +49,19 @@ $data_gestion = $bo_general->listarGestionActiva();
                             </div>
                         </div>
                         <div class="mb-1 row justify-content-center align-items-center">
-                            <div class="col-sm-3">
+                            <div class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Nombre:</span>
                                     <input type="text" class="form-control" id="nombre_remitente" name="nombre_remitente" placeholder="Nombre" value="">
                                 </div>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3 col-xl-2">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Exp.:</span>
                                     <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="Expediente" value="">
                                 </div>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Area.:</span>
                                     <select name="c_area_adm" id="c_area_adm" class="form-control">
