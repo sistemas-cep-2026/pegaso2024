@@ -5,6 +5,7 @@ s_validar_pagina();
 require_once(u_src() . "bo/bo_general.php");
 require_once(u_src() . "bo/bo_tram_seguimiento_documentos_recibid.php");
 require_once u_src() . 'bo/bo_gen_parametro_det.php';
+require_once(u_src() . "bo/bo_tram_documentos_recibidos.php");
 
 $bo_parametro_detalle = new bo_gen_parametro_det();
 $bo_doc_recibidos = new bo_tram_seguimiento_documentos_recibid();
@@ -29,6 +30,25 @@ $disabled_global = ($flag == 'A') ? 'disabled' : '';
 
 $ent_doc_recibidos->setCc_docrecibidos($cc_docrecibidos);
 $data_detalle = $bo_doc_recibidos->listaIDExp($ent_doc_recibidos);
+
+// Cabecera del expediente: se necesita documento_enviado (aquí se guarda el nombre del PDF)
+$bo_exp_cab  = new bo_tram_documentos_recibidos();
+$ent_exp_cab = new tram_documentos_recibidos();
+$ent_exp_cab->setCc_docrecibidos($cc_docrecibidos);
+$documento_enviado = '';
+foreach ($bo_exp_cab->listarId($ent_exp_cab) as $cab) {
+    $documento_enviado = trim((string) ($cab['documento_enviado'] ?? ''));
+}
+
+// Bloqueo del PDF: expediente archivado ('A') o alguna derivación ya recibida ('T') / atendida ('A')
+$bloqueo_pdf = ($disabled_global !== '');
+foreach ($data_detalle as $det_pdf) {
+    $flag_det_pdf = trim((string) ($det_pdf['flag'] ?? ''));
+    if ($flag_det_pdf === 'T' || $flag_det_pdf === 'A') {
+        $bloqueo_pdf = true;
+        break;
+    }
+}
 ?>
 <fieldset <?php echo $disabled_global; ?>>
     <form id="formGrabarDetalle">
@@ -124,6 +144,7 @@ $data_detalle = $bo_doc_recibidos->listaIDExp($ent_doc_recibidos);
         </table>
     </form>
 </fieldset>
+<?php include __DIR__ . '/exp_file.php'; // fuera del fieldset: el bloqueo lo maneja exp_file.php ?>
 
 <script>
     $(function() {
@@ -203,4 +224,4 @@ $data_detalle = $bo_doc_recibidos->listaIDExp($ent_doc_recibidos);
                 swalError(err);
             });
     }
-</script>
+</script>

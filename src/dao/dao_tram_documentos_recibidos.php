@@ -51,17 +51,17 @@ class dao_tram_documentos_recibidos
     public function subir_file(tram_documentos_recibidos $obj)
     {
         $sql = "update documentos_recibidos 
-        set file_adjunto='{$obj->getFile_adjunto()}' 
-        where cc_docrecibidos={$obj->getCc_docrecibidos()}";
+        set documento_enviado='{$obj->getDocumento_enviado()}' 
+        where cc_docrecibidos={$obj->getCc_docrecibidos()}
+        and (documento_enviado is null or rtrim(documento_enviado)='')";
         return $this->conecta->sql_query($sql);
     }
     public function eliminar_file(tram_documentos_recibidos $obj)
     {
         $sql = "update documentos_recibidos 
-        set file_adjunto=NULL
-        where cc_docrecibidos={$obj->getCc_docrecibidos()}";
+        set documento_enviado=NULL
+        where cc_docrecibidos={$obj->getCc_docrecibidos()}
+        and rtrim(documento_enviado) like '%.pdf'";
         return $this->conecta->sql_query($sql);
     }
 }
-
-// c_tipo_de_documento, num_documento, fecha_documento, c_persona, c_persona_pf, asunto, asunto2, c_local, c_usuario, tipo_persona, destinatario, c_local_origen, c_cargo

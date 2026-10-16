@@ -55,6 +55,7 @@ class bo_tram_documentos_recibidos
         l.nombre as c_local_origen_text,
         d.c_cargo,
         d.flag,
+        rtrim(d.documento_enviado) as documento_enviado,
         d.tokenumero,
         dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) as fecha_ingreso
         from documentos_recibidos d (nolock) left join personas p (nolock)

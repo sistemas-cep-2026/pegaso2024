@@ -153,7 +153,7 @@ function fn_subirArchivo() {
                 throw data;
             }
             Swal.close();
-            recargar(750, 'O');
+            fn_listarDetalleFromExp();
         })
         .catch(function (err) {
             Swal.close();
@@ -177,7 +177,7 @@ function fn_eliminarArchivo(...arreglo) {
                 if (data !== "0") {
                     throw data;
                 }
-                recargar(750, 'O');
+                fn_listarDetalleFromExp();
             })
             .catch(function (err) {
                 Swal.showValidationMessage(err);
@@ -211,4 +211,4 @@ function fn_verSeguimientoExp(cc_docrecibidos_enc) {
     obtenerDatos(modalContainerXl, 'tramite/exp_rep_show', 'cod=' + encodeURIComponent(cc_docrecibidos_enc), function () {
         modalRegistroXl.show();
     });
-}
+}
