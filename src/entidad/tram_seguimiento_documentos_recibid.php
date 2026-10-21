@@ -4,24 +4,25 @@ class tram_seguimiento_documentos_recibid extends Parse
 {
     private $cc_docrecibidos_det;
     private $cc_docrecibidos;
-    private $c_expediente;
-    private $linea;
     private $c_area_adm;
     private $fecha_entrega;
+    private $c_accion;
     private $cod_original;
-    private $accion_a_tomar;
     private $observacion;
     private $c_local;
-    private $c_accion;
-    private $flag;
+    private $accion_a_tomar;
+    private $file_adjunto;
     private $c_usuario;
-    private $c_local_destino;
-    private $c_usuario_destino;
-    private $fecha_respuesta;
-    private $tipo_persona;
+    private $feha_respuesta;
     private $fecha_verif;
     private $usu_recep;
     private $usu_atien;
+    private $flag;
+    private $tipo_persona;
+    private $c_local_destino;
+    private $c_expediente;
+    private $linea;
+    private $c_usuario_destino;
 
     private $opc;
 
@@ -29,24 +30,25 @@ class tram_seguimiento_documentos_recibid extends Parse
     {
         $this->cc_docrecibidos_det = 0;
         $this->cc_docrecibidos = 0;
-        $this->c_expediente = '';
-        $this->linea = 0;
         $this->c_area_adm = '';
         $this->fecha_entrega = '';
+        $this->c_accion = 0;
         $this->cod_original = '';
-        $this->accion_a_tomar = '';
         $this->observacion = '';
         $this->c_local = '';
-        $this->c_accion = 0;
-        $this->flag = '';
+        $this->accion_a_tomar = '';
+        $this->file_adjunto = '';
         $this->c_usuario = '';
-        $this->c_local_destino = '';
-        $this->c_usuario_destino = '';
-        $this->fecha_respuesta = '';
-        $this->tipo_persona = '';
+        $this->feha_respuesta = '';
         $this->fecha_verif = '';
         $this->usu_recep = '';
         $this->usu_atien = '';
+        $this->flag = '';
+        $this->tipo_persona = '';
+        $this->c_local_destino = '';
+        $this->c_expediente = '';
+        $this->linea = 0;
+        $this->c_usuario_destino = '';
 
         $this->opc = '';
     }
@@ -73,28 +75,6 @@ class tram_seguimiento_documentos_recibid extends Parse
         return $this->cc_docrecibidos;
     }
 
-    public function setC_expediente($c_expediente)
-    {
-        if (empty($c_expediente)) return;
-        $this->c_expediente = self::Clean($c_expediente);
-    }
-
-    public function getC_expediente()
-    {
-        return $this->c_expediente;
-    }
-
-    public function setLinea($linea)
-    {
-        if (empty($linea)) return;
-        $this->linea = self::Clean($linea);
-    }
-
-    public function getLinea()
-    {
-        return $this->linea;
-    }
-
     public function setC_area_adm($c_area_adm)
     {
         if (empty($c_area_adm)) return;
@@ -117,6 +97,17 @@ class tram_seguimiento_documentos_recibid extends Parse
         return $this->fecha_entrega;
     }
 
+    public function setC_accion($c_accion)
+    {
+        if (empty($c_accion)) return;
+        $this->c_accion = self::Clean($c_accion);
+    }
+
+    public function getC_accion()
+    {
+        return $this->c_accion;
+    }
+
     public function setCod_original($cod_original)
     {
         if (empty($cod_original)) return;
@@ -126,17 +117,6 @@ class tram_seguimiento_documentos_recibid extends Parse
     public function getCod_original()
     {
         return $this->cod_original;
-    }
-
-    public function setAccion_a_tomar($accion_a_tomar)
-    {
-        if (empty($accion_a_tomar)) return;
-        $this->accion_a_tomar = self::Clean($accion_a_tomar);
-    }
-
-    public function getAccion_a_tomar()
-    {
-        return $this->accion_a_tomar;
     }
 
     public function setObservacion($observacion)
@@ -161,26 +141,26 @@ class tram_seguimiento_documentos_recibid extends Parse
         return $this->c_local;
     }
 
-    public function setC_accion($c_accion)
+    public function setAccion_a_tomar($accion_a_tomar)
     {
-        if (empty($c_accion)) return;
-        $this->c_accion = self::Clean($c_accion);
+        if (empty($accion_a_tomar)) return;
+        $this->accion_a_tomar = self::Clean($accion_a_tomar);
     }
 
-    public function getC_accion()
+    public function getAccion_a_tomar()
     {
-        return $this->c_accion;
+        return $this->accion_a_tomar;
     }
 
-    public function setFlag($flag)
+    public function setFile_adjunto($file_adjunto)
     {
-        if (empty($flag)) return;
-        $this->flag = self::Clean($flag);
+        if (empty($file_adjunto)) return;
+        $this->file_adjunto = self::Clean($file_adjunto);
     }
 
-    public function getFlag()
+    public function getFile_adjunto()
     {
-        return $this->flag;
+        return $this->file_adjunto;
     }
 
     public function setC_usuario($c_usuario)
@@ -194,48 +174,15 @@ class tram_seguimiento_documentos_recibid extends Parse
         return $this->c_usuario;
     }
 
-    public function setC_local_destino($c_local_destino)
+    public function setFeha_respuesta($feha_respuesta)
     {
-        if (empty($c_local_destino)) return;
-        $this->c_local_destino = self::Clean($c_local_destino);
+        if (empty($feha_respuesta)) return;
+        $this->feha_respuesta = self::Clean($feha_respuesta);
     }
 
-    public function getC_local_destino()
+    public function getFeha_respuesta()
     {
-        return $this->c_local_destino;
-    }
-
-    public function setC_usuario_destino($c_usuario_destino)
-    {
-        if (empty($c_usuario_destino)) return;
-        $this->c_usuario_destino = self::Clean($c_usuario_destino);
-    }
-
-    public function getC_usuario_destino()
-    {
-        return $this->c_usuario_destino;
-    }
-
-    public function setFecha_respuesta($fecha_respuesta)
-    {
-        if (empty($fecha_respuesta)) return;
-        $this->fecha_respuesta = self::Clean($fecha_respuesta);
-    }
-
-    public function getFecha_respuesta()
-    {
-        return $this->fecha_respuesta;
-    }
-
-    public function setTipo_persona($tipo_persona)
-    {
-        if (empty($tipo_persona)) return;
-        $this->tipo_persona = self::Clean($tipo_persona);
-    }
-
-    public function getTipo_persona()
-    {
-        return $this->tipo_persona;
+        return $this->feha_respuesta;
     }
 
     public function setFecha_verif($fecha_verif)
@@ -269,6 +216,72 @@ class tram_seguimiento_documentos_recibid extends Parse
     public function getUsu_atien()
     {
         return $this->usu_atien;
+    }
+
+    public function setFlag($flag)
+    {
+        if (empty($flag)) return;
+        $this->flag = self::Clean($flag);
+    }
+
+    public function getFlag()
+    {
+        return $this->flag;
+    }
+
+    public function setTipo_persona($tipo_persona)
+    {
+        if (empty($tipo_persona)) return;
+        $this->tipo_persona = self::Clean($tipo_persona);
+    }
+
+    public function getTipo_persona()
+    {
+        return $this->tipo_persona;
+    }
+
+    public function setC_local_destino($c_local_destino)
+    {
+        if (empty($c_local_destino)) return;
+        $this->c_local_destino = self::Clean($c_local_destino);
+    }
+
+    public function getC_local_destino()
+    {
+        return $this->c_local_destino;
+    }
+
+    public function setC_expediente($c_expediente)
+    {
+        if (empty($c_expediente)) return;
+        $this->c_expediente = self::Clean($c_expediente);
+    }
+
+    public function getC_expediente()
+    {
+        return $this->c_expediente;
+    }
+
+    public function setLinea($linea)
+    {
+        if (empty($linea)) return;
+        $this->linea = self::Clean($linea);
+    }
+
+    public function getLinea()
+    {
+        return $this->linea;
+    }
+
+    public function setC_usuario_destino($c_usuario_destino)
+    {
+        if (empty($c_usuario_destino)) return;
+        $this->c_usuario_destino = self::Clean($c_usuario_destino);
+    }
+
+    public function getC_usuario_destino()
+    {
+        return $this->c_usuario_destino;
     }
 
     public function setOpc($opc)

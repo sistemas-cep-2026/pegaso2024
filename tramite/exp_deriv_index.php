@@ -64,7 +64,7 @@ $data_gestion = $bo_general->listarGestionActiva();
                             <div class="col-sm-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Expediente:</span>
-                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="" value="" required>
+                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="" value="">
                                 </div>
                             </div>
                             <div class="col-sm-3 text-start">

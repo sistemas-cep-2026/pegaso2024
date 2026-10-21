@@ -50,7 +50,7 @@ class dao_tram_documentos_recibidos
     }
     public function subir_file(tram_documentos_recibidos $obj)
     {
-        $sql = "update documentos_recibidos 
+        $sql = "update documentos_recibidos1 
         set documento_enviado='{$obj->getDocumento_enviado()}' 
         where cc_docrecibidos={$obj->getCc_docrecibidos()}
         and (documento_enviado is null or rtrim(documento_enviado)='')";
@@ -58,7 +58,7 @@ class dao_tram_documentos_recibidos
     }
     public function eliminar_file(tram_documentos_recibidos $obj)
     {
-        $sql = "update documentos_recibidos 
+        $sql = "update documentos_recibidos1 
         set documento_enviado=NULL
         where cc_docrecibidos={$obj->getCc_docrecibidos()}
         and rtrim(documento_enviado) like '%.pdf'";

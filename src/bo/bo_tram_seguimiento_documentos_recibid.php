@@ -33,13 +33,13 @@ class bo_tram_seguimiento_documentos_recibid
             de.flag,
             de.linea,
             de.accion_a_tomar,
-		    dbo.fc_v1_parametro_valor('seguimiento_documentos_recibid','flag',de.flag) as flag_text,
+		    dbo.fc_v1_parametro_valor('seguimiento_documentos_recibid1','flag',de.flag) as flag_text,
             de.cod_original,
-            dbo.fc_v1_parametro_valor('seguimiento_documentos_recibid','cod_original',de.cod_original) as cod_original_text,
+            dbo.fc_v1_parametro_valor('seguimiento_documentos_recibid1','cod_original',de.cod_original) as cod_original_text,
             de.feha_respuesta,
             dbo.fc_v1_fecha_hora(de.feha_respuesta) as feha_respuesta_text,
             de.usu_recep
-            from seguimiento_documentos_recibid de  (nolock) left join gen_area_adm a
+            from seguimiento_documentos_recibid1 de  (nolock) left join gen_area_adm a
             on de.c_area_adm=a.cc_area_adm
             left join tram_acciones ac
             on de.c_accion=ac.c_accion

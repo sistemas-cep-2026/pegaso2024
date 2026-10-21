@@ -101,64 +101,61 @@ $color = $porcentaje < $cant_min ? 'danger' : ($porcentaje < $cant_med ? 'warnin
             </div>
         </div>
     <?php
-    } else {
-    ?>
-        <div class="row">
-            <div class="col-12">
-                <div class="card bg-light overflow-hidden">
-                    <div class="card-body">
-                        <div class="d-flex">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0"><b class="text-<?= $color; ?>"><?= decimal($porcentaje, 0) ?>%</b> Progreso del expediente completado</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="progress bg-<?= $color; ?>-subtle rounded-0">
-                        <div class="progress-bar bg-<?= $color; ?>" role="progressbar" style="width: <?= decimal($porcentaje, 0) ?>%" aria-valuenow="<?= decimal($porcentaje, 0) ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="divListarEstadosTramitado"><?= cargador(); ?></div>
-        <hr>
-        <div class="row p-1">
-            <div class="col-12 p-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img loading="lazy" onerror="this.onerror=null; this.src='images/sinfoto.jpg';" src="<?= $foto ?>" class="rounded img-fluid material-shadow" width="120">
-                    </div>
-                    <div class="flex-grow-1 ms-3 row fs-5">
-                        <div class="row">
-
-                            <div class="col-xl-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li class="mb-25"><b>Nombre:</b> <?= $nombre_completo ?></li>
-                                    <li class="mb-25"><b><?= $documento ?></b></li>
-                                    <li class="mb-25"><b>Genero :</b> <?= $genero ?></li>
-                                    <li class="mb-25"><b>Pais:</b> <?= $pais ?></li>
-                                </ul>
-                            </div>
-                            <div class="col-xl-6">
-                                <ul class="list-unstyled mb-0">
-                                    <li class="mb-25"><b>Fec. Nac.:</b> <?= $fec_nac ?></li>
-                                    <li class="mb-25"><b>Correo :</b> <?= $correo ?></li>
-                                    <li class="mb-25"><b>Celular:</b> <?= $celular ?></li>
-                                </ul>
-                            </div>
-                            <div class="col-xl-12">
-                                <ul class="list-unstyled">
-                                    <li class="mb-25"><b>Lugar nacimiento:</b> <?= $lugar_nacimiento ?></li>
-                                    <li class="mb-25"><b>Dirección:</b> <?= $direccion ?> (<?= $lugar_direccion ?>)</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php
     }
     ?>
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light overflow-hidden">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0"><b class="text-<?= $color; ?>"><?= decimal($porcentaje, 0) ?>%</b> Progreso del expediente completado</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress bg-<?= $color; ?>-subtle rounded-0">
+                    <div class="progress-bar bg-<?= $color; ?>" role="progressbar" style="width: <?= decimal($porcentaje, 0) ?>%" aria-valuenow="<?= decimal($porcentaje, 0) ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="divListarEstadosTramitado"><?= cargador(); ?></div>
+    <hr>
+    <div class="row p-1">
+        <div class="col-12 p-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <img loading="lazy" onerror="this.onerror=null; this.src='images/sinfoto.jpg';" src="<?= $foto ?>" class="rounded img-fluid material-shadow" width="120">
+                </div>
+                <div class="flex-grow-1 ms-3 row fs-5">
+                    <div class="row">
+
+                        <div class="col-xl-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-25"><b>Nombre:</b> <?= $nombre_completo ?></li>
+                                <li class="mb-25"><b><?= $documento ?></b></li>
+                                <li class="mb-25"><b>Genero :</b> <?= $genero ?></li>
+                                <li class="mb-25"><b>Pais:</b> <?= $pais ?></li>
+                            </ul>
+                        </div>
+                        <div class="col-xl-6">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-25"><b>Fec. Nac.:</b> <?= $fec_nac ?></li>
+                                <li class="mb-25"><b>Correo :</b> <?= $correo ?></li>
+                                <li class="mb-25"><b>Celular:</b> <?= $celular ?></li>
+                            </ul>
+                        </div>
+                        <div class="col-xl-12">
+                            <ul class="list-unstyled">
+                                <li class="mb-25"><b>Lugar nacimiento:</b> <?= $lugar_nacimiento ?></li>
+                                <li class="mb-25"><b>Dirección:</b> <?= $direccion ?> (<?= $lugar_direccion ?>)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <hr>
     <div class="row">
         <div class="col-sm-12">
@@ -196,5 +193,6 @@ $color = $porcentaje < $cant_min ? 'danger' : ($porcentaje < $cant_med ? 'warnin
     listarEstadosTramitado({
         c_persona: '<?= s_crypt($c_persona) ?>',
         cr: '<?= $cr_texto ?>',
+        cep:'<?= $cep ?>'
     });
 </script>

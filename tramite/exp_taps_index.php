@@ -18,7 +18,7 @@ $flag = '0';
 $opc = isset($_REQUEST['opc']) ? s_crypt($_REQUEST['opc'], 'out') : 'I';
 $cc_docrecibidos = isset($_REQUEST['cod']) ? s_crypt($_REQUEST['cod'], 'out') : '';
 
-$tipo_persona = $bo_parametro_detalle->listarParametroDet("documentos_recibidos", "tipo_persona");
+$tipo_persona = $bo_parametro_detalle->listarParametroDet("documentos_recibidos1", "tipo_persona");
 $data_doc = $bo_general->tipo_documento();
 $data_cargos = $bo_general->listarCargos();
 

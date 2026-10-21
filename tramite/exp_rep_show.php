@@ -1,9 +1,75 @@
 <?php
 require_once(dirname(__DIR__) . "/util/seguridad.php");
 require_once(dirname(__DIR__) . "/util/util.php");
+require_once(dirname(__DIR__) . "/util/config_file.php");
 s_validar_pagina();
 require_once(u_src() . "bo/bo_tram_documentos_recibidos.php");
 require_once(u_src() . "bo/bo_tram_seguimiento_documentos_recibid.php");
+
+// Busca el PDF adjunto del expediente (mismo criterio que tramite/exp_deriv_lista.php).
+// Devuelve la URL del visor (tramite/exp_file_ver) o null si no existe. Los PDF viven fuera de la web (D:/file_tramites).
+if (!function_exists('exp_deriv_buscar_pdf')) {
+    function exp_deriv_buscar_pdf($row, &$buscados)
+    {
+        $buscados = [];
+        $cc  = (int)($row['cc_docrecibidos'] ?? 0);
+        $exp = preg_replace('/[^A-Za-z0-9]/', '', trim((string)($row['c_expediente'] ?? '')));
+
+        $nombres = [];
+        foreach (['documento_enviado', 'file_adjunto'] as $campo) {
+            $n = trim((string)($row[$campo] ?? ''));
+            if ($n !== '') {
+                $nombres[] = $n;
+            }
+        }
+        if ($exp !== '') {
+            $nombres[] = 'TRAM_' . $exp . '.pdf';
+        }
+
+        $dir = null;
+        try {
+            $dir = u_file_carpeta('pdf', null, false);   // null si la carpeta no existe
+        } catch (Throwable $e) {
+            $dir = null;
+        }
+        if ($dir !== null) {
+            $patrones = [];
+            if ($cc > 0) {
+                $patrones[] = $cc . '_*.pdf';
+            }
+            if ($exp !== '') {
+                $patrones[] = 'TRAM_' . $exp . '*.pdf';
+            }
+            foreach ($patrones as $patron) {
+                $buscados[] = $patron;
+                $hallados = glob($dir . $patron);
+                if ($hallados) {
+                    usort($hallados, function ($a, $b) {
+                        return filemtime($b) - filemtime($a);   // el más reciente primero
+                    });
+                    foreach ($hallados as $h) {
+                        $nombres[] = basename($h);
+                    }
+                }
+            }
+        }
+
+        foreach (array_unique($nombres) as $nombre) {
+            if (strtolower(substr($nombre, -4)) !== '.pdf') {
+                continue;   // valores antiguos (.doc, etc.) no se enlazan
+            }
+            $buscados[] = $nombre;
+            try {
+                if (u_file_ruta('pdf', $nombre) !== null) {
+                    return u_file_url('pdf', $nombre);
+                }
+            } catch (Throwable $e) {
+                // un nombre inválido en la BD no debe romper la vista
+            }
+        }
+        return null;
+    }
+}
 
 $bo_doc_recibidos     = new bo_tram_documentos_recibidos();
 $bo_doc_recibidos_det = new bo_tram_seguimiento_documentos_recibid();
@@ -48,9 +114,14 @@ $estadoMap = [
 
 $estadoDocMap = [
     'P' => ['Pendiente', 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'],
+    'T' => ['Trámite',   'bg-info-subtle text-info-emphasis border border-info-subtle'],
     'A' => ['Archivado', 'bg-success-subtle text-success-emphasis border border-success-subtle']
 ];
 [$estadoDocTexto, $estadoDocClase] = $estadoDocMap[$row['flag'] ?? ''] ?? ['—', 'bg-light text-muted border'];
+
+// listarId no trae documento_enviado: la búsqueda usa cc_docrecibidos / c_expediente
+$pdf_buscados = [];
+$url_pdf = exp_deriv_buscar_pdf($row, $pdf_buscados);
 ?>
 <div class="modal-header">
     <h5 class="modal-title">
@@ -65,7 +136,20 @@ $estadoDocMap = [
             <i class="ri-calendar-line me-1"></i>
             <?= htmlspecialchars($row['fecha_documento_text'] ?? '') ?>
         </div>
-        <span class="badge <?= $estadoDocClase ?>"><?= $estadoDocTexto ?></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php if ($url_pdf !== null): ?>
+                <a href="<?= htmlspecialchars($url_pdf) ?>" target="_blank" rel="noopener"
+                    class="btn btn-outline-danger btn-sm d-inline-flex align-items-center px-2 py-1"
+                    title="Ver PDF adjunto" aria-label="Ver PDF adjunto del expediente">
+                    <i class="ri-file-pdf-2-line fs-16 me-1"></i><span class="fs-12 fw-semibold">PDF</span>
+                </a>
+            <?php else: ?>
+                <span class="text-muted fs-12 text-nowrap" title="Se buscó: <?= htmlspecialchars(implode(', ', $pdf_buscados)) ?>">
+                    <i class="ri-attachment-2 align-middle"></i> Sin archivo
+                </span>
+            <?php endif; ?>
+            <span class="badge <?= $estadoDocClase ?>"><?= $estadoDocTexto ?></span>
+        </div>
     </div>
     <div class="row g-2 fs-13 mb-3">
         <div class="col-md-6">

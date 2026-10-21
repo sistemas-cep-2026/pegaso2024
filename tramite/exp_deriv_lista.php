@@ -1,6 +1,7 @@
 <?php
 require_once(dirname(__DIR__) . "/util/seguridad.php");
 require_once(dirname(__DIR__) . "/util/util.php");
+require_once(dirname(__DIR__) . "/util/config_file.php");
 
 s_validar_pagina();
 
@@ -17,33 +18,103 @@ $bo_doc_recibidos_det = new bo_tram_seguimiento_documentos_recibid();
 $ent_doc_recibidos     = new tram_documentos_recibidos();
 $ent_doc_recibidos_det = new tram_seguimiento_documentos_recibid();
 
-$est_estado = $bo_parametro_detalle->listarParametroDet('seguimiento_documentos_recibid',    'flag');
+$est_estado = $bo_parametro_detalle->listarParametroDet('seguimiento_documentos_recibid1',    'flag');
 
-$est_original = $bo_parametro_detalle->listarParametroDet('seguimiento_documentos_recibid',    'cod_original');
+$est_original = $bo_parametro_detalle->listarParametroDet('seguimiento_documentos_recibid1',    'cod_original');
 
 $cc_local = s_local();
 $sede = ($cc_local == '28') ? 'CN' : 'CR';
 
 $c_area_adm = isset($_REQUEST['c_area_adm'])    ? trim($_REQUEST['c_area_adm'])    : '';
-$gestion = isset($_REQUEST['gestion'])    ? (int)$_REQUEST['gestion']    : 0;
-$c_expediente = isset($_REQUEST['c_expediente'])    ? (int)$_REQUEST['c_expediente']    : 0;
+$gestion = isset($_REQUEST['gestion'])    ? rtrim($_REQUEST['gestion'])    : '00';
+$c_expediente = isset($_REQUEST['c_expediente'])    ? (int)$_REQUEST['c_expediente']    : '';
+if ($c_expediente > 0) {
+    $numero = str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
+    $ent_doc_recibidos->setC_expediente($numero);
+}
 
 $seccion_req = isset($_REQUEST['seccion'])    ? trim($_REQUEST['seccion'])    : '';
 
 $data_area   = $bo_general->AreaAdministrativa($sede);
 $data_accion = $bo_general->tram_accion();
 
-$numero =    str_pad($cc_local, 2, '0', STR_PAD_LEFT) .
-    str_pad($gestion, 2, '0', STR_PAD_LEFT) .
-    str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
-
+$numero =    str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
 $ent_doc_recibidos->setC_local($cc_local);
-$ent_doc_recibidos->setC_expediente($numero);
+$ent_doc_recibidos->setGestion($gestion);
 
 $data_doc = $bo_doc_recibidos->listarDerivacion($ent_doc_recibidos, $c_area_adm);
-
 $opcd_u = s_crypt('U', 'in');
+$opc_archivar_enc = s_crypt('A', 'in');
 
+
+/**
+ * Busca el PDF de un expediente en la carpeta de archivos (D:/file_tramites). Devuelve la URL del visor
+ * si existe y, en $buscados, los nombres que se intentaron (para explicar por qué no se encontró).
+ * Prueba: el nombre guardado en la BD (documento_enviado / file_adjunto, si el BO lo trae),
+ * TRAM_<n° expediente>.pdf y <cc_docrecibidos>_<fecha>.pdf (nombre que usaba la subida anterior).
+ */
+if (!function_exists('exp_deriv_buscar_pdf')) {
+    function exp_deriv_buscar_pdf($row, &$buscados)
+    {
+        $buscados = [];
+        $cc  = (int)($row['cc_docrecibidos'] ?? 0);
+        $exp = preg_replace('/[^A-Za-z0-9]/', '', trim((string)($row['c_expediente'] ?? '')));
+
+        $nombres = [];
+        foreach (['documento_enviado', 'file_adjunto'] as $campo) {
+            $n = trim((string)($row[$campo] ?? ''));
+            if ($n !== '') {
+                $nombres[] = $n;
+            }
+        }
+        if ($exp !== '') {
+            $nombres[] = 'TRAM_' . $exp . '.pdf';
+        }
+
+        $dir = null;
+        try {
+            $dir = u_file_carpeta('pdf', null, false);   // null si la carpeta no existe
+        } catch (Throwable $e) {
+            $dir = null;
+        }
+        if ($dir !== null) {
+            $patrones = [];
+            if ($cc > 0) {
+                $patrones[] = $cc . '_*.pdf';
+            }
+            if ($exp !== '') {
+                $patrones[] = 'TRAM_' . $exp . '*.pdf';
+            }
+            foreach ($patrones as $patron) {
+                $buscados[] = $patron;
+                $hallados = glob($dir . $patron);
+                if ($hallados) {
+                    usort($hallados, function ($a, $b) {
+                        return filemtime($b) - filemtime($a);   // el más reciente primero
+                    });
+                    foreach ($hallados as $h) {
+                        $nombres[] = basename($h);
+                    }
+                }
+            }
+        }
+
+        foreach (array_unique($nombres) as $nombre) {
+            if (strtolower(substr($nombre, -4)) !== '.pdf') {
+                continue;   // valores antiguos (.doc, etc.) no se enlazan
+            }
+            $buscados[] = $nombre;
+            try {
+                if (u_file_ruta('pdf', $nombre) !== null) {
+                    return u_file_url('pdf', $nombre);
+                }
+            } catch (Throwable $e) {
+                // un nombre inválido en la BD no debe romper el listado
+            }
+        }
+        return null;
+    }
+}
 
 function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_original, $est_estado, $seccion, $editable_doc, $opcd_u, $area_filtro, $areaPadre = null)
 {
@@ -64,6 +135,7 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
     $flagP = ($flag === 'P');
     $flagT = ($flag === 'T');
     $flagA = ($flag === 'A');
+    $flagR = ($flag === 'R');
 
     $areaNodo = trim((string)($node['c_area_adm'] ?? ''));
 
@@ -88,6 +160,11 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
         $estadoBadgeClase = 'bg-info-subtle text-info border border-info-subtle';
         $estadoBadgeTexto = 'Recibido';
         $estadoIcono = 'ri-inbox-archive-line';
+    } elseif ($flagR) {
+        $estadoBorde = 'border-secondary';
+        $estadoBadgeClase = 'bg-secondary-subtle text-secondary border border-secondary-subtle';
+        $estadoBadgeTexto = 'Retorna';
+        $estadoIcono = 'ri-arrow-go-back-line';
     } else {
 
         $estadoBorde = 'border-warning';
@@ -353,9 +430,24 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
     if ($seccion_req !== '' &&        $seccion_req != $seccion) {
         continue;
     }
-    $editableDoc = ($row['flag'] == 'P');
-    $text_color = $editableDoc ? "bg-info" : "bg-success";
-    $ruta =        dirname(__DIR__) . "/file_tramites/" . ($row['file_adjunto'] ?? '');
+    // Estado de la CABECERA (documentos_recibidos.flag): P = Pendiente, T = Trámite, A = Archivado.
+    // Es independiente del flag de cada derivación (seguimiento_documentos_recibid.flag).
+    $flagDoc = trim((string)($row['flag'] ?? ''));
+    $editableDoc = in_array($flagDoc, ['P', 'T'], true);   // mientras no esté archivado se puede trabajar
+    $archivadoDoc = ($flagDoc === 'A');
+    $puedeArchivar = ($flagDoc === 'T');                    // solo un expediente en trámite se archiva
+    $arr_estado_doc = ['P' => 'Pendiente', 'T' => 'Trámite', 'A' => 'Archivado'];
+    $arr_color_doc = ['P' => 'bg-info', 'T' => 'bg-primary', 'A' => 'bg-success'];
+    $text_color = $arr_color_doc[$flagDoc] ?? 'bg-secondary';
+    $flag_text_doc = trim((string)($row['flag_text'] ?? ''));
+    if ($flag_text_doc === '') {
+        $flag_text_doc = $arr_estado_doc[$flagDoc] ?? $flagDoc;   // si el parámetro de la BD no define el estado
+    }
+    $cc_docrecibidos_arch_enc = s_crypt($row['cc_docrecibidos'], 'in');
+
+    // PDF del expediente (carpeta D:/file_tramites): icono si existe; si no, mensaje "Sin adjunto".
+    $pdf_buscados = [];
+    $url_pdf = exp_deriv_buscar_pdf($row, $pdf_buscados);
     ?>
     <div id="sec_<?= $seccion ?>" class="card border shadow-sm mb-3">
         <div class="card-body p-3">
@@ -372,8 +464,21 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
                                 <?= htmlspecialchars($row['c_expediente'] ?? '') ?>
                             </h5>
                             <span class="badge <?= $text_color ?> fs-11">
-                                <?= htmlspecialchars($row['flag_text'] ?? '') ?>
+                                <?= htmlspecialchars($flag_text_doc) ?>
                             </span>
+                        </div>
+                        <div class="flex-shrink-0 ms-auto ps-2 text-end">
+                            <?php if ($url_pdf !== null): ?>
+                                <a href="<?= htmlspecialchars($url_pdf) ?>" target="_blank" rel="noopener"
+                                    class="btn btn-outline-danger btn-sm d-inline-flex align-items-center px-2 py-1"
+                                    title="Ver PDF adjunto" aria-label="Ver PDF adjunto del expediente <?= htmlspecialchars($row['c_expediente'] ?? '') ?>">
+                                    <i class="ri-file-pdf-2-line fs-16 me-1"></i><span class="fs-12 fw-semibold">PDF</span>
+                                </a>
+                            <?php else: ?>
+                                <span class="text-muted fs-11 text-nowrap" title="<?= htmlspecialchars('Se buscó: ' . implode(', ', array_unique($pdf_buscados))) ?>">
+                                    <i class="ri-attachment-2 align-middle"></i> Sin adjunto
+                                </span>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="vstack gap-2 fs-12">
@@ -406,11 +511,20 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
                                 <?= htmlspecialchars($row['c_usuario'] ?? '') ?>
                             </span>
                         </div>
+                        <?php if ($archivadoDoc): ?>
+                            <div class="d-flex align-items-center">
+                                <i class="ri-archive-line text-success me-2"></i>
+                                <span class="fw-medium text-success">Archivado</span>
+                            </div>
+                        <?php elseif ($puedeArchivar): ?>
+                            <div>
+                                <button type="button" class="btn btn-outline-success btn-sm w-100" title="Archivar expediente"
+                                    onclick="fn_archivarExpediente('<?= $cc_docrecibidos_arch_enc ?>','<?= $opc_archivar_enc ?>','<?= $seccion ?>');">
+                                    <i class="ri-archive-line me-1"></i> Archivar
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <?php if (!empty($row['file_adjunto']) && file_exists($ruta)): ?>
-                        <a href="<?= url('file_tramites/' . rawurlencode($row['file_adjunto'])) ?>" target="_blank" class="btn btn-outline-danger btn-sm w-100 mt-3">
-                            <i class="ri-file-pdf-line me-1"></i> Ver adjunto </a>
-                    <?php endif; ?>
                 </div>
                 <div class="col-lg-9 col-md-8">
                     <?php

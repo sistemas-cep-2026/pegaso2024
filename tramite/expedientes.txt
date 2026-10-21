@@ -38,3 +38,137 @@ WHERE s.cc_docrecibidos IS NULL
 -- update documentos_recibidos set flag='A' where flag='*' ;
 
 -- update seguimiento_documentos_recibid set flag='P' where flag='&' ;
+
+
+
+
+mejoramiento 
+
+
+/* =====================================================================
+   OPTIMIZACIÓN: documentos_recibidos1 / seguimiento_documentos_recibid1
+   Ejecutar primero en una copia, con backup, fuera de horario.
+   Antes, revisa los índices que ya existen:
+       EXEC sp_helpindex 'dbo.documentos_recibidos1';
+       EXEC sp_helpindex 'dbo.seguimiento_documentos_recibid1';
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. ÍNDICES (lo que más impacto tiene)
+   --------------------------------------------------------------------- */
+
+-- 1.1 SEGUIMIENTO: es el más urgente. Sin él, cada EXISTS, cada MAX()
+--     y listaIDExp recorren toda la tabla de seguimiento.
+CREATE NONCLUSTERED INDEX IX_seg_docrecibidos_area
+ON dbo.seguimiento_documentos_recibid1 (cc_docrecibidos, c_area_adm);
+GO
+
+-- 1.2 Para listarDerivacion cuando el filtro fuerte es el área
+CREATE NONCLUSTERED INDEX IX_seg_area
+ON dbo.seguimiento_documentos_recibid1 (c_area_adm, cc_docrecibidos);
+GO
+
+-- 1.3 DOCUMENTOS: filtro por local + orden/rango por expediente
+--     (listar, listarParaImprimirRango, listarDerivacion, listarTramitesColegiacion)
+CREATE NONCLUSTERED INDEX IX_docrec_local_expediente
+ON dbo.documentos_recibidos1 (c_local, c_expediente)
+INCLUDE (flag, fecha_ingreso, c_local_origen, c_persona, c_persona_pf);
+GO
+
+-- 1.4 listar sin local: rango/orden por expediente
+CREATE NONCLUSTERED INDEX IX_docrec_expediente
+ON dbo.documentos_recibidos1 (c_expediente);
+GO
+
+-- 1.5 Dashboards y filtros por fecha (requiere el cambio de YEAR() en PHP)
+CREATE NONCLUSTERED INDEX IX_docrec_fecha_local
+ON dbo.documentos_recibidos1 (fecha_ingreso, c_local)
+INCLUDE (flag);
+GO
+
+-- 1.6 Pendientes (listarDerivacion sin expediente: flag = 'P')
+CREATE NONCLUSTERED INDEX IX_docrec_pendientes
+ON dbo.documentos_recibidos1 (c_local, cc_docrecibidos)
+WHERE flag = 'P';
+GO
+
+-- 1.7 validarExiste (probablemente se ejecuta en cada registro)
+CREATE NONCLUSTERED INDEX IX_docrec_local_token
+ON dbo.documentos_recibidos1 (c_local, tokenumero);
+GO
+
+-- 1.8 Filtro por gestión: SUBSTRING(c_expediente,3,2) no puede usar índice.
+--     Columna calculada persistida + índice.
+ALTER TABLE dbo.documentos_recibidos1
+ADD gestion AS SUBSTRING(c_expediente, 3, 2) PERSISTED;
+GO
+CREATE NONCLUSTERED INDEX IX_docrec_gestion
+ON dbo.documentos_recibidos1 (gestion, c_expediente);
+GO
+
+-- 1.9 Subconsulta COUNT(*) de listarTramitesColegiacion
+--     (solo si no existe ya un índice por c_expediente en esa tabla)
+-- CREATE NONCLUSTERED INDEX IX_recaudo_expediente
+-- ON dbo.tram_documentos_recaudo (c_expediente);
+-- GO
+
+
+/* ---------------------------------------------------------------------
+   2. ESTRUCTURA: seguimiento_documentos_recibid1
+   --------------------------------------------------------------------- */
+
+-- 2.1 nchar(150) ocupa SIEMPRE 300 bytes por fila, haya archivo o no.
+ALTER TABLE dbo.seguimiento_documentos_recibid1
+ALTER COLUMN file_adjunto NVARCHAR(150) NULL;
+GO
+UPDATE dbo.seguimiento_documentos_recibid1
+SET file_adjunto = RTRIM(file_adjunto)
+WHERE file_adjunto IS NOT NULL;
+GO
+
+-- 2.2 TEXT (obsoleto) -> VARCHAR(MAX)
+ALTER TABLE dbo.seguimiento_documentos_recibid1 ALTER COLUMN observacion    VARCHAR(MAX) NULL;
+ALTER TABLE dbo.seguimiento_documentos_recibid1 ALTER COLUMN accion_a_tomar VARCHAR(MAX) NULL;
+GO
+UPDATE dbo.seguimiento_documentos_recibid1
+SET observacion = observacion, accion_a_tomar = accion_a_tomar;  -- mueve los datos dentro de la fila
+GO
+
+-- 2.3 decimal(18,0) = 9 bytes; INT = 4 bytes (si 'linea' es un correlativo)
+ALTER TABLE dbo.seguimiento_documentos_recibid1 ALTER COLUMN linea INT NULL;
+GO
+
+-- 2.4 Un seguimiento sin documento no tiene sentido: NOT NULL + FK
+--     (verifica antes: SELECT COUNT(*) FROM seguimiento_documentos_recibid1 WHERE cc_docrecibidos IS NULL)
+--     Si hay índices sobre la columna, el ALTER COLUMN exige crearlos DESPUÉS: ejecuta 2.4 antes del bloque 1.
+ALTER TABLE dbo.seguimiento_documentos_recibid1 ALTER COLUMN cc_docrecibidos INT NOT NULL;
+GO
+ALTER TABLE dbo.seguimiento_documentos_recibid1
+ADD CONSTRAINT FK_seg_documentos_recibidos
+FOREIGN KEY (cc_docrecibidos) REFERENCES dbo.documentos_recibidos1 (cc_docrecibidos);
+GO
+
+
+/* ---------------------------------------------------------------------
+   3. ESTRUCTURA: documentos_recibidos1
+   --------------------------------------------------------------------- */
+
+ALTER TABLE dbo.documentos_recibidos1 ALTER COLUMN asunto  VARCHAR(MAX) NULL;
+ALTER TABLE dbo.documentos_recibidos1 ALTER COLUMN asunto2 VARCHAR(MAX) NULL;
+GO
+UPDATE dbo.documentos_recibidos1 SET asunto = asunto, asunto2 = asunto2;
+GO
+
+-- Identity siempre crece al final: FILLFACTOR 90 desperdicia 10% de cada página
+ALTER INDEX PK_documentos_recibidos ON dbo.documentos_recibidos1
+REBUILD WITH (FILLFACTOR = 100);
+GO
+
+
+/* ---------------------------------------------------------------------
+   4. OPCIONAL: reemplazar los (NOLOCK) de forma segura
+   NOLOCK puede devolver filas duplicadas o saltarse filas.
+   Con esto las lecturas no bloquean y puedes quitar los NOLOCK.
+   Requiere que no haya otras conexiones activas en la BD.
+   --------------------------------------------------------------------- */
+-- ALTER DATABASE [TuBaseDeDatos] SET READ_COMMITTED_SNAPSHOT ON WITH ROLLBACK IMMEDIATE;

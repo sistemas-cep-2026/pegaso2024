@@ -10,7 +10,7 @@ class bo_general
         $this->dao = new dao_general();
     }
 
-    /*public function listarRegiones()
+    public function listarRegiones()
     {
         $sql = "SELECT c_local,
         nombre, 
@@ -22,7 +22,7 @@ class bo_general
         WHERE adm='*'
         order by cast(c_local as int) asc";
         return $this->dao->consulta($sql);
-    }*/
+    }
     public function RegionID($cc_local)
     {
         $sql = "SELECT c_local,
@@ -262,7 +262,7 @@ class bo_general
             $sql .= " and cc.flag_colegiacion='" . $flag_colegiacion . "' ";
         }
         $sql .= " order by  b.nombre,cc.c_banco,cc.c_cta_corriente";
-       echo $sql;
+        echo $sql;
         return $this->dao->consulta($sql);
     }
     public function ListarcuentasBancarias_activas($c_local, $c_banco, $c_cuenta, $flag_colegiacion = '')

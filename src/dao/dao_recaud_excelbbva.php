@@ -63,8 +63,7 @@ class dao_recaud_excelbbva
       
 	//	$sql = "exec sp_v1_proceso_recaudadora_BBVA";
 	//	$sql = "exec sp_v1_proceso_recaudadora_BBVA";
-		$sql = "insert sp_ejecutar_procesos (fecha,flag,proceso)
-VALUES (GETDATE(),'&','RE')";
+		$sql = "insert sp_ejecutar_procesos (fecha,flag,proceso) VALUES (GETDATE(),'&','RE')";
 
         return $this->conecta->sql_query($sql);
     }

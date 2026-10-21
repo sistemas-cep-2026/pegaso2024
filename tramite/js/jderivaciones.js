@@ -128,6 +128,8 @@ function fn_recibirDeriv(cc_docrecibidos_det, cc_docrecibidos, opcd, seccion) {
         .catch(function (err) {
             derivacionEnProceso = false;
             swalError(err);
+            // si otra persona ya recibió la derivación, se refresca la tarjeta para no mostrar un botón obsoleto
+            fn_buscarRegistroDeriv(seccion);
         });
 }
 
@@ -189,6 +191,50 @@ function fn_EliminarDeriv(cc_docrecibidos_det, opcd, seccion) {
         });
 }
 
+/*
+ * Archivar el expediente desde la lista de derivaciones.
+ * Reutiliza el mismo endpoint que fn_ArchivarRegistroFrom (tramite/exp_taps_update, opc 'A'),
+ * que responde JSON {error:false|true, message}. Al terminar solo se refresca la tarjeta del
+ * expediente (no se recarga la página, para no perder el resultado de la búsqueda).
+ * Los tres valores llegan cifrados con s_crypt desde exp_deriv_lista.php.
+ */
+function fn_archivarExpediente(cc_docrecibidos_enc, opc_enc, seccion) {
+    alertaMensaje(
+        "¿Desea archivar el expediente? Quedará en solo lectura y ya no se podrá derivar ni atender.",
+        function () {
+            return ajax("tramite/exp_taps_update", {
+                cc_docrecibidos: cc_docrecibidos_enc,
+                opc: opc_enc
+            })
+                .then(function (data) {
+                    if (typeof data === "string") {
+                        try {
+                            data = JSON.parse(data);
+                        } catch (e) {
+                            throw data;
+                        }
+                    }
+                    if (!data || typeof data !== "object" || data.error) {
+                        throw (data && data.message) ? data.message : "No se pudo archivar el expediente.";
+                    }
+                    return data;
+                })
+                .catch(function (err) {
+                    Swal.showValidationMessage(err);
+                });
+        }
+    )
+        .then(function (result) {
+            if (result && result.value) {
+                swalOk(750);
+                fn_buscarRegistroDeriv(seccion);
+            }
+        })
+        .catch(function (err) {
+            swalError(err);
+        });
+}
+
 $(document).on(
     "keydown",
     ".det-form input, .det-form select, .det-form textarea",
@@ -199,4 +245,4 @@ $(document).on(
             return false;
         }
     }
-);
+);

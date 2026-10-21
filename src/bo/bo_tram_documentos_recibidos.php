@@ -42,7 +42,7 @@ class bo_tram_documentos_recibidos
         d.c_persona,
         rtrim(p.nombre) as razon_social,
         d.c_persona_pf,
-        dbo.fc_v1_parametro_valor('documentos_recibidos','tipo_persona',tipo_persona) as tipo_persona_text,
+        dbo.fc_v1_parametro_valor('documentos_recibidos1','tipo_persona',tipo_persona) as tipo_persona_text,
         rtrim(pf.nombre) as nombre_remitente,
         rtrim(pf.c_cmp) as cmp_remitente,
         d.asunto, 
@@ -58,7 +58,7 @@ class bo_tram_documentos_recibidos
         rtrim(d.documento_enviado) as documento_enviado,
         d.tokenumero,
         dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) as fecha_ingreso
-        from documentos_recibidos d (nolock) left join personas p (nolock)
+        from documentos_recibidos1 d (nolock) left join personas p (nolock)
         on d.c_persona=p.c_persona
         left join personas pf (nolock)
         on d.c_persona_pf=pf.c_persona
@@ -71,60 +71,83 @@ class bo_tram_documentos_recibidos
 
     public function listar(tram_documentos_recibidos $obj)
     {
-        $sql = "select top 100 d.cc_docrecibidos,
-    d.c_expediente,
-    d.c_tipo_de_documento, 
-    d.num_documento, 
-    dbo.fc_fecha_from(d.fecha_documento) as fecha_documento,
-    dbo.fc_fecha_texto(d.fecha_documento) as fecha_documento_text,
-    d.c_persona,
-    rtrim(p.nombre) as razon_social,
-    d.c_persona_pf,
-    dbo.fc_v1_parametro_valor('documentos_recibidos','tipo_persona',tipo_persona) as tipo_persona_text,
-    rtrim(pf.nombre) as nombre_remitente,
-    d.asunto, 
-    d.asunto2, 
-    d.c_local, 
-    d.c_usuario, 
-    d.tipo_persona, 
-    d.destrinatario, 
-    d.c_local_origen,
-    l.nombre as c_local_origen_text,
-    d.c_cargo,
-    d.tokenumero,
-    dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) as fecha_ingreso,
-    d.flag,
-    dbo.fc_v1_parametro_valor('documentos_recibidos','flag',flag) as flag_text
-    from documentos_recibidos d (nolock) left join personas p (nolock)
-    on d.c_persona=p.c_persona
-    left join personas pf (nolock)
-    on d.c_persona_pf=pf.c_persona
-    left join gen_local l
-    on l.c_local=d.c_local_origen
-    where 1=1";
+        $sql = "SELECT TOP 100
+        d.cc_docrecibidos,
+        d.c_expediente,
+        d.c_tipo_de_documento,
+        d.num_documento,
+        dbo.fc_fecha_from(d.fecha_documento) AS fecha_documento,
+        dbo.fc_fecha_texto(d.fecha_documento) AS fecha_documento_text,
+        d.c_persona,
+        RTRIM(p.nombre) AS razon_social,
+        d.c_persona_pf,
+        dbo.fc_v1_parametro_valor('documentos_recibidos1','tipo_persona',d.tipo_persona) AS tipo_persona_text,
+        RTRIM(pf.nombre) AS nombre_remitente,
+        d.asunto,
+        d.asunto2,
+        d.c_local,
+        d.c_usuario,
+        d.tipo_persona,
+        d.destrinatario,
+        d.c_local_origen,
+        l.nombre AS c_local_origen_text,
+        d.c_cargo,
+        d.tokenumero,
+        dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) AS fecha_ingreso,
+        d.flag,
+        dbo.fc_v1_parametro_valor('documentos_recibidos1','flag',d.flag) AS flag_text
+    FROM documentos_recibidos1 d (NOLOCK)
+    LEFT JOIN personas p (NOLOCK)
+        ON d.c_persona = p.c_persona
+    LEFT JOIN personas pf (NOLOCK)
+        ON d.c_persona_pf = pf.c_persona
+    LEFT JOIN gen_local l
+        ON l.c_local = d.c_local_origen
+    WHERE 1=1";
 
         if (strlen($obj->getGestion()) > 0) {
-            $sql .= " and SUBSTRING(d.c_expediente, 3, 2)='" . $obj->getGestion() . "'";
+            $sql .= " AND SUBSTRING(d.c_expediente, 3, 2)='" . $obj->getGestion() . "'";
         }
+
         if (strlen($obj->getNombre_remitente()) > 0) {
-            $sql .= " and pf.nombre like '%" . $obj->getNombre_remitente() . "%'";
+            $sql .= " AND pf.nombre LIKE '%" . $obj->getNombre_remitente() . "%'";
         }
+
         if (strlen($obj->getC_local()) > 0) {
-            $sql .= " and d.c_local='" . $obj->getC_local() . "'";
+            $sql .= " AND d.c_local='" . $obj->getC_local() . "'";
         }
-        if ((strlen($obj->getFecha_desde()) > 0) and (strlen($obj->getFecha_hasta()) > 0)) {
+
+        if (strlen($obj->getFecha_desde()) > 0 && strlen($obj->getFecha_hasta()) > 0) {
+
             $fecha_desde_sql = u_fechaFormato(str_replace('/', '-', $obj->getFecha_desde()), 'Ymd H:i');
+
             $fecha_hasta_sql = u_fechaFormato(str_replace('/', '-', $obj->getFecha_hasta()), 'Ymd H:i');
-            $sql .= " and d.fecha_ingreso BETWEEN '{$fecha_desde_sql}' and '{$fecha_hasta_sql}'";
+
+            $sql .= " AND d.fecha_ingreso BETWEEN '{$fecha_desde_sql}' AND '{$fecha_hasta_sql}'";
         }
+
         if (strlen($obj->getC_local_origen()) > 0) {
-            $sql .= " and d.c_local_origen='" . $obj->getC_local_origen() . "'";
+            $sql .= " AND d.c_local_origen='" . $obj->getC_local_origen() . "'";
         }
+
         if (strlen($obj->getNum_desde()) > 0 && strlen($obj->getNum_hasta()) > 0) {
+
             $sql .= " AND d.c_expediente BETWEEN '" . $obj->getNum_desde() . "' AND '" . $obj->getNum_hasta() . "'";
         } elseif (strlen($obj->getNum_desde()) > 0) {
+
             $sql .= " AND d.c_expediente >= '" . $obj->getNum_desde() . "'";
         }
+
+        if (strlen(trim($obj->getC_area_adm())) > 0) {
+
+            $sql .= " AND EXISTS ( SELECT 1
+            FROM seguimiento_documentos_recibid1 s WITH (NOLOCK)
+            WHERE s.cc_docrecibidos = d.cc_docrecibidos
+              AND s.c_area_adm = '{$obj->getC_area_adm()}'
+        )";
+        }
+
+        $sql .= " ORDER BY d.c_expediente ASC";
 
         //echo $sql;
         return $this->dao->consulta($sql);
@@ -145,7 +168,7 @@ class bo_tram_documentos_recibidos
     ac.nombre AS c_accion_text,
     dbo.fc_v1_fecha_texto(sd.fecha_entrega) AS fecha_entrega_text
 
-    FROM documentos_recibidos d WITH (NOLOCK)
+    FROM documentos_recibidos1 d WITH (NOLOCK)
 
     LEFT JOIN personas p WITH (NOLOCK)
     ON d.c_persona = p.c_persona
@@ -153,11 +176,11 @@ class bo_tram_documentos_recibidos
     LEFT JOIN personas pf WITH (NOLOCK)
     ON d.c_persona_pf = pf.c_persona
 
-    LEFT JOIN seguimiento_documentos_recibid sd WITH (NOLOCK)
+    LEFT JOIN seguimiento_documentos_recibid1 sd WITH (NOLOCK)
     ON sd.cc_docrecibidos = d.cc_docrecibidos
     AND sd.cc_docrecibidos_det = (
         SELECT MAX(sd2.cc_docrecibidos_det)
-        FROM seguimiento_documentos_recibid sd2 WITH (NOLOCK)
+        FROM seguimiento_documentos_recibid1 sd2 WITH (NOLOCK)
         WHERE sd2.cc_docrecibidos = d.cc_docrecibidos
     )
 
@@ -189,7 +212,7 @@ class bo_tram_documentos_recibidos
         d.c_persona,
         rtrim(p.nombre) as razon_social,
         d.c_persona_pf,
-        dbo.fc_v1_parametro_valor('documentos_recibidos','tipo_persona',tipo_persona) as tipo_persona_text,
+        dbo.fc_v1_parametro_valor('documentos_recibidos1','tipo_persona',tipo_persona) as tipo_persona_text,
         rtrim(pf.nombre) as nombre_remitente,
         d.asunto, 
         d.asunto2, 
@@ -203,21 +226,27 @@ class bo_tram_documentos_recibidos
         d.tokenumero,
         dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) as fecha_ingreso,
         d.flag,
-        dbo.fc_v1_parametro_valor('documentos_recibidos','flag',flag) as flag_text
-        from documentos_recibidos d (nolock) left join personas p (nolock)
+        dbo.fc_v1_parametro_valor('documentos_recibidos1','flag',flag) as flag_text
+        from documentos_recibidos1 d (nolock) left join personas p (nolock)
         on d.c_persona=p.c_persona
         left join personas pf (nolock)
         on d.c_persona_pf=pf.c_persona
         left join gen_local l
         on l.c_local=d.c_local_origen
-        where d.c_local='{$obj->getC_local()}' and d.c_expediente>='{$obj->getC_expediente()}'
-        AND EXISTS (
+        where d.c_local='{$obj->getC_local()}' and d.gestion='{$obj->getGestion()}'";
+        if (strlen($obj->getC_expediente()) > 0) {
+            $sql .= " AND d.c_expediente>='" . $obj->getC_expediente() . "'";
+        } else {
+            $sql .= " AND d.flag='P'";
+        }
+
+        $sql .= "AND EXISTS (
         SELECT 1
-        FROM seguimiento_documentos_recibid s WITH (NOLOCK)
+        FROM seguimiento_documentos_recibid1 s WITH (NOLOCK)
         WHERE s.cc_docrecibidos = d.cc_docrecibidos
           AND s.c_area_adm= '{$c_area_adm}')";
         $sql .= " ORDER BY d.cc_docrecibidos asc";
-        //echo $sql;
+        // echo $sql;
         return $this->dao->consulta($sql);
     }
 
@@ -237,7 +266,7 @@ class bo_tram_documentos_recibidos
                 p.c_cmp,
                 d.c_usuario,
                 (SELECT COUNT(*) FROM tram_documentos_recaudo tr WHERE tr.c_expediente = d.c_expediente) cantidad_pagos
-                FROM documentos_recibidos d (NOLOCK)
+                FROM documentos_recibidos1 d (NOLOCK)
                 LEFT JOIN personas p (NOLOCK) 
                 ON p.c_persona = d.c_persona
                 WHERE d.c_local='{$obj->getC_local()}' AND p.nombre LIKE '%{$obj->getNombre_remitente()}%'";
@@ -254,61 +283,20 @@ class bo_tram_documentos_recibidos
     }
 
     /*
-    public function listarxExpediente(tram_documentos_recibidos $obj)
-
+    |--------------------------------------------------------------------------
+    | datos para colegiacion
+    |--------------------------------------------------------------------------
+    */
+    public function buscarExpedienteHabilidad(tram_documentos_recibidos $obj)
     {
-        $sql = "SELECT 
-                d.cc_docrecibidos, 
-                d.c_expediente,
-                d.c_tipo_de_documento, 
-                d.num_documento, 
-                dbo.fc_fecha_from(d.fecha_documento) AS fecha_documento,
-                dbo.fc_fecha_texto(d.fecha_documento) AS fecha_documento_text,
-                d.c_persona,
-                RTRIM(p.nombre) AS razon_social,
-                d.c_persona_pf,
-                dbo.fc_v1_parametro_valor('documentos_recibidos','tipo_persona',d.tipo_persona) AS tipo_persona_text,
-                RTRIM(pf.nombre) AS nombre_remitente,
-                d.asunto, 
-                d.asunto2, 
-                d.c_local, 
-                d.c_usuario, 
-                d.tipo_persona, 
-                d.destrinatario as destinatario, 
-                d.c_local_origen,
-                d.c_cargo,
-                d.flag,
-                d.tokenumero,
-                dbo.fc_v1_fecha_texto_hora(d.fecha_ingreso) AS fecha_ingreso
-                FROM documentos_recibidos d WITH (NOLOCK)
-                LEFT JOIN personas p  WITH (NOLOCK) ON d.c_persona = p.c_persona
-                LEFT JOIN personas pf WITH (NOLOCK) ON d.c_persona_pf = pf.c_persona
-                WHERE pf.nombre LIKE '%{$obj->getNombre_remitente()}%'
-                AND EXISTS (
-                SELECT 1 
-                FROM seguimiento_documentos_recibid de WITH (NOLOCK)
-                WHERE de.cc_docrecibidos = d.cc_docrecibidos";
-        if (strlen($obj->getC_area_adm()) > 0) {
-            $sql .= " AND de.c_area_adm='" . $obj->getC_area_adm() . "'";
-        }
-        $sql .= " )";
-
-        if (strlen($obj->getC_local()) > 0) {
-            $sql .= " AND d.c_local='" . $obj->getC_local() . "'";
-        }
-        if (strlen($obj->getDesde()) > 0 && strlen($obj->getHasta()) > 0) {
-            $sql .= " AND d.fecha_ingreso BETWEEN '{$obj->getDesde()}' AND '{$obj->getHasta()}'";
-        }
-
-        if (strlen($obj->getC_expediente()) > 0) {
-            $sql .= " AND d.c_expediente='" . $obj->getC_expediente() . "'";
-        }
-        echo $sql;
+        $sql = "SELECT p.nombre as nombre_institucion, dr.c_persona as c_persona_institucion,
+        dr.c_expediente as c_expediente FROM documentos_recibidos dr (NOLOCK)
+        INNER JOIN personas p (NOLOCK) ON dr.c_persona = p.c_persona
+        WHERE dr.c_expediente = (SELECT '" . $obj->getC_local() . "'+(SELECT MAX(cod) 
+        from gestiones_directivas (NOLOCK))+'" . $obj->getC_expediente() . "')";
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
-*/
-
-
 
 
     /*
@@ -320,7 +308,7 @@ class bo_tram_documentos_recibidos
     {
         $filtro_local = !empty($c_local) ? " AND d.c_local = '{$c_local}'" : "";
         $sql = "SELECT COUNT(*) AS cantidad
-        FROM documentos_recibidos d (nolock)
+        FROM documentos_recibidos1 d (nolock)
         WHERE YEAR(d.fecha_ingreso) = '{$anho}'{$filtro_local}";
         return $this->dao->consulta($sql);
     }
@@ -329,9 +317,9 @@ class bo_tram_documentos_recibidos
     {
         $filtro_local = !empty($c_local) ? " AND d.c_local = '{$c_local}'" : "";
         $sql = "SELECT
-            dbo.fc_v1_parametro_valor('documentos_recibidos','flag',d.flag) AS estado,
+            dbo.fc_v1_parametro_valor('documentos_recibidos1','flag',d.flag) AS estado,
             COUNT(*) AS cantidad
-        FROM documentos_recibidos d (nolock)
+        FROM documentos_recibidos1 d (nolock)
         WHERE YEAR(d.fecha_ingreso) = '{$anho}'{$filtro_local}
         GROUP BY d.flag
         ORDER BY cantidad DESC";
@@ -342,7 +330,7 @@ class bo_tram_documentos_recibidos
     {
         $filtro_local = !empty($c_local) ? " AND d.c_local = '{$c_local}'" : "";
         $sql = "SELECT MONTH(d.fecha_ingreso) AS mes, COUNT(*) AS cantidad
-        FROM documentos_recibidos d (nolock)
+        FROM documentos_recibidos1 d (nolock)
         WHERE YEAR(d.fecha_ingreso) = '{$anho}'{$filtro_local}
         GROUP BY MONTH(d.fecha_ingreso)
         ORDER BY mes";
@@ -351,7 +339,7 @@ class bo_tram_documentos_recibidos
 
     public function validarExiste(tram_documentos_recibidos $obj)
     {
-        $sql = "select * from documentos_recibidos where c_local='{$obj->getC_local()}' 
+        $sql = "select * from documentos_recibidos1 where c_local='{$obj->getC_local()}' 
         and tokenumero='{$obj->getTokenumero()}'";
         return $this->dao->consulta($sql);
     }

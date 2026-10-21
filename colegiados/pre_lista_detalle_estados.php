@@ -13,6 +13,7 @@ $ent_web_tram_colegiacion_cont = new web_tram_colegiacion_control();
 
 $c_persona = s_crypt($_REQUEST["c_persona"], 'out');
 $cr_texto = $_REQUEST["cr"];
+$cep = $_REQUEST["cep"];
 
 if (empty($c_persona)) {
 	die(errors());
@@ -146,24 +147,27 @@ $data_recaudoxds = $bo_tram_colegiacion->PersonaIDdni_nuevocol_recaudox($ent_tra
 	</div>
 	<div class="col-xl-3">
 		<?php
-		if ($estado_cl_control == 'P') {
-		echo errors('EL TRÁMITE AÚN NO HA SIDO ENVIADO POR EL SOLICITANTE.');
-		} else {
-		?>
-			<div class="d-grid gap-2">
-				<button type="button" onclick="fn_procesarShow({c_persona:'<?= s_crypt($c_persona) ?>', codigo:'CR', estado:'R', cr: '<?= $cr_texto ?>'});" class="btn btn-danger">
-					<i class="mr-2 fa fa-times"></i> Rechazar
-				</button>
-				<button type="button" onclick="fn_procesarShow({c_persona:'<?= s_crypt($c_persona) ?>', codigo:'CR', estado:'A', cr: '<?= $cr_texto ?>'});" class="btn btn-success">
-					<i class="mr-2 fa fa-check"></i> Aceptar
-				</button>
-				<a href="<?= url('colegiados/print_documentocol?c_persona=' . $c_persona); ?>" target="_blank" class="btn btn-info">
-					<i class="mr-2 fa fa-print"></i> Imprimir
-				</a>
-			</div>
-		<?php
-		}
+		if (empty($cep)) {
 
+
+			if ($estado_cl_control == 'P') {
+				echo errors('EL TRÁMITE AÚN NO HA SIDO ENVIADO POR EL SOLICITANTE.');
+			} else {
+		?>
+				<div class="d-grid gap-2">
+					<button type="button" onclick="fn_procesarShow({c_persona:'<?= s_crypt($c_persona) ?>', codigo:'CR', estado:'R', cr: '<?= $cr_texto ?>'});" class="btn btn-danger">
+						<i class="mr-2 fa fa-times"></i> Rechazar
+					</button>
+					<button type="button" onclick="fn_procesarShow({c_persona:'<?= s_crypt($c_persona) ?>', codigo:'CR', estado:'A', cr: '<?= $cr_texto ?>'});" class="btn btn-success">
+						<i class="mr-2 fa fa-check"></i> Aceptar
+					</button>
+					<a href="<?= url('colegiados/print_documentocol?c_persona=' . $c_persona); ?>" target="_blank" class="btn btn-info">
+						<i class="mr-2 fa fa-print"></i> Imprimir
+					</a>
+				</div>
+		<?php
+			}
+		}
 		?>
 
 	</div>

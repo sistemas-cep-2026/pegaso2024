@@ -71,7 +71,8 @@ class dao_recaud_excelbcp
 
     public function procesarRecaudadorabcp(recaud_excelbcp $obj)
     {
-        $sql = "exec sp_v1_proceso_recaudadora_BCP";
+        //$sql = "exec sp_v1_proceso_recaudadora_BCP";
+        $sql = "insert  into SP_EJECUTAR_PROCESOS (fecha,FECHA_PROCESO_id,flag,proceso ) values  (getdate(),'','&','R1')";
         //echo $sql;
         return $this->conecta->sql_query($sql);
     }

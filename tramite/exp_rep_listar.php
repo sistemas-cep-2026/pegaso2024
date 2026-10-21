@@ -29,7 +29,8 @@ $ent_doc_recibidos->setNum_hasta($num_hasta);
 $data_doc = $bo_doc_recibidos->listar($ent_doc_recibidos);
 $color_flag = [
 	'A' => 'success',
-	'P' => 'info',
+	'P' => 'warning',
+	'T' => 'primary',
 ];
 ?>
 <div id="print-section" class="print-section">
@@ -87,10 +88,7 @@ $color_flag = [
 		</table>
 		<?php if ($num_desde  !== '') { ?>
 			<div class="flex-grow-1 ms-2 text-center">
-				<a href="#"
-					class="btn btn-outline-primary"
-					title="Imprimir"
-					onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde)); ?>', 750); return false;">
+				<a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde)); ?>', 750); return false;">
 					<i class="ri-printer-line me-1"></i> Imprimir
 				</a>
 			</div>

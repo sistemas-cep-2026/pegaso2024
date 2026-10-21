@@ -42,66 +42,61 @@ $ent_doc_recibidos->setGestion($gestion);
 $data_exp = $bo_doc_recibidos->listar($ent_doc_recibidos);
 
 $estadoMap = [
-    'P' => ['Pendiente', 'warning'],
-    'A' => ['Archivado', 'success'],
+    'P' => ['PENDIENTE', 'warning'],
+    'A' => ['ARCHIVADO', 'success'],
+    'T' => ['TRAMITE', 'info'],
 ];
 ?>
-<?php if (empty($data_exp)): ?>
-    <?php /* Sin resultados NO se dibuja la tabla: DataTables falla si la unica fila usa colspan (_DT_CellIndex). */ ?>
-    <div class="text-center py-3 text-muted">
-        <i class="ri-information-line me-1"></i> No hay expedientes para listar.
-    </div>
-<?php else: ?>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-sm align-middle" id="table-reporte">
-            <thead>
-                <tr class="table-light">
-                    <th>#</th>
-                    <th>Fecha</th>
-                    <th>Expediente</th>
-                    <th>Nombre</th>
-                    <th>Número</th>
-                    <th>Fec. Doc.</th>
-                    <th>Asunto</th>
-                    <th>Usuario</th>
-                    <th>Estado</th>
-                    <th class="text-center">Opciones</th>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle" id="table-reporte">
+        <thead>
+            <tr class="table-light">
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Expediente</th>
+                <th>Nombre</th>
+                <th>Número</th>
+                <th>Fec. Doc.</th>
+                <th>Asunto</th>
+                <th>Usuario</th>
+                <th>Estado</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $i = 1; ?>
+            <?php foreach ($data_exp as $row): ?>
+                <?php
+                $flag = trim((string)($row['flag'] ?? ''));
+                [$estadoTexto, $estadoColor] = $estadoMap[$flag] ?? ['—', 'secondary'];
+                ?>
+                <tr data-cc-docrecibidos="<?= (int)$row['cc_docrecibidos'] ?>">
+                    <td><?= $i++ ?></td>
+                    <td><?= htmlspecialchars($row['fecha_ingreso'] ?? '') ?></td>
+                    <td class="fw-semibold"><?= htmlspecialchars($row['c_expediente'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($row['nombre_remitente'] ?? ($row['razon_social'] ?? '')) ?></td>
+                    <td><?= htmlspecialchars($row['num_documento'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($row['fecha_documento_text'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($row['asunto'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($row['c_usuario'] ?? '') ?></td>
+                    <td><span class="badge bg-<?= $estadoColor ?>-subtle text-<?= $estadoColor ?>"><?= $estadoTexto ?></span></td>
+                    <td>
+                        <div class="d-flex gap-1 justify-content-center">
+                            <a href="javascript:void(0);" onclick="fn_verSeguimientoExp('<?= s_crypt($row['cc_docrecibidos']) ?>');"
+                                class="btn btn-soft-primary btn-sm waves-effect waves-light"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Ver seguimiento" aria-label="Ver seguimiento">
+                                <i class="ri-eye-line"></i>
+                            </a>
+                            <a href="javascript:void(0);" onclick="redireccionar_ventana('<?= url('tramite/exp_print?cod=' . s_crypt($row['cc_docrecibidos'])) ?>',750);"
+                                class="btn btn-soft-secondary btn-sm waves-effect waves-light"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Imprimir" aria-label="Imprimir">
+                                <i class="ri-printer-line"></i>
+                            </a>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php $i = 1; ?>
-                <?php foreach ($data_exp as $row): ?>
-                    <?php
-                    $flag = trim((string)($row['flag'] ?? ''));
-                    [$estadoTexto, $estadoColor] = $estadoMap[$flag] ?? ['—', 'secondary'];
-                    ?>
-                    <tr data-cc-docrecibidos="<?= (int)$row['cc_docrecibidos'] ?>">
-                        <td><?= $i++ ?></td>
-                        <td><?= htmlspecialchars($row['fecha_ingreso'] ?? '') ?></td>
-                        <td class="fw-semibold"><?= htmlspecialchars($row['c_expediente'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['nombre_remitente'] ?? ($row['razon_social'] ?? '')) ?></td>
-                        <td><?= htmlspecialchars($row['num_documento'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['fecha_documento_text'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['asunto'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['c_usuario'] ?? '') ?></td>
-                        <td><span class="badge bg-<?= $estadoColor ?>-subtle text-<?= $estadoColor ?>"><?= $estadoTexto ?></span></td>
-                        <td>
-                            <div class="d-flex gap-1 justify-content-center">
-                                <a href="javascript:void(0);" onclick="fn_verSeguimientoExp('<?= s_crypt($row['cc_docrecibidos']) ?>');"
-                                    class="btn btn-soft-primary btn-sm waves-effect waves-light"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Ver seguimiento" aria-label="Ver seguimiento">
-                                    <i class="ri-eye-line"></i>
-                                </a>
-                                <a href="javascript:void(0);" onclick="redireccionar_ventana('<?= url('tramite/exp_print?cod=' . s_crypt($row['cc_docrecibidos'])) ?>',750);"
-                                    class="btn btn-soft-secondary btn-sm waves-effect waves-light"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Imprimir" aria-label="Imprimir">
-                                    <i class="ri-printer-line"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php endif; ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
