@@ -26,7 +26,7 @@ class dao_tram_documentos_enviados
     '" . $obj->getCc_docenviado() . "',
     '" . $obj->getC_tipo_de_documento() . "',
     '" . $obj->getGestion() . "',
-    '" . $obj->getFecha() . "',
+ 
     '" . $obj->getAsunto() . "',
     '" . $obj->getC_usuario() . "',
     '" . $obj->getC_local() . "',
@@ -35,10 +35,15 @@ class dao_tram_documentos_enviados
     '" . $obj->getTipo_persona() . "',
     '" . $obj->getFlag() . "',
     '" . $obj->getOpc() . "'";
-        echo $sql;
-        return $this->conecta->sql_query($sql);
+//echo $sql;
+        if ($obj->getOpc() == "I") {
+            $result = $this->conecta->sql_query($sql);
+            return sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC);
+        } else {
+            return $this->conecta->sql_query($sql);
+        }
+            
     }
-
     public function modificar(tram_documentos_enviados $obj)
     {
         $sql = "";

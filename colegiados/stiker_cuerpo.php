@@ -1,5 +1,5 @@
  <?php
-  $dato_personales = $bo_personas->resolucion_data($tipo, $c_tipo, digitos($cep,'6'));
+  $dato_personales = $bo_personas->resolucion_data($tipo, $desde, $hasta);
   foreach ($dato_personales as $rowdetalle) {
     $nombre_completo_detalle = $rowdetalle["nombre"];
     $fecha = $rowdetalle["fecha"];
@@ -41,19 +41,19 @@
            . </strong>Por Resoluci&oacute;n N&deg;
          <?php
           if ($tipo == 'C') {
-            echo $res . "-CEP/CN.";
+            echo $res . "-CN/CEP.";
           }
           if ($tipo == 'E') {
-            echo "025-00-CEP/CN.";
+            echo "025-00-CN/CEP.";
           }
           if ($tipo == 'M') {
-            echo "208-02-CEP/CN.";
+            echo "208-02-CN/CEP.";
           }
           if ($tipo == 'D') {
-            echo "141-08-CEP/CN.";
+            echo "141-08-CN/CEP.";
           }
           if ($tipo == 'A') {
-            echo "236-19-CEP/CN.";
+            echo "236-19-CN/CEP.";
           } ?>
          El T&iacute;tulo de
          <?php if ($sexo == 'M') {

@@ -43,7 +43,8 @@ class bo_tram_seguimiento_documentos_recibid
             on de.c_area_adm=a.cc_area_adm
             left join tram_acciones ac
             on de.c_accion=ac.c_accion
-            where cc_docrecibidos='{$obj->getCc_docrecibidos()}'";
+            where cc_docrecibidos='{$obj->getCc_docrecibidos()}'
+            order by de.fecha_entrega asc";
         //echo $sql;
         return $this->dao->consulta($sql);
     }

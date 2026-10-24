@@ -4,45 +4,46 @@ class fin_items_planilla_de_cobranza extends Parse
 {
     private $cc_itemplanilla;
     private $cc_ventas;
-    private $cod_forma_de_pago;
-    private $cta_cte_deposito;
-    private $num_referencia;
-    private $fecha_referencia;
-    private $monto;
-
-    private $linea;
-    private $c_banco;
-    private $c_cta_corriente;
-    private $flag_automatico;
     private $c_planilla_cobranza;
-    private $c_usuario;
+    private $cod_ingr_egre;
     private $c_cuenta;
-    private $c_persona;
     private $cod_documento;
     private $num_documento;
     private $fecha;
-    private $cod_moneda;
-    private $tipo_de_cambio;
-    private $c_banco_ref;
-    private $c_vendedor;
+    private $cod_forma_de_pago;
+    private $monto;
     private $monto_aplicado;
-    private $observacion;
-    private $c_operacion;
+    private $num_referencia;
+    private $fecha_referencia;
+    private $c_banco_ref;
+    private $cta_cte_deposito;
+    private $c_usuario;
+    private $flag_automatico;
     private $flag_anulado;
     private $flag_adelanto;
-    private $flag_rebotado;
     private $flag_aplicado;
+    private $linea;
+    private $observacion;
+    private $c_operacion;
+    private $cod_oficina_cobrador;
+    private $c_persona;
+    private $tipo_de_cambio;
+    private $cod_moneda;
+    private $c_tarjeta_de_credito;
+    private $c_banco;
+    private $c_cta_corriente;
+    private $c_vendedor;
+    private $flag_rebotado;
     private $flag_con_facturas;
     private $num_comprobante;
     private $linea_de_ref;
+    private $c_planilla_diferido;
     private $linea_diferido;
     private $c_cobrador;
-    private $cod_ingr_egre;
     private $cod_diferido;
     private $voucher;
     private $dif_cambio;
     private $c_operacion_dif_cambio;
-    private $cod_oficina_cobrador;
     private $tipo_de_cambio_actualizacion;
     private $flag_voucher;
     private $flag_voucher_letras;
@@ -55,52 +56,52 @@ class fin_items_planilla_de_cobranza extends Parse
     private $c_usuario_anula;
     private $fecha_anula;
     private $num_cheque;
-    private $c_planilla_diferido;
     private $c_banco_cheque;
-    private $c_tarjeta_de_credito;
 
     function __construct()
     {
         $this->cc_itemplanilla = 0;
         $this->cc_ventas = 0;
-        $this->cod_forma_de_pago = '';
-        $this->cta_cte_deposito = '';
-        $this->num_referencia = '';
-        $this->fecha_referencia = '';
-        $this->monto = 0;
-        $this->linea = 0;
-        $this->c_banco = '';
-        $this->c_cta_corriente = '';
-        $this->flag_automatico = '';
         $this->c_planilla_cobranza = '';
-        $this->c_usuario = '';
+        $this->cod_ingr_egre = '';
         $this->c_cuenta = '';
-        $this->c_persona = '';
         $this->cod_documento = '';
         $this->num_documento = '';
         $this->fecha = '';
-        $this->cod_moneda = '';
-        $this->tipo_de_cambio = 0;
-        $this->c_banco_ref = '';
-        $this->c_vendedor = '';
+        $this->cod_forma_de_pago = '';
+        $this->monto = 0;
         $this->monto_aplicado = 0;
-        $this->observacion = '';
-        $this->c_operacion = '';
+        $this->num_referencia = '';
+        $this->fecha_referencia = '';
+        $this->c_banco_ref = '';
+        $this->cta_cte_deposito = '';
+        $this->c_usuario = '';
+        $this->flag_automatico = '';
         $this->flag_anulado = '';
         $this->flag_adelanto = '';
-        $this->flag_rebotado = '';
         $this->flag_aplicado = '';
+        $this->linea = 0;
+        $this->observacion = '';
+        $this->c_operacion = '';
+        $this->cod_oficina_cobrador = '';
+        $this->c_persona = '';
+        $this->tipo_de_cambio = 0;
+        $this->cod_moneda = '';
+        $this->c_tarjeta_de_credito = '';
+        $this->c_banco = '';
+        $this->c_cta_corriente = '';
+        $this->c_vendedor = '';
+        $this->flag_rebotado = '';
         $this->flag_con_facturas = '';
         $this->num_comprobante = '';
         $this->linea_de_ref = 0;
+        $this->c_planilla_diferido = '';
         $this->linea_diferido = 0;
         $this->c_cobrador = '';
-        $this->cod_ingr_egre = '';
         $this->cod_diferido = '';
         $this->voucher = '';
         $this->dif_cambio = 0;
         $this->c_operacion_dif_cambio = '';
-        $this->cod_oficina_cobrador = '';
         $this->tipo_de_cambio_actualizacion = 0;
         $this->flag_voucher = '';
         $this->flag_voucher_letras = '';
@@ -113,9 +114,7 @@ class fin_items_planilla_de_cobranza extends Parse
         $this->c_usuario_anula = '';
         $this->fecha_anula = '';
         $this->num_cheque = '';
-        $this->c_planilla_diferido = '';
         $this->c_banco_cheque = '';
-        $this->c_tarjeta_de_credito = '';
     }
 
     public function setCc_itemplanilla($cc_itemplanilla)
@@ -140,105 +139,6 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->cc_ventas;
     }
 
-    public function setCod_forma_de_pago($cod_forma_de_pago)
-    {
-        if (empty($cod_forma_de_pago)) return;
-        $this->cod_forma_de_pago = self::Clean($cod_forma_de_pago);
-    }
-
-    public function getCod_forma_de_pago()
-    {
-        return $this->cod_forma_de_pago;
-    }
-
-    public function setCta_cte_deposito($cta_cte_deposito)
-    {
-        if (empty($cta_cte_deposito)) return;
-        $this->cta_cte_deposito = self::Clean($cta_cte_deposito);
-    }
-
-    public function getCta_cte_deposito()
-    {
-        return $this->cta_cte_deposito;
-    }
-
-    public function setNum_referencia($num_referencia)
-    {
-        if (empty($num_referencia)) return;
-        $this->num_referencia = self::Clean($num_referencia);
-    }
-
-    public function getNum_referencia()
-    {
-        return $this->num_referencia;
-    }
-
-    public function setFecha_referencia($fecha_referencia)
-    {
-        if (empty($fecha_referencia)) return;
-        $this->fecha_referencia = self::Clean($fecha_referencia);
-    }
-
-    public function getFecha_referencia()
-    {
-        return $this->fecha_referencia;
-    }
-
-    public function setMonto($monto)
-    {
-        if (empty($monto)) return;
-        $this->monto = self::Clean($monto);
-    }
-
-    public function getMonto()
-    {
-        return $this->monto;
-    }
-
-    public function setLinea($linea)
-    {
-        if (empty($linea)) return;
-        $this->linea = self::Clean($linea);
-    }
-
-    public function getLinea()
-    {
-        return $this->linea;
-    }
-
-    public function setC_banco($c_banco)
-    {
-        if (empty($c_banco)) return;
-        $this->c_banco = self::Clean($c_banco);
-    }
-
-    public function getC_banco()
-    {
-        return $this->c_banco;
-    }
-
-    public function setC_cta_corriente($c_cta_corriente)
-    {
-        if (empty($c_cta_corriente)) return;
-        $this->c_cta_corriente = self::Clean($c_cta_corriente);
-    }
-
-    public function getC_cta_corriente()
-    {
-        return $this->c_cta_corriente;
-    }
-
-    public function setFlag_automatico($flag_automatico)
-    {
-        if (empty($flag_automatico)) return;
-        $this->flag_automatico = self::Clean($flag_automatico);
-    }
-
-    public function getFlag_automatico()
-    {
-        return $this->flag_automatico;
-    }
-
     public function setC_planilla_cobranza($c_planilla_cobranza)
     {
         if (empty($c_planilla_cobranza)) return;
@@ -250,15 +150,15 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->c_planilla_cobranza;
     }
 
-    public function setC_usuario($c_usuario)
+    public function setCod_ingr_egre($cod_ingr_egre)
     {
-        if (empty($c_usuario)) return;
-        $this->c_usuario = self::Clean($c_usuario);
+        if (empty($cod_ingr_egre)) return;
+        $this->cod_ingr_egre = self::Clean($cod_ingr_egre);
     }
 
-    public function getC_usuario()
+    public function getCod_ingr_egre()
     {
-        return $this->c_usuario;
+        return $this->cod_ingr_egre;
     }
 
     public function setC_cuenta($c_cuenta)
@@ -270,17 +170,6 @@ class fin_items_planilla_de_cobranza extends Parse
     public function getC_cuenta()
     {
         return $this->c_cuenta;
-    }
-
-    public function setC_persona($c_persona)
-    {
-        if (empty($c_persona)) return;
-        $this->c_persona = self::Clean($c_persona);
-    }
-
-    public function getC_persona()
-    {
-        return $this->c_persona;
     }
 
     public function setCod_documento($cod_documento)
@@ -316,48 +205,26 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->fecha;
     }
 
-    public function setCod_moneda($cod_moneda)
+    public function setCod_forma_de_pago($cod_forma_de_pago)
     {
-        if (empty($cod_moneda)) return;
-        $this->cod_moneda = self::Clean($cod_moneda);
+        if (empty($cod_forma_de_pago)) return;
+        $this->cod_forma_de_pago = self::Clean($cod_forma_de_pago);
     }
 
-    public function getCod_moneda()
+    public function getCod_forma_de_pago()
     {
-        return $this->cod_moneda;
+        return $this->cod_forma_de_pago;
     }
 
-    public function setTipo_de_cambio($tipo_de_cambio)
+    public function setMonto($monto)
     {
-        if (empty($tipo_de_cambio)) return;
-        $this->tipo_de_cambio = self::Clean($tipo_de_cambio);
+        if (empty($monto)) return;
+        $this->monto = self::Clean($monto);
     }
 
-    public function getTipo_de_cambio()
+    public function getMonto()
     {
-        return $this->tipo_de_cambio;
-    }
-
-    public function setC_banco_ref($c_banco_ref)
-    {
-        if (empty($c_banco_ref)) return;
-        $this->c_banco_ref = self::Clean($c_banco_ref);
-    }
-
-    public function getC_banco_ref()
-    {
-        return $this->c_banco_ref;
-    }
-
-    public function setC_vendedor($c_vendedor)
-    {
-        if (empty($c_vendedor)) return;
-        $this->c_vendedor = self::Clean($c_vendedor);
-    }
-
-    public function getC_vendedor()
-    {
-        return $this->c_vendedor;
+        return $this->monto;
     }
 
     public function setMonto_aplicado($monto_aplicado)
@@ -371,26 +238,70 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->monto_aplicado;
     }
 
-    public function setObservacion($observacion)
+    public function setNum_referencia($num_referencia)
     {
-        if (empty($observacion)) return;
-        $this->observacion = self::Clean($observacion);
+        if (empty($num_referencia)) return;
+        $this->num_referencia = self::Clean($num_referencia);
     }
 
-    public function getObservacion()
+    public function getNum_referencia()
     {
-        return $this->observacion;
+        return $this->num_referencia;
     }
 
-    public function setC_operacion($c_operacion)
+    public function setFecha_referencia($fecha_referencia)
     {
-        if (empty($c_operacion)) return;
-        $this->c_operacion = self::Clean($c_operacion);
+        if (empty($fecha_referencia)) return;
+        $this->fecha_referencia = self::Clean($fecha_referencia);
     }
 
-    public function getC_operacion()
+    public function getFecha_referencia()
     {
-        return $this->c_operacion;
+        return $this->fecha_referencia;
+    }
+
+    public function setC_banco_ref($c_banco_ref)
+    {
+        if (empty($c_banco_ref)) return;
+        $this->c_banco_ref = self::Clean($c_banco_ref);
+    }
+
+    public function getC_banco_ref()
+    {
+        return $this->c_banco_ref;
+    }
+
+    public function setCta_cte_deposito($cta_cte_deposito)
+    {
+        if (empty($cta_cte_deposito)) return;
+        $this->cta_cte_deposito = self::Clean($cta_cte_deposito);
+    }
+
+    public function getCta_cte_deposito()
+    {
+        return $this->cta_cte_deposito;
+    }
+
+    public function setC_usuario($c_usuario)
+    {
+        if (empty($c_usuario)) return;
+        $this->c_usuario = self::Clean($c_usuario);
+    }
+
+    public function getC_usuario()
+    {
+        return $this->c_usuario;
+    }
+
+    public function setFlag_automatico($flag_automatico)
+    {
+        if (empty($flag_automatico)) return;
+        $this->flag_automatico = self::Clean($flag_automatico);
+    }
+
+    public function getFlag_automatico()
+    {
+        return $this->flag_automatico;
     }
 
     public function setFlag_anulado($flag_anulado)
@@ -415,17 +326,6 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->flag_adelanto;
     }
 
-    public function setFlag_rebotado($flag_rebotado)
-    {
-        if (empty($flag_rebotado)) return;
-        $this->flag_rebotado = self::Clean($flag_rebotado);
-    }
-
-    public function getFlag_rebotado()
-    {
-        return $this->flag_rebotado;
-    }
-
     public function setFlag_aplicado($flag_aplicado)
     {
         if (empty($flag_aplicado)) return;
@@ -435,6 +335,138 @@ class fin_items_planilla_de_cobranza extends Parse
     public function getFlag_aplicado()
     {
         return $this->flag_aplicado;
+    }
+
+    public function setLinea($linea)
+    {
+        if (empty($linea)) return;
+        $this->linea = self::Clean($linea);
+    }
+
+    public function getLinea()
+    {
+        return $this->linea;
+    }
+
+    public function setObservacion($observacion)
+    {
+        if (empty($observacion)) return;
+        $this->observacion = self::Clean($observacion);
+    }
+
+    public function getObservacion()
+    {
+        return $this->observacion;
+    }
+
+    public function setC_operacion($c_operacion)
+    {
+        if (empty($c_operacion)) return;
+        $this->c_operacion = self::Clean($c_operacion);
+    }
+
+    public function getC_operacion()
+    {
+        return $this->c_operacion;
+    }
+
+    public function setCod_oficina_cobrador($cod_oficina_cobrador)
+    {
+        if (empty($cod_oficina_cobrador)) return;
+        $this->cod_oficina_cobrador = self::Clean($cod_oficina_cobrador);
+    }
+
+    public function getCod_oficina_cobrador()
+    {
+        return $this->cod_oficina_cobrador;
+    }
+
+    public function setC_persona($c_persona)
+    {
+        if (empty($c_persona)) return;
+        $this->c_persona = self::Clean($c_persona);
+    }
+
+    public function getC_persona()
+    {
+        return $this->c_persona;
+    }
+
+    public function setTipo_de_cambio($tipo_de_cambio)
+    {
+        if (empty($tipo_de_cambio)) return;
+        $this->tipo_de_cambio = self::Clean($tipo_de_cambio);
+    }
+
+    public function getTipo_de_cambio()
+    {
+        return $this->tipo_de_cambio;
+    }
+
+    public function setCod_moneda($cod_moneda)
+    {
+        if (empty($cod_moneda)) return;
+        $this->cod_moneda = self::Clean($cod_moneda);
+    }
+
+    public function getCod_moneda()
+    {
+        return $this->cod_moneda;
+    }
+
+    public function setC_tarjeta_de_credito($c_tarjeta_de_credito)
+    {
+        if (empty($c_tarjeta_de_credito)) return;
+        $this->c_tarjeta_de_credito = self::Clean($c_tarjeta_de_credito);
+    }
+
+    public function getC_tarjeta_de_credito()
+    {
+        return $this->c_tarjeta_de_credito;
+    }
+
+    public function setC_banco($c_banco)
+    {
+        if (empty($c_banco)) return;
+        $this->c_banco = self::Clean($c_banco);
+    }
+
+    public function getC_banco()
+    {
+        return $this->c_banco;
+    }
+
+    public function setC_cta_corriente($c_cta_corriente)
+    {
+        if (empty($c_cta_corriente)) return;
+        $this->c_cta_corriente = self::Clean($c_cta_corriente);
+    }
+
+    public function getC_cta_corriente()
+    {
+        return $this->c_cta_corriente;
+    }
+
+    public function setC_vendedor($c_vendedor)
+    {
+        if (empty($c_vendedor)) return;
+        $this->c_vendedor = self::Clean($c_vendedor);
+    }
+
+    public function getC_vendedor()
+    {
+        return $this->c_vendedor;
+    }
+
+    public function setFlag_rebotado($flag_rebotado)
+    {
+        if (empty($flag_rebotado)) return;
+        $this->flag_rebotado = self::Clean($flag_rebotado);
+    }
+
+    public function getFlag_rebotado()
+    {
+        return $this->flag_rebotado;
     }
 
     public function setFlag_con_facturas($flag_con_facturas)
@@ -470,6 +502,17 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->linea_de_ref;
     }
 
+    public function setC_planilla_diferido($c_planilla_diferido)
+    {
+        if (empty($c_planilla_diferido)) return;
+        $this->c_planilla_diferido = self::Clean($c_planilla_diferido);
+    }
+
+    public function getC_planilla_diferido()
+    {
+        return $this->c_planilla_diferido;
+    }
+
     public function setLinea_diferido($linea_diferido)
     {
         if (empty($linea_diferido)) return;
@@ -490,17 +533,6 @@ class fin_items_planilla_de_cobranza extends Parse
     public function getC_cobrador()
     {
         return $this->c_cobrador;
-    }
-
-    public function setCod_ingr_egre($cod_ingr_egre)
-    {
-        if (empty($cod_ingr_egre)) return;
-        $this->cod_ingr_egre = self::Clean($cod_ingr_egre);
-    }
-
-    public function getCod_ingr_egre()
-    {
-        return $this->cod_ingr_egre;
     }
 
     public function setCod_diferido($cod_diferido)
@@ -545,17 +577,6 @@ class fin_items_planilla_de_cobranza extends Parse
     public function getC_operacion_dif_cambio()
     {
         return $this->c_operacion_dif_cambio;
-    }
-
-    public function setCod_oficina_cobrador($cod_oficina_cobrador)
-    {
-        if (empty($cod_oficina_cobrador)) return;
-        $this->cod_oficina_cobrador = self::Clean($cod_oficina_cobrador);
-    }
-
-    public function getCod_oficina_cobrador()
-    {
-        return $this->cod_oficina_cobrador;
     }
 
     public function setTipo_de_cambio_actualizacion($tipo_de_cambio_actualizacion)
@@ -690,17 +711,6 @@ class fin_items_planilla_de_cobranza extends Parse
         return $this->num_cheque;
     }
 
-    public function setC_planilla_diferido($c_planilla_diferido)
-    {
-        if (empty($c_planilla_diferido)) return;
-        $this->c_planilla_diferido = self::Clean($c_planilla_diferido);
-    }
-
-    public function getC_planilla_diferido()
-    {
-        return $this->c_planilla_diferido;
-    }
-
     public function setC_banco_cheque($c_banco_cheque)
     {
         if (empty($c_banco_cheque)) return;
@@ -710,16 +720,5 @@ class fin_items_planilla_de_cobranza extends Parse
     public function getC_banco_cheque()
     {
         return $this->c_banco_cheque;
-    }
-
-    public function setC_tarjeta_de_credito($c_tarjeta_de_credito)
-    {
-        if (empty($c_tarjeta_de_credito)) return;
-        $this->c_tarjeta_de_credito = self::Clean($c_tarjeta_de_credito);
-    }
-
-    public function getC_tarjeta_de_credito()
-    {
-        return $this->c_tarjeta_de_credito;
     }
 }

@@ -246,7 +246,7 @@ class bo_tram_documentos_recibidos
         WHERE s.cc_docrecibidos = d.cc_docrecibidos
           AND s.c_area_adm= '{$c_area_adm}')";
         $sql .= " ORDER BY d.cc_docrecibidos asc";
-        // echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 

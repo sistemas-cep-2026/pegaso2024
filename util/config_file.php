@@ -414,8 +414,10 @@ function u_file_validar($archivo, $tipo)
 {
     $p = u_file_perfil($tipo);
 
-    if (!is_array($archivo) || !isset($archivo['error'], $archivo['tmp_name'], $archivo['name'], $archivo['size'])
-        || is_array($archivo['error']) || is_array($archivo['name'])) {
+    if (
+        !is_array($archivo) || !isset($archivo['error'], $archivo['tmp_name'], $archivo['name'], $archivo['size'])
+        || is_array($archivo['error']) || is_array($archivo['name'])
+    ) {
         throw new Exception("Error al subir el archivo.");
     }
 
@@ -479,19 +481,6 @@ function u_file_validar($archivo, $tipo)
  * Subir / eliminar
  * ------------------------------------------------------------------------- */
 
-/**
- * Valida y guarda el archivo $archivo (elemento de $_FILES) según el perfil $tipo.
- * Devuelve el NOMBRE FINAL del archivo (solo nombre, sin ruta), listo para guardar en la BD.
- *
- * $nombre_base  nombre sin extensión que quiere el módulo (ej.: 'TRAM_28070010499'). La extensión
- *               la pone el sistema. Si ya existe un archivo con ese nombre y el perfil no
- *               sobrescribe, se agrega _1, _2, ...
- * $opciones     (todas opcionales)
- *   'carpeta'       carpeta relativa distinta a la del perfil (obligatoria si el perfil no tiene)
- *   'sobrescribir'  true/false para cambiar lo que dice el perfil
- *   'max_nombre'    largo máximo del nombre final, p. ej. 30 si se guarda en un varchar(30);
- *                   si no cabe, el archivo no se guarda y se lanza Exception
- */
 function u_file_subir($archivo, $tipo, $nombre_base, $opciones = array())
 {
     $p    = u_file_perfil($tipo);

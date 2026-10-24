@@ -4,28 +4,28 @@ fn_fromActividadDetalle();
 
 function fn_fromActividadDetalle() {
   var str = $('#cc_sustento').val();
-  obtenerDatos('divFromDetalle', 'tramite/hextras_taps_sust_from?cc_sustento=' + str);
+  obtenerDatos('divFromDetalle', 'rrhh/hextras_taps_sust_from?cc_sustento=' + str);
 }
 
 function fn_grabarRegistro() {
   try {
-   swalProcesando();
-   var str = $("#frmGrabarRegistro").serialize();
-   return ajax("tramite/hextras_taps_update", str)
-   .then(function (res) {
-    var mensaje = res.split("|");
-    if (mensaje[0] !== "0") {
-      throw res;
-    }
-    redireccionar(mensaje[1]);
-    //fn_fromActividadDetalle();
-  })
-   .catch(function (err) {
+    swalProcesando();
+    var str = $("#frmGrabarRegistro").serialize();
+    return ajax("rrhh/hextras_taps_update", str)
+      .then(function (res) {
+        var mensaje = res.split("|");
+        if (mensaje[0] !== "0") {
+          throw res;
+        }
+        redireccionar(mensaje[1]);
+        //fn_fromActividadDetalle();
+      })
+      .catch(function (err) {
+        swalError(err);
+      });
+  } catch (err) {
     swalError(err);
-  });
- } catch (err) {
-  swalError(err);
-}
+  }
 }
 
 
@@ -34,32 +34,32 @@ function fn_grabarRegistro() {
 function fn_grabarDetalleD() {
   swalProcesando();
   var str = $("#frmFormRegistroD").serialize();
-  ajax("tramite/hextras_taps_sust_update", str)
-  .then(function (res) {
-    if (res !== "0") {
-      throw res;
-    }
-    swalOk(750);
-    recargar(750);
-  })
-  .catch(function (err) {
-    swalError(err);
-  });
+  ajax("rrhh/hextras_taps_sust_update", str)
+    .then(function (res) {
+      if (res !== "0") {
+        throw res;
+      }
+      swalOk(750);
+      recargar(750);
+    })
+    .catch(function (err) {
+      swalError(err);
+    });
 }
 
 function fn_Eliminar(cc_sustento_det) {
   alertaMensaje("&iquest;Desea eliminar?", function () {
     var str = "cc_sustento_det=" + cc_sustento_det + "&opcd=E";
-    return ajax("tramite/hextras_taps_sust_update", str)
-    .then(function (data) {
-      if (data !== "0") {
-        throw new Error(data);
-      }
-      return data;
-    })
-    .catch(function (err) {
-      Swal.showValidationMessage(err);
-    });
+    return ajax("rrhh/hextras_taps_sust_update", str)
+      .then(function (data) {
+        if (data !== "0") {
+          throw new Error(data);
+        }
+        return data;
+      })
+      .catch(function (err) {
+        Swal.showValidationMessage(err);
+      });
   }).then(function (result) {
     if (result.value) {
       swalOk(750);
@@ -72,14 +72,14 @@ function fn_Eliminar(cc_sustento_det) {
 
 function fn_listarReporte() {
   var str = $("#frm").serialize();
-  obtenerDatos("divlistarHoras", "tramite/hextras_taps_buscar", str, function () {
+  obtenerDatos("divlistarHoras", "rrhh/hextras_taps_buscar", str, function () {
     fn_reporteMensual();
   });
 }
 
 function fn_reporteMensual() {
   var str = $("#frmFormRegistroMensual").serialize();
-  obtenerDatos("divReportemensual", "tramite/hextras_taps_listar", str, function () {
+  obtenerDatos("divReportemensual", "rrhh/hextras_taps_listar", str, function () {
     /*fn_listaDataTable('table-hextras', {
       responsive: false,
       searching: false,
@@ -95,14 +95,14 @@ function fn_reporteMensual() {
 /*consolidad*/
 function fn_listarConsolidado() {
   var str = $("#frm").serialize();
-  obtenerDatos("divlistarConsolidad", "tramite/hextras_taps_consoli", str, function () {
+  obtenerDatos("divlistarConsolidad", "rrhh/hextras_taps_consoli", str, function () {
     fn_reporteConsolidado();
   });
 }
 
 function fn_reporteConsolidado() {
   var str = $("#frmFormRegistroConsol").serialize();
-  obtenerDatos("divReporteConsolidado", "tramite/hextras_taps_consoli_lita", str, function () {
+  obtenerDatos("divReporteConsolidado", "rrhh/hextras_taps_consoli_lita", str, function () {
     /*fn_listaDataTable('table-hextras', {
       responsive: false,
       searching: false,

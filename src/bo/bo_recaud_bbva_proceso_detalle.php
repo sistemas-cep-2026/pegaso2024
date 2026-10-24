@@ -128,9 +128,9 @@ class bo_recaud_bbva_proceso_detalle
 
     public function listar(?recaud_bbva_proceso_detalle $obj = null)
     {
-        $sql = "select bbva.fecha_pago,bbva.id, bbva.c_local, bbva.referencia1 AS nombre1, p.c_cmp AS c_cmp, ISNULL(LEFT(RTRIM(p.nombre), 30), bbva.referencia2) AS nombre2, 
+        $sql = "select bbva.fecha_pago,bbva.id, bbva.c_local, bbva.referencia2 AS nombre1, p.c_cmp AS c_cmp, ISNULL(LEFT(RTRIM(p.nombre), 30), bbva.referencia2) AS nombre2, 
 CONVERT(VARCHAR(10), CAST(bbva.fecha_pago AS DATE), 103) AS fecha, bbva.total as total_distribuir, bbva.distribuir, bbva.fijoregion, bbva.region, bbva.nacional, bbva.fecha_pago AS num, 
-p.c_persona,'000000' hora, bbva.num_movimiento operacion_canal ,dbo.fc_fecha_hora(bbva.fecha_id) fecha_id,(total-region-nacional) as fijonacional 
+p.c_persona,bbva.hora, bbva.num_movimiento operacion_canal ,dbo.fc_fecha_hora(bbva.fecha_id) fecha_id,(total-region-nacional) as fijonacional 
 FROM bbva_proceso_detalle bbva 
 LEFT JOIN personas p ON p.c_persona = bbva.c_persona 
 WHERE bbva.referencia1 like '%'  ";
@@ -142,7 +142,7 @@ WHERE bbva.referencia1 like '%'  ";
         }
         $sql .= " and ISNULL(bbva.c_local,'%') LIKE '{$obj->getC_local()}%'";
         $sql .= " ORDER BY bbva.fecha_pago desc, bbva.num_movimiento  DESC";
-        // echo $sql;
+         //echo $sql;
         return $this->dao->consulta($sql);
     }
     public function total_recaudo(?recaud_bbva_proceso_detalle $obj = null)
@@ -156,7 +156,7 @@ FROM bbva_proceso_detalle WHERE referencia1 LIKE '%'";
         if (in_array($obj->getTipo(), ['D', 'R'])) {
             $sql .= " and LEFT(fecha_pago,6)='" . $obj->getPeriodo() . "'";
         }
-       //echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 

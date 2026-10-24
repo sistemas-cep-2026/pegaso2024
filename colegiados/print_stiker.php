@@ -7,8 +7,8 @@ $bo_personas   = new bo_gen_personas();
 
 $tipo = $_REQUEST["tipo"];
 $c_tipo = $_REQUEST["c_tipo"];
-$desde = intval($_REQUEST["desde"]);
-$hasta = intval($_REQUEST["hasta"]);
+$desde = $_REQUEST["desde"];
+$hasta = $_REQUEST["hasta"];
 $visible = $_REQUEST["v"];
 ?>
 
@@ -67,7 +67,7 @@ $visible = $_REQUEST["v"];
     </table>
   <?php } ?>
   <script>
-    window.addEventListener("contextmenu", function(event) {
+    /*window.addEventListener("contextmenu", function(event) {
       event.preventDefault();
     });
     window.addEventListener("keydown", function(event) {
@@ -85,7 +85,7 @@ $visible = $_REQUEST["v"];
     });
     window.addEventListener("afterprint", (event) => {
       window.close();
-    });
+    });*/
   </script>
 </body>
 

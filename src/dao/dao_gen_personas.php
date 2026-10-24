@@ -26,13 +26,13 @@ class dao_gen_personas
         grado,
         num_documento,
         nombre,
-        flag_activo
+        flag_activo,cod_tipo
         )values(
         '{$obj->getC_persona()}',
         '{$obj->getGrado()}',
         '{$obj->getNum_documento()}',
         '{$obj->getNombre()}',
-        'A')";
+        'A','CP')";
         //echo $sql;
         return $this->conecta->sql_query($sql);
     }

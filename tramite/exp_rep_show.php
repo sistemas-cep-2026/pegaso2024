@@ -71,6 +71,108 @@ if (!function_exists('exp_deriv_buscar_pdf')) {
     }
 }
 
+// Traza del documento en solo lectura: misma presentación (árbol por derivación padre -> hija) que tramite/exp_deriv_lista.php,
+// pero sin botones ni formularios. Estado de cada derivación: P Pendiente, T Recibido, A Atendido, R Retorna.
+if (!function_exists('exp_rep_render_traza')) {
+    function exp_rep_render_traza($node, $nivel)
+    {
+        $marginLeft = ($nivel - 1) * 18;
+        $flag = trim((string)($node['flag'] ?? ''));
+
+        if ($flag === 'A') {
+            $borde = 'border-success';
+            $badgeClase = 'bg-success-subtle text-success border border-success-subtle';
+            $badgeTexto = 'Atendido';
+            $icono = 'ri-checkbox-circle-line';
+        } elseif ($flag === 'T') {
+            $borde = 'border-info';
+            $badgeClase = 'bg-info-subtle text-info border border-info-subtle';
+            $badgeTexto = 'Recibido';
+            $icono = 'ri-inbox-archive-line';
+        } elseif ($flag === 'R') {
+            $borde = 'border-secondary';
+            $badgeClase = 'bg-secondary-subtle text-secondary border border-secondary-subtle';
+            $badgeTexto = 'Retorna';
+            $icono = 'ri-arrow-go-back-line';
+        } else {
+            $borde = 'border-warning';
+            $badgeClase = 'bg-warning-subtle text-warning border border-warning-subtle';
+            $badgeTexto = 'Pendiente';
+            $icono = 'ri-time-line';
+        }
+
+        $ejecucion = (isset($node['accion_a_tomar']) && trim((string)$node['accion_a_tomar']) !== '&') ? trim((string)$node['accion_a_tomar']) : '';
+?>
+        <li class="dd-item mb-2">
+            <div style="margin-left: <?= $marginLeft ?>px;">
+                <div class="card border-0 border-start border-3 <?= $borde ?> shadow-sm mb-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="row align-items-center g-2">
+                            <div class="col-lg-4 col-md-5">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-xs flex-shrink-0 me-2">
+                                        <span class="avatar-title bg-primary-subtle text-primary rounded">
+                                            <i class="ri-file-text-line fs-16"></i>
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center flex-wrap gap-1">
+                                            <span class="text-muted fs-12"> Área: </span>
+                                            <span class="fw-semibold fs-13"><?= htmlspecialchars($node['c_area_adm_text'] ?? '') ?></span>
+                                        </div>
+                                        <?php if (!empty($node['c_accion_text'])): ?>
+                                            <div class="text-muted fs-12 mt-1"><i class="ri-arrow-right-s-line"></i> <?= htmlspecialchars($node['c_accion_text']) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-3">
+                                <div class="fs-12 text-muted"> Envía </div>
+                                <div class="fw-medium fs-13"><?= htmlspecialchars($node['c_usuario'] ?? '') ?></div>
+                                <div class="text-muted fs-11"><?= htmlspecialchars($node['fecha_entrega_text'] ?? '') ?></div>
+                            </div>
+                            <div class="col-lg-2 col-md-3">
+                                <div class="fs-12 text-muted"> Recibe </div>
+                                <div class="fw-medium fs-13">
+                                    <?= !empty($node['usu_recep']) ? htmlspecialchars($node['usu_recep']) : '<span class="text-muted">—</span>' ?>
+                                </div>
+                                <div class="text-muted fs-11"><?= htmlspecialchars($node['feha_respuesta_text'] ?? '') ?></div>
+                            </div>
+                            <div class="col-lg-2 d-none d-lg-block">
+                                <?php if ($ejecucion !== ''): ?>
+                                    <div class="fs-12 text-muted"> Ejecución </div>
+                                    <div class="fw-medium fs-12 text-truncate" title="<?= htmlspecialchars($ejecucion) ?>"><?= htmlspecialchars($ejecucion) ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-lg-2 text-end">
+                                <div class="d-flex justify-content-end align-items-center flex-wrap gap-1">
+                                    <span class="badge <?= $badgeClase ?>"><i class="<?= $icono ?> me-1"></i><?= $badgeTexto ?></span>
+                                    <?php if (!empty($node['cod_original_text'])): ?>
+                                        <span class="badge bg-light text-primary border"><?= htmlspecialchars($node['cod_original_text']) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if (!empty($node['observacion'])): ?>
+                            <div class="border-top mt-2 pt-2">
+                                <small class="text-muted"><i class="ri-message-2-line me-1"></i><?= htmlspecialchars($node['observacion']) ?></small>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php if (!empty($node['children'])): ?>
+                <ol class="dd-list list-unstyled mt-1">
+                    <?php foreach ($node['children'] as $child): ?>
+                        <?php exp_rep_render_traza($child, $nivel + 1); ?>
+                    <?php endforeach; ?>
+                </ol>
+            <?php endif; ?>
+        </li>
+    <?php
+    }
+}
+
 $bo_doc_recibidos     = new bo_tram_documentos_recibidos();
 $bo_doc_recibidos_det = new bo_tram_seguimiento_documentos_recibid();
 
@@ -84,7 +186,7 @@ $data_doc = $bo_doc_recibidos->listarId($ent_doc_recibidos);
 $row = $data_doc[0] ?? null;
 
 if (!$row) {
-?>
+    ?>
     <div class="modal-header">
         <h5 class="modal-title">Expediente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -106,11 +208,6 @@ $data_detalle = $bo_doc_recibidos_det->listaIDExp($ent_doc_recibidos_det);
 usort($data_detalle, function ($a, $b) {
     return ((int)$a['cc_docrecibidos_det']) <=> ((int)$b['cc_docrecibidos_det']);
 });
-
-$estadoMap = [
-    'A' => ['Atendido',  'bg-success-subtle text-success border border-success-subtle'],
-    'T' => ['Recibido',  'bg-info-subtle text-info border border-info-subtle'],
-];
 
 $estadoDocMap = [
     'P' => ['Pendiente', 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'],
@@ -174,68 +271,39 @@ $url_pdf = exp_deriv_buscar_pdf($row, $pdf_buscados);
         <small class="text-muted"><?= count($data_detalle) ?> registro(s)</small>
     </div>
 
-    <?php if (empty($data_detalle)): ?>
+    <?php
+    // Árbol de derivaciones (igual que exp_deriv_lista.php): "linea" = id de la derivación padre; 0 = raíz.
+    $items = [];
+    $tree = [];
+    foreach ($data_detalle as $det) {
+        $id = (int)$det['cc_docrecibidos_det'];
+        $det['children'] = [];
+        $det['parent'] = (int)($det['linea'] ?? 0);
+        $items[$id] = $det;
+    }
+    foreach ($items as $id => &$node) {
+        if ($node['parent'] === 0) {
+            $tree[$id] = &$node;
+        } elseif (isset($items[$node['parent']])) {
+            $items[$node['parent']]['children'][$id] = &$node;
+        } else {
+            $tree[$id] = &$node;   // padre inexistente: se muestra como raíz para no ocultar el registro
+        }
+    }
+    unset($node);
+    ?>
+    <?php if (empty($tree)): ?>
         <div class="alert alert-info border-0 mb-0 py-2">
             <i class="ri-information-line me-1"></i>
             Sin derivaciones registradas
         </div>
     <?php else: ?>
-        <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Fecha</th>
-                        <th>Área / Acción</th>
-                        <th>Envía</th>
-                        <th>Recibe</th>
-                        <th>Ejecución</th>
-                        <th class="text-center">Estado</th>
-                        <th class="text-center">O/C</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $i = 1; ?>
-                    <?php foreach ($data_detalle as $det): ?>
-                        <?php
-                        $flag = trim((string)($det['flag'] ?? ''));
-                        [$estadoTexto, $estadoClase] = $estadoMap[$flag] ?? ['Pendiente', 'bg-warning-subtle text-warning border border-warning-subtle'];
-                        $ejecucionValor = (isset($det['accion_a_tomar']) && trim((string)$det['accion_a_tomar']) !== '&') ? trim((string)$det['accion_a_tomar']) : '';
-                        ?>
-                        <tr>
-                            <td><?= $i++ ?></td>
-                            <td class="text-nowrap fs-12"><?= htmlspecialchars($det['fecha_entrega_text'] ?? '') ?></td>
-                            <td>
-                                <div class="fw-semibold fs-13"><?= htmlspecialchars($det['c_area_adm_text'] ?? '') ?></div>
-                                <?php if (!empty($det['c_accion_text'])): ?>
-                                    <div class="text-muted fs-12"><?= htmlspecialchars($det['c_accion_text']) ?></div>
-                                <?php endif; ?>
-                                <?php if (!empty($det['observacion'])): ?>
-                                    <div class="text-muted fs-12 fst-italic">"<?= htmlspecialchars($det['observacion']) ?>"</div>
-                                <?php endif; ?>
-                            </td>
-                            <td class="fs-13"><?= htmlspecialchars($det['c_usuario'] ?? '') ?></td>
-                            <td class="fs-13">
-                                <?php if (!empty($det['usu_recep'])): ?>
-                                    <?= htmlspecialchars($det['usu_recep']) ?>
-                                    <div class="text-muted fs-11"><?= htmlspecialchars($det['feha_respuesta_text'] ?? '') ?></div>
-                                <?php else: ?>
-                                    <span class="text-muted">—</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="fs-13">
-                                <?= $ejecucionValor !== '' ? htmlspecialchars($ejecucionValor) : '<span class="text-muted">—</span>' ?>
-                            </td>
-                            <td class="text-center">
-                                <span class="badge <?= $estadoClase ?>"><?= $estadoTexto ?></span>
-                            </td>
-                            <td class="text-center fs-12">
-                                <?= htmlspecialchars($det['cod_original_text'] ?? '') ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="dd">
+            <ol class="dd-list list-unstyled mb-0">
+                <?php foreach ($tree as $rootNode): ?>
+                    <?php exp_rep_render_traza($rootNode, 1); ?>
+                <?php endforeach; ?>
+            </ol>
         </div>
     <?php endif; ?>
 </div>

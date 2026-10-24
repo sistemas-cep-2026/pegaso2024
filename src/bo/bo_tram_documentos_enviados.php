@@ -29,7 +29,10 @@ class bo_tram_documentos_enviados
 
     public function listarID(tram_documentos_enviados $obj = null)
     {
-        $sql = "";
+        $sql = "select   c_tipo_de_documento,gestion,num_documento,asunto,
+        fecha,c_area_adm_doc,tipo_persona,c_area_adm_usuario,cc_docenviado ,flag
+        from documentos_enviados where cc_docenviado='{$obj->getCc_docenviado()}'";
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 }

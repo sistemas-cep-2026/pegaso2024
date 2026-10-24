@@ -28,6 +28,8 @@ $sede = ($cc_local == '28') ? 'CN' : 'CR';
 $c_area_adm = isset($_REQUEST['c_area_adm'])    ? trim($_REQUEST['c_area_adm'])    : '';
 $gestion = isset($_REQUEST['gestion'])    ? rtrim($_REQUEST['gestion'])    : '00';
 $c_expediente = isset($_REQUEST['c_expediente'])    ? (int)$_REQUEST['c_expediente']    : '';
+$val_expediente = str_pad($_REQUEST["c_expediente"], 7, '0', STR_PAD_LEFT);
+$num_desde = $cc_local . $gestion . $val_expediente;
 if ($c_expediente > 0) {
     $numero = str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
     $ent_doc_recibidos->setC_expediente($numero);
@@ -46,13 +48,6 @@ $data_doc = $bo_doc_recibidos->listarDerivacion($ent_doc_recibidos, $c_area_adm)
 $opcd_u = s_crypt('U', 'in');
 $opc_archivar_enc = s_crypt('A', 'in');
 
-
-/**
- * Busca el PDF de un expediente en la carpeta de archivos (D:/file_tramites). Devuelve la URL del visor
- * si existe y, en $buscados, los nombres que se intentaron (para explicar por qué no se encontró).
- * Prueba: el nombre guardado en la BD (documento_enviado / file_adjunto, si el BO lo trae),
- * TRAM_<n° expediente>.pdf y <cc_docrecibidos>_<fecha>.pdf (nombre que usaba la subida anterior).
- */
 if (!function_exists('exp_deriv_buscar_pdf')) {
     function exp_deriv_buscar_pdf($row, &$buscados)
     {
@@ -430,8 +425,6 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
     if ($seccion_req !== '' &&        $seccion_req != $seccion) {
         continue;
     }
-    // Estado de la CABECERA (documentos_recibidos.flag): P = Pendiente, T = Trámite, A = Archivado.
-    // Es independiente del flag de cada derivación (seguimiento_documentos_recibid.flag).
     $flagDoc = trim((string)($row['flag'] ?? ''));
     $editableDoc = in_array($flagDoc, ['P', 'T'], true);   // mientras no esté archivado se puede trabajar
     $archivadoDoc = ($flagDoc === 'A');
@@ -445,7 +438,6 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
     }
     $cc_docrecibidos_arch_enc = s_crypt($row['cc_docrecibidos'], 'in');
 
-    // PDF del expediente (carpeta D:/file_tramites): icono si existe; si no, mensaje "Sin adjunto".
     $pdf_buscados = [];
     $url_pdf = exp_deriv_buscar_pdf($row, $pdf_buscados);
     ?>
@@ -606,5 +598,13 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
                 </div>
             </div>
         </div>
+    </div>
+<?php } ?>
+
+<?php if ($seccion_req === '' && $num_desde  !== '') { ?>
+    <div class="flex-grow-1 ms-2 text-center">
+        <a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde)); ?>', 750); return false;">
+            <i class="ri-printer-line me-1"></i> Imprimir
+        </a>
     </div>
 <?php } ?>

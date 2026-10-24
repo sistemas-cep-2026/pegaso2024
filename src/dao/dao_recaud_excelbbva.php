@@ -22,14 +22,15 @@ class dao_recaud_excelbbva
 
     public function subirRecaudadorabbva(recaud_excelbbva $obj)
     {
-        $sql = "insert into recaud_excelbbva(nombre, REFERENCIA1, REFERENCIA2, IMPORTE1, NUM_MOVIMIENTO, fecha_pago) VALUES (
+        $sql = "insert into recaud_excelbbva(nombre, REFERENCIA1, REFERENCIA2, IMPORTE1, NUM_MOVIMIENTO, fecha_pago,hora) VALUES (
 			'" . $obj->getNombre() . "',
 			'" . $obj->getCodigo() . "',
 			'" . $obj->getObs() . "',
 			'" . $obj->getImp1() . "',
 	 
 			'" . $obj->getMov() . "',
-			'" . $obj->getFecha_pago() . "' )";
+			'" . $obj->getFecha_pago() . "' ,
+			'" . $obj->getHora() . "' )";
 
 
              /*$sql = "insert into recaud_excelbbva(nombre, 

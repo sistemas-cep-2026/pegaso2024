@@ -13,6 +13,7 @@ class recaud_excelbbva extends Parse
     private $fecha_proceso;
     private $forma_pago;
     private $canal;
+    private $hora;
 
     function __construct()
     {
@@ -27,6 +28,7 @@ class recaud_excelbbva extends Parse
         $this->fecha_proceso = 0;
         $this->forma_pago = '';
         $this->canal = '';
+        $this->hora = '00:00:00';
     }
 
     public function setNombre($nombre)
@@ -149,5 +151,17 @@ class recaud_excelbbva extends Parse
     {
         return $this->canal;
     }
+
+   public function setHora($hora)
+    {
+        if(empty($hora)) return;
+        $this->hora = self::Clean($hora);
+    }
+
+    public function getHora()
+    {
+        return $this->hora;
+    }
+
 
 }

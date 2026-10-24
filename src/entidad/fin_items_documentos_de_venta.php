@@ -4,31 +4,33 @@ class fin_items_documentos_de_venta extends Parse
 {
     private $cc_ventadetall;
     private $cc_ventas;
-    private $c_articulo;
     private $cod_documento;
     private $num_documento;
+    private $c_articulo;
     private $nombre_pr;
     private $cantidad;
     private $venta;
+    private $precio;
     private $observacion;
     private $ano;
     private $mes_desde;
     private $mes_hasta;
-
-    private $linea;
-
-    private $tc_doc_ref;
-    private $costo;
+    private $c_igv;
     private $flag_voucher;
-    private $porc_descuento1;
+    private $linea;
     private $descuento;
+    private $tc_doc_ref;
+    private $c_descripcion;
+    private $cod_procedencia;
+    private $serie;
+    private $costo;
+    private $porc_descuento1;
     private $porc_descuento2;
     private $costo_prom_us;
     private $costo_prom_soles;
-    private $precio;
     private $cod_documento_ref;
     private $num_documento_ref;
-    private $Monto;
+    private $monto;
     private $voucher;
     private $fecha_aplicacion;
     private $numero_gs;
@@ -39,41 +41,38 @@ class fin_items_documentos_de_venta extends Parse
     private $desc_manual;
     private $adelanto_items;
     private $glosa;
-    private $serie;
-    private $c_igv;
-    private $c_descripcion;
-    private $cod_procedencia;
 
     function __construct()
     {
         $this->cc_ventadetall = 0;
         $this->cc_ventas = 0;
-        $this->c_articulo = '';
         $this->cod_documento = '';
         $this->num_documento = '';
+        $this->c_articulo = '';
         $this->nombre_pr = '';
         $this->cantidad = 0;
         $this->venta = 0;
+        $this->precio = 0;
         $this->observacion = '';
         $this->ano = '';
         $this->mes_desde = '';
         $this->mes_hasta = '';
-
-        $this->linea = 0;
-
-
-        $this->tc_doc_ref = 0;
-        $this->costo = 0;
+        $this->c_igv = '';
         $this->flag_voucher = '';
-        $this->porc_descuento1 = 0;
+        $this->linea = 0;
         $this->descuento = 0;
+        $this->tc_doc_ref = 0;
+        $this->c_descripcion = 0;
+        $this->cod_procedencia = '';
+        $this->serie = '';
+        $this->costo = 0;
+        $this->porc_descuento1 = 0;
         $this->porc_descuento2 = 0;
         $this->costo_prom_us = 0;
         $this->costo_prom_soles = 0;
-        $this->precio = 0;
         $this->cod_documento_ref = '';
         $this->num_documento_ref = '';
-        $this->Monto = 0;
+        $this->monto = 0;
         $this->voucher = '';
         $this->fecha_aplicacion = '';
         $this->numero_gs = '';
@@ -84,10 +83,6 @@ class fin_items_documentos_de_venta extends Parse
         $this->desc_manual = '';
         $this->adelanto_items = 0;
         $this->glosa = '';
-        $this->serie = '';
-        $this->c_igv = '';
-        $this->c_descripcion = 0;
-        $this->cod_procedencia = '';
     }
 
     public function setCc_ventadetall($cc_ventadetall)
@@ -112,17 +107,6 @@ class fin_items_documentos_de_venta extends Parse
         return $this->cc_ventas;
     }
 
-    public function setC_articulo($c_articulo)
-    {
-        if (empty($c_articulo)) return;
-        $this->c_articulo = self::Clean($c_articulo);
-    }
-
-    public function getC_articulo()
-    {
-        return $this->c_articulo;
-    }
-
     public function setCod_documento($cod_documento)
     {
         if (empty($cod_documento)) return;
@@ -143,6 +127,17 @@ class fin_items_documentos_de_venta extends Parse
     public function getNum_documento()
     {
         return $this->num_documento;
+    }
+
+    public function setC_articulo($c_articulo)
+    {
+        if (empty($c_articulo)) return;
+        $this->c_articulo = self::Clean($c_articulo);
+    }
+
+    public function getC_articulo()
+    {
+        return $this->c_articulo;
     }
 
     public function setNombre_pr($nombre_pr)
@@ -176,6 +171,17 @@ class fin_items_documentos_de_venta extends Parse
     public function getVenta()
     {
         return $this->venta;
+    }
+
+    public function setPrecio($precio)
+    {
+        if (empty($precio)) return;
+        $this->precio = self::Clean($precio);
+    }
+
+    public function getPrecio()
+    {
+        return $this->precio;
     }
 
     public function setObservacion($observacion)
@@ -222,42 +228,15 @@ class fin_items_documentos_de_venta extends Parse
         return $this->mes_hasta;
     }
 
-
-
-    public function setLinea($linea)
+    public function setC_igv($c_igv)
     {
-        if (empty($linea)) return;
-        $this->linea = self::Clean($linea);
+        if (empty($c_igv)) return;
+        $this->c_igv = self::Clean($c_igv);
     }
 
-    public function getLinea()
+    public function getC_igv()
     {
-        return $this->linea;
-    }
-
-
-
-
-    public function setTc_doc_ref($tc_doc_ref)
-    {
-        if (empty($tc_doc_ref)) return;
-        $this->tc_doc_ref = self::Clean($tc_doc_ref);
-    }
-
-    public function getTc_doc_ref()
-    {
-        return $this->tc_doc_ref;
-    }
-
-    public function setCosto($costo)
-    {
-        if (empty($costo)) return;
-        $this->costo = self::Clean($costo);
-    }
-
-    public function getCosto()
-    {
-        return $this->costo;
+        return $this->c_igv;
     }
 
     public function setFlag_voucher($flag_voucher)
@@ -271,15 +250,15 @@ class fin_items_documentos_de_venta extends Parse
         return $this->flag_voucher;
     }
 
-    public function setPorc_descuento1($porc_descuento1)
+    public function setLinea($linea)
     {
-        if (empty($porc_descuento1)) return;
-        $this->porc_descuento1 = self::Clean($porc_descuento1);
+        if (empty($linea)) return;
+        $this->linea = self::Clean($linea);
     }
 
-    public function getPorc_descuento1()
+    public function getLinea()
     {
-        return $this->porc_descuento1;
+        return $this->linea;
     }
 
     public function setDescuento($descuento)
@@ -293,6 +272,72 @@ class fin_items_documentos_de_venta extends Parse
         return $this->descuento;
     }
 
+    public function setTc_doc_ref($tc_doc_ref)
+    {
+        if (empty($tc_doc_ref)) return;
+        $this->tc_doc_ref = self::Clean($tc_doc_ref);
+    }
+
+    public function getTc_doc_ref()
+    {
+        return $this->tc_doc_ref;
+    }
+
+    public function setC_descripcion($c_descripcion)
+    {
+        if (empty($c_descripcion)) return;
+        $this->c_descripcion = self::Clean($c_descripcion);
+    }
+
+    public function getC_descripcion()
+    {
+        return $this->c_descripcion;
+    }
+
+    public function setCod_procedencia($cod_procedencia)
+    {
+        if (empty($cod_procedencia)) return;
+        $this->cod_procedencia = self::Clean($cod_procedencia);
+    }
+
+    public function getCod_procedencia()
+    {
+        return $this->cod_procedencia;
+    }
+
+    public function setSerie($serie)
+    {
+        if (empty($serie)) return;
+        $this->serie = self::Clean($serie);
+    }
+
+    public function getSerie()
+    {
+        return $this->serie;
+    }
+
+    public function setCosto($costo)
+    {
+        if (empty($costo)) return;
+        $this->costo = self::Clean($costo);
+    }
+
+    public function getCosto()
+    {
+        return $this->costo;
+    }
+
+    public function setPorc_descuento1($porc_descuento1)
+    {
+        if (empty($porc_descuento1)) return;
+        $this->porc_descuento1 = self::Clean($porc_descuento1);
+    }
+
+    public function getPorc_descuento1()
+    {
+        return $this->porc_descuento1;
+    }
+
     public function setPorc_descuento2($porc_descuento2)
     {
         if (empty($porc_descuento2)) return;
@@ -303,8 +348,6 @@ class fin_items_documentos_de_venta extends Parse
     {
         return $this->porc_descuento2;
     }
-
-
 
     public function setCosto_prom_us($costo_prom_us)
     {
@@ -326,17 +369,6 @@ class fin_items_documentos_de_venta extends Parse
     public function getCosto_prom_soles()
     {
         return $this->costo_prom_soles;
-    }
-
-    public function setPrecio($precio)
-    {
-        if (empty($precio)) return;
-        $this->precio = self::Clean($precio);
-    }
-
-    public function getPrecio()
-    {
-        return $this->precio;
     }
 
     public function setCod_documento_ref($cod_documento_ref)
@@ -361,15 +393,15 @@ class fin_items_documentos_de_venta extends Parse
         return $this->num_documento_ref;
     }
 
-    public function setMonto($Monto)
+    public function setMonto($monto)
     {
-        if (empty($Monto)) return;
-        $this->Monto = self::Clean($Monto);
+        if (empty($monto)) return;
+        $this->monto = self::Clean($monto);
     }
 
     public function getMonto()
     {
-        return $this->Monto;
+        return $this->monto;
     }
 
     public function setVoucher($voucher)
@@ -480,49 +512,5 @@ class fin_items_documentos_de_venta extends Parse
     public function getGlosa()
     {
         return $this->glosa;
-    }
-
-    public function setSerie($serie)
-    {
-        if (empty($serie)) return;
-        $this->serie = self::Clean($serie);
-    }
-
-    public function getSerie()
-    {
-        return $this->serie;
-    }
-
-    public function setC_igv($c_igv)
-    {
-        if (empty($c_igv)) return;
-        $this->c_igv = self::Clean($c_igv);
-    }
-
-    public function getC_igv()
-    {
-        return $this->c_igv;
-    }
-
-    public function setC_descripcion($c_descripcion)
-    {
-        if (empty($c_descripcion)) return;
-        $this->c_descripcion = self::Clean($c_descripcion);
-    }
-
-    public function getC_descripcion()
-    {
-        return $this->c_descripcion;
-    }
-
-    public function setCod_procedencia($cod_procedencia)
-    {
-        if (empty($cod_procedencia)) return;
-        $this->cod_procedencia = self::Clean($cod_procedencia);
-    }
-
-    public function getCod_procedencia()
-    {
-        return $this->cod_procedencia;
     }
 }

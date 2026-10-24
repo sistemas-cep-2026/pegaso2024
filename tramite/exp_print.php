@@ -108,38 +108,37 @@ foreach ($data_local as $loc) {
 				</tr>
 			</table>
 
+			<?php
+			// Cuadro de seguimiento: las filas en blanco se llenan a mano en el impreso, por eso tienen altura fija.
+			$filas_vacias    = 2;        // cantidad de filas en blanco al final
+			$alto_fila_vacia = '30px';   // altura fija de cada fila en blanco (ajustable)
+			?>
 			<table class="table table-bordered border-dark table-sm mb-2 fs-12">
 				<thead>
 					<tr>
-						<th class="col-2 p-1">FECHA</th>
-						<th class="col-4 p-1">ACCION</th>
-						<th class="col-4 p-1">DESTINO</th>
-						<th class="col-2 p-1">FIRMA</th>
+						<th class="p-1" style="width:1%; white-space:nowrap;">FECHA</th>
+						<th class="p-1" style="width:32%;">ACCION</th>
+						<th class="p-1" style="width:36%;">DESTINO</th>
+						<th class="p-1" style="width:22%;">FIRMA</th>
 					</tr>
 				</thead>
 				<tbody>
-					<?php $i = 1;
-					foreach ($data_detalle as $det): ?>
+					<?php foreach ($data_detalle as $det): ?>
 						<tr>
-							<td class="p-1">(<?php echo $i; ?>) - <?php echo htmlspecialchars($det['fecha_entrega_text'] ?? ''); ?></td>
+							<td class="p-1" style="white-space:nowrap;"><?php echo htmlspecialchars($det['fecha_entrega_text'] ?? ''); ?></td>
 							<td class="p-1"><?php echo htmlspecialchars($det['c_accion_text'] ?? ''); ?></td>
 							<td class="p-1"><?php echo htmlspecialchars($det['c_area_adm_text'] ?? ''); ?></td>
 							<td class="p-1"></td>
 						</tr>
-					<?php $i++;
-					endforeach; ?>
-					<tr>
-						<td class="py-1"></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td class="py-1"></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
+					<?php endforeach; ?>
+					<?php for ($f = 0; $f < $filas_vacias; $f++): ?>
+						<tr style="height:<?php echo $alto_fila_vacia; ?>;">
+							<td class="p-1" style="height:<?php echo $alto_fila_vacia; ?>; white-space:nowrap;">&nbsp;</td>
+							<td class="p-1">&nbsp;</td>
+							<td class="p-1">&nbsp;</td>
+							<td class="p-1">&nbsp;</td>
+						</tr>
+					<?php endfor; ?>
 				</tbody>
 			</table>
 			<div class="border-top pt-1 mb-1 fs-12">

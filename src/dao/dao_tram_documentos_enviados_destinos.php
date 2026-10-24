@@ -22,7 +22,7 @@ class dao_tram_documentos_enviados_destinos
 
     public function insertar(tram_documentos_enviados_destinos $obj)
     {
-        $sql = "";
+        $sql = "insert documentos_enviados_destinos (c_persona,cargo,cc_docenviado,numero) values ('{$obj->getC_persona()}','',{$obj->getCc_docenviado()},{$obj->getCc_docenviado()}) ";
         return $this->conecta->sql_query($sql);
     }
 

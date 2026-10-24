@@ -1,6 +1,6 @@
 function fn_listarReporte() {
   var str = $("#frmFormRegistro").serialize();
-  obtenerDatos("divReporte", "tramite/permiso_listar", str, function () {
+  obtenerDatos("divReporte", "rrhh/permiso_listar", str, function () {
     fn_listaDataTable('table-reporte', {
       ordering: true,
       responsive: false,
@@ -14,7 +14,7 @@ function fn_listarReporte() {
 
 function fn_control(cc_permisos, opc) {
   var str = `cc_permisos=${cc_permisos}&opc=${opc}`;
-  obtenerDatos(modalContainer, "tramite/permiso_from", str, function () {
+  obtenerDatos(modalContainer, "rrhh/permiso_from", str, function () {
     modalRegistro.show();
   });
 }
@@ -22,7 +22,7 @@ function fn_control(cc_permisos, opc) {
 function fc_anular(cc_permisos, opc) {
   alertaMensaje("¿Desea anular este permiso?", function () {
     const str = `cc_permisos=${cc_permisos}&opc=${opc}`;
-    return ajax("tramite/permiso_update", str)
+    return ajax("rrhh/permiso_update", str)
       .then(function (res) {
         var data = JSON.parse(res);
         if (data.error) throw data.message;
@@ -41,7 +41,7 @@ function fc_anular(cc_permisos, opc) {
 
 function fn_imprimir(cc_permisos) {
   window.open(
-    "tramite/permiso_print.php?cod=" + cc_permisos,
+    "rrhh/permiso_print.php?cod=" + cc_permisos,
     "_blank"
   );
 }

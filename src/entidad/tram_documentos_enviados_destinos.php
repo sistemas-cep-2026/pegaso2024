@@ -17,6 +17,7 @@ class tram_documentos_enviados_destinos extends Parse
     private $sector_entidad;
     private $c_grupos_destinos;
     private $c_destinos;
+    private $opcd;
 
     function __construct()
     {
@@ -35,6 +36,8 @@ class tram_documentos_enviados_destinos extends Parse
         $this->sector_entidad = '';
         $this->c_grupos_destinos = '';
         $this->c_destinos = '';
+        $this->opcd = '';
+
     }
 
     public function setCc_docenviado_det($cc_docenviado_det)
@@ -200,5 +203,16 @@ class tram_documentos_enviados_destinos extends Parse
     public function getC_destinos()
     {
         return $this->c_destinos;
+    }
+    
+    public function setOpcd($opcd)
+    {
+        if (empty($opcd)) return;
+        $this->opcd = self::Clean($opcd);
+    }
+
+    public function getOpcd()
+    {
+        return $this->opcd;
     }
 }

@@ -9,7 +9,6 @@ try {
     require_once(u_src() . "bo/bo_tram_documentos_recibidos.php");
     require_once(u_src() . "bo/bo_tram_seguimiento_documentos_recibid.php");
 
-    // Si el envío superó post_max_size PHP vacía $_REQUEST/$_FILES: se avisa con el mensaje correcto
     u_file_verificar_post();
 
     $bo_doc_recibidos  = new bo_tram_documentos_recibidos();
@@ -22,21 +21,19 @@ try {
         throw new Exception("Parámetros requeridos faltantes.");
     }
 
-    // Una sola lectura de la cabecera del expediente
     $ent_doc_recibidos->setCc_docrecibidos($cc_docrecibidos);
     $cabecera = $bo_doc_recibidos->listarId($ent_doc_recibidos);
     if (empty($cabecera)) {
         throw new Exception("No se encontró el expediente.");
     }
 
-    // Nombre del archivo: TRAM_<n° de expediente>. Si el expediente no tiene número se usa su id.
     $c_expediente    = trim((string) ($cabecera[0]['c_expediente'] ?? ''));
-    $prefijo_archivo = 'TRAM_' . ($c_expediente !== '' ? $c_expediente : $cc_docrecibidos);
+    //$prefijo_archivo = 'TRAM_' . ($c_expediente !== '' ? $c_expediente : $cc_docrecibidos);
+    $prefijo_archivo = ($c_expediente !== '' ? $c_expediente : $cc_docrecibidos) . '_E';
 
     $actual     = trim((string) ($cabecera[0]['documento_enviado'] ?? ''));
     $actual_pdf = ($actual !== '' && preg_match('/\.pdf$/i', $actual) === 1);
 
-    // Bloqueado: expediente archivado (flag 'A') o alguna derivación ya Recibida ('T') / Atendida ('A')
     $bloqueado = (trim((string) ($cabecera[0]['flag'] ?? '')) === 'A');
     if (!$bloqueado) {
         $bo_derivaciones  = new bo_tram_seguimiento_documentos_recibid();
@@ -66,7 +63,6 @@ try {
             throw new Exception("Error al subir el archivo.");
         }
 
-        // Valida (PDF real, máx. 5Mb) y guarda en file_tramites/. documento_enviado es varchar(30).
         $nombre_archivo = u_file_subir($_FILES['file_adjunto'], 'pdf', $prefijo_archivo, array('max_nombre' => 30));
 
         $ent_doc_recibidos->setDocumento_enviado($nombre_archivo);
@@ -77,7 +73,6 @@ try {
             throw new Exception($bo_doc_recibidos->errores());
         }
 
-        // Verifica que realmente quedó grabado (el UPDATE no afecta filas si el campo ya tenía dato)
         $verifica = $bo_doc_recibidos->listarId($ent_doc_recibidos);
         if (trim((string) ($verifica[0]['documento_enviado'] ?? '')) !== $nombre_archivo) {
             u_file_eliminar('pdf', $nombre_archivo);
@@ -99,12 +94,11 @@ try {
         }
         $archivo = basename(s_crypt($archivoRequest, 'out'));
 
-        // Solo se elimina el PDF registrado en este expediente; nunca un dato antiguo del campo
         if (!$actual_pdf || $archivo !== $actual) {
             throw new Exception("El archivo no corresponde a este expediente.");
         }
 
-        u_file_eliminar('pdf', $archivo); // si el archivo ya no existe en disco igual se limpia el campo
+        u_file_eliminar('pdf', $archivo);
 
         $ent_doc_recibidos->setCc_docrecibidos($cc_docrecibidos);
         if (!$bo_doc_recibidos->control($ent_doc_recibidos, $opc)) {

@@ -667,9 +667,8 @@ class bo_gen_personas
             From personas P(nolock) 
             INNER JOIN Personas_especialidad PE (NOLOCK) 
             ON P.C_PERSONA=PE.C_PERSONA 
-
             WHERE SUBSTRING(pe.c_especialidad,1,1)='" . $tipo . "'
-            and cast(pe.c_reg_esp as int)=cast('" . $cep . "' as int) 
+            and pe.c_reg_esp between '" . $desde . "' and '" . $hasta . "'
             ORDER BY pe.c_reg_esp ";
         }
         // echo $sql;

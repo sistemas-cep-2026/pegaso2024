@@ -309,7 +309,7 @@ class bo_general
         if (!empty($tipo)) {
             $sql .= " and tramite= '" . $tipo . "' ";
         }
-
+//echo $sql;
         return $this->dao->consulta($sql);
     }
 

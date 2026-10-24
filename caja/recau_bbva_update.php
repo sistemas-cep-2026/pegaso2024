@@ -39,13 +39,14 @@ try {
             $hora_sin_puntos = str_replace(":", "", trim($linea));
 
             $ent_recaudobbva->setNombre(trim(substr($linea,  0, 40)));
-            $ent_recaudobbva->setCodigo(trim(substr($linea, 41, 26)));
+            $ent_recaudobbva->setCodigo(trim(substr($linea, 41, 26))); 
             $ent_recaudobbva->setObs(trim(substr($linea, 67, 41)));
             $ent_recaudobbva->setImp1(trim(substr($linea, 108, 26)));
             $ent_recaudobbva->setImp2(trim(substr($linea, 134, 26)));
             $ent_recaudobbva->setOficina('001');
             $ent_recaudobbva->setMov(trim(substr($linea, 186,  26)));
             $ent_recaudobbva->setFecha_pago(trim(substr($linea, 212,  10)));
+            $ent_recaudobbva->setHora(trim(substr($linea, 222,  8)));
             $ent_recaudobbva->setFecha_proceso(trim(substr($hora_sin_puntos, 222,  20)));
             $ent_recaudobbva->setForma_pago('01');
             $ent_recaudobbva->setCanal('01');

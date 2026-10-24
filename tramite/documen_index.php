@@ -13,15 +13,17 @@ $bo_documentos = new bo_tram_documentos_enviados();
 
 $ent_documentos = new tram_documentos_enviados();
 
-$cc_local = s_local();
+$cc_local = s_local_vinculado();
 $flag = '0';
 $opc = isset($_REQUEST['opc']) ? s_crypt($_REQUEST['opc'], 'out') : 'I';
 $cc_docenviado = isset($_REQUEST['cod']) ? s_crypt($_REQUEST['cod'], 'out') : '';
 
-$tipo_persona = $bo_parametro_detalle->listarParametroDet("documentos_recibidos", "tipo_persona");
-$data_doc = $bo_general->tipo_documento('T');
-$data_cargos = $bo_general->listarCargos();
+$tipo_persona = $bo_parametro_detalle->listarParametroDet("documentos_recibidos1", "tipo_persona");
 
+$data_doc = $bo_general->tipo_documento('T');
+//$data_cargos = $bo_general->listarCargos();
+$sede = (s_local() == '28') ? 'CN' : 'CR';
+$data_area = $bo_general->AreaAdministrativa($sede);
 
 $gestion = s_gestion();
 
@@ -31,13 +33,17 @@ if ($opc === 'U') {
     $ent_documentos->setCc_docenviado($cc_docenviado);
     $dat_ac = $bo_documentos->listarId($ent_documentos);
     foreach ($dat_ac as $act) {
-        $ent_documentos->setC_expediente($act["c_expediente"]);
-        $ent_documentos->setC_tipo_de_documento($act["c_tipo_de_documento"]);
         $ent_documentos->setNum_documento($act["num_documento"]);
+        $ent_documentos->setC_tipo_de_documento($act["c_tipo_de_documento"]);
+        $ent_documentos->setAsunto($act["asunto"]);
+        $ent_documentos->setC_area_adm_usuario($act["c_area_adm_usuario"]);
+        $ent_documentos->setC_area_adm_doc($act["c_area_adm_doc"]);
+        $ent_documentos->setAsunto($act["asunto"]);
+        $ent_documentos->setTipo_persona($act["tipo_persona"]);
+        $flag=$act["flag"];
+        
+        $opc=($flag=='*') ? '*' : 'U';
 
-        $ent_documentos->setC_persona($act["c_persona"]);
-
-        $flag = $act["flag"];
         $disabled =  'disabled';
     }
     $disabled_temp = ' disabled';
@@ -63,6 +69,11 @@ if ($opc === 'U') {
                     <div class="tab-pane active" id="crear_documento" aria-labelledby="crear_documento-tab" role="tabpanel">
                         <form action="javascript:fn_guardarDocumento();" id="frmRegistroDocumento" novalidate>
                             <input type="hidden" name="flag" id="flag" value="<?php echo $flag ?>">
+                            <input  type="hidden" name="cc_local" id="cc_local" value="<?php echo $cc_local ?>">
+                            <input  type="hidden" name="gestion" id="gestion" value="<?php echo $gestion ?>">
+                            <input  type="hidden" name="cc_docenviado" id="cc_docenviado" value="<?php echo s_crypt($cc_docenviado, 'in') ?>">
+                                        <input   id="cc_docenviado" value="<?php echo $cc_docenviado ?>">
+                            <input  type="hidden" name="opc" value="<?php echo s_crypt($opc, 'in') ?>">
                             <div class="row">
                                 <div class="col-md-9 p-2 border-end">
                                     <fieldset <?php echo $disabled; ?>>
@@ -76,15 +87,15 @@ if ($opc === 'U') {
                                             <div class="col-lg-4">
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text">Fecha Doc. : </span>
-                                                    <input type="date" class="form-control" id="fecha" name="fecha" value="<?php echo $ent_documentos->getFecha(); ?>" required>
+                                                    <input type="date" class="form-control" id="fecha" name="fecha" value="<?php echo $ent_documentos->getFecha(); ?>" disabled>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-4">
                                                 <div class="input-group mb-3">
-                                                    <span class="input-group-text">Destino. : </span>
-                                                    <select name="tipo_persona" id="tipo_persona" class="form-control" required>
+                                                    <span class="input-group-text"><i class="bx bx-user me-1"></i> Remitente</span>
+                                                    <select name="tipo_persona" id="tipo_persona" class="form-control" onchange="mostrarCamposExtras()" required>
                                                         <?php foreach ($tipo_persona as $fl) { ?>
                                                             <option value="<?php echo $fl['cc_codigo'] ?>" <?php if ($ent_documentos->getTipo_persona() === $fl['cc_codigo']) echo "selected"; ?>>
                                                                 <?php echo $fl['detalle'] ?>
@@ -93,6 +104,21 @@ if ($opc === 'U') {
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-7">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">Area Usuario : </span>
+                                                    <select name="c_area_adm_usuario" id="c_area_adm_usuario" class="form-control" required>
+                                                        <?php foreach ($data_area as $car) { ?>
+                                                            <option value="<?php echo $car['cc_area_adm'] ?>" <?php if ($ent_documentos->getC_area_adm_usuario() === $car['cc_area_adm']) echo "selected"; ?>>
+                                                                <?php echo $car['nombre'] ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
                                             <div class="col-lg-6">
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text">Tipo Documento. : </span>
@@ -106,48 +132,44 @@ if ($opc === 'U') {
                                                     </select>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
                                             <div class="col-lg-4">
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text">Área de Origen : </span>
                                                     <select name="c_area_adm_doc" id="c_area_adm_doc" class="form-control" required>
-                                                        <?php foreach ($data_cargos as $car) { ?>
-                                                            <option value="<?php echo $car['c_cargo'] ?>" <?php if ($ent_documentos->getC_area_adm_doc() === $car['c_cargo']) echo "selected"; ?>>
+                                                        <?php foreach ($data_area as $car) { ?>
+                                                            <option value="<?php echo $car['cc_area_adm'] ?>" <?php if ($ent_documentos->getC_area_adm_doc() === $car['cc_area_adm']) echo "selected"; ?>>
                                                                 <?php echo $car['nombre'] ?>
                                                             </option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-7">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text">Area Usuario : </span>
-                                                    <select name="c_area_adm_usuario" id="c_area_adm_usuario" class="form-control" required>
-                                                        <?php foreach ($data_cargos as $car) { ?>
-                                                            <option value="<?php echo $car['c_cargo'] ?>" <?php if ($ent_documentos->getC_area_adm_usuario() === $car['c_cargo']) echo "selected"; ?>>
-                                                                <?php echo $car['nombre'] ?>
-                                                            </option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                            </div>
+
+                                            <input type="hidden"
+                                                name="c_area_adm_doc"
+                                                id="c_area_adm_doc_hidden"
+                                                disabled>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text">Asunto : </span>
-                                                    <input type="text" class="form-control" id="asunto" name="asunto" value="<?php echo $ent_documentos->getAsunto(); ?>" required>
+                                                    <input type="text"
+                                                        class="form-control"
+                                                        id="asunto"
+                                                        name="asunto"
+                                                        value="<?php echo htmlspecialchars($ent_documentos->getAsunto() ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        style="text-transform: uppercase;"
+                                                        oninput="this.value = this.value.toUpperCase();"
+                                                        required>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-lg-12">
-                                                <input type="text" name="gestion" id="gestion" value="<?php echo $gestion ?>">
-                                                <input type="hidden" name="flag" id="flag" value="A">
-                                                <input type="hidden" name="cc_local" id="cc_local" value="<?php echo $cc_local ?>">
-                                                <input type="hidden" name="cc_docrecibidos" id="cc_docrecibidos" value="<?php echo s_crypt($cc_docrecibidos, 'in') ?>">
-                                                <input type="hidden" name="opc" value="<?php echo s_crypt($opc, 'in') ?>">
+
+                                                
+                                                
                                                 <div class="row border-bottom mb-1 py-2"></div>
                                             </div>
                                         </div>
@@ -156,26 +178,20 @@ if ($opc === 'U') {
 
                                 <div class="col-md-3">
                                     <div class="mt-md-1">
-                                        <?php include 'exp_taps_botones.php'; ?>
+                                        <?php include 'documen_taps_botones.php'; ?>
                                     </div>
                                 </div>
                             </div>
                         </form>
                         <div class="row">
                             <div class="col-md-9 border-end">
-                                <div id="divDetalleDetalleExp"></div>
+                                <div id="divDetalleDetalleDoc"></div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <?php if ($opc == 'U') {
-                                    include 'exp_file.php';
-                                } ?>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="tab-pane" id="reporte_documento" aria-labelledby="reporte_documento-tab" role="tabpanel">
-                        <div id="div_listarExp"></div>
+                        <div id="div_listarDoc"></div>
                     </div>
                 </div>
             </div>
@@ -186,3 +202,4 @@ if ($opc === 'U') {
 <?php $include_scripts = function () {
     return importTypeahead() . importInputMask() . importformmasks() . importDatatable() . importSelect2();
 } ?>
+ 
