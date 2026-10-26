@@ -26,7 +26,7 @@ try {
     $ent_documentos_dest->setC_persona(s_crypt($_REQUEST['c_persona'] ?? '', 'out'));
     $ent_documentos_dest->setOpcd($opcd);
 
-    $val = $ent_documentos_dest->procesar_detalle($ent_comprob_det);
+    $val = $bo_documentos_dest->control($ent_comprob_det);
 
     if (!$val) {
         throw new Exception($bo_comprob_det->errores());

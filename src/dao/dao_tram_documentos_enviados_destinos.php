@@ -28,13 +28,13 @@ class dao_tram_documentos_enviados_destinos
 
     public function modificar(tram_documentos_enviados_destinos $obj)
     {
-        $sql = "";
+        $sql = "update documentos_enviados_destinos set c_persona={$obj->getC_persona()} where cc_docenviado_det= {$obj->getCc_docenviado_det()}";
         return $this->conecta->sql_query($sql);
     }
 
     public function eliminar(tram_documentos_enviados_destinos $obj)
     {
-        $sql = "";
+        $sql = "delete documentos_enviados_destinos where cc_docenviado_det= {$obj->getCc_docenviado_det()}";
         return $this->conecta->sql_query($sql);
     }
 }

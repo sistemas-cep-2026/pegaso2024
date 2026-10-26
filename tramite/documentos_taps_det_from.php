@@ -143,11 +143,11 @@ if ($opc == 'U') {
     }
 
     function fn_borrarFila(cc_documento_det) {
-        fn_control_Det(`cc_documento_det=${cc_documento_det}&opcd=<?php echo s_crypt('E'); ?>`)
+        fn_control_Det(`cc_docenviado_det=${cc_docenviado_det}&opcd=<?php echo s_crypt('E'); ?>`)
     }
 
     function fn_agregarFila() {
-        fn_control_Det(`cc_documento_det=<?php echo s_crypt($cc_documento_det); ?>&opcd=<?php echo s_crypt('I'); ?>`)
+        fn_control_Det(`cc_docenviado_det=<?php echo s_crypt($cc_docenviado_det); ?>&opcd=<?php echo s_crypt('I'); ?>`)
     }
 
      function fn_control_Det(str) {
