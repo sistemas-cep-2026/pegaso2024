@@ -16,21 +16,21 @@ try {
     $opcd = s_crypt($_REQUEST['opcd'] ?? '', 'out');
     $cc_docenviado_det = !empty($_REQUEST['cc_docenviado_det']) ? s_crypt($_REQUEST['cc_docenviado_det'], 'out') : '';
     $cc_docenviado = !empty($_REQUEST['cc_docenviado']) ? s_crypt($_REQUEST['cc_docenviado'], 'out') : '';
-
-    if ($opcd === 'I') {
-        $cc_compra = !empty($_REQUEST['cc_compra']) ? s_crypt($_REQUEST['cc_compra'], 'out')  : '';
-    }
+    $cargo = !empty($_REQUEST['cargo'])  ? $_REQUEST['cargo']  : '';
+  
 
     $ent_documentos_dest->setCc_docenviado_det($cc_docenviado_det);
     $ent_documentos_dest->setCc_docenviado($cc_docenviado);
-    $ent_documentos_dest->setC_persona(s_crypt($_REQUEST['c_persona'] ?? '', 'out'));
+        $ent_documentos_dest->setCargo($cargo);
+    $ent_documentos_dest->setC_persona(s_crypt($_REQUEST['c_persona'] ?? '...', 'out'));
     $ent_documentos_dest->setOpcd($opcd);
 
-    $val = $bo_documentos_dest->control($ent_comprob_det);
+    $val = $bo_documentos_dest->control($ent_documentos_dest,$opcd);
 
-    if (!$val) {
-        throw new Exception($bo_comprob_det->errores());
+   if (!$val) {
+        throw new Exception($bo_documentos_dest->errores());
     }
+         
 
     echo '0';
 } catch (Exception $e) {

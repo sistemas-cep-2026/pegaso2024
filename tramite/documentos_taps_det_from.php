@@ -17,6 +17,8 @@ $cc_docenviado = isset($_REQUEST['cc_docenviado']) ? s_crypt($_REQUEST['cc_docen
 $ent_documentos_dest->setCc_docenviado($cc_docenviado);
 $data_detalle = $bo_documentos_dest->listar($ent_documentos_dest);
 
+$data_cargos = $bo_general->listarCargos();
+
 $disabled = 'disabled';
 
 if ($opc == 'U') {
@@ -32,9 +34,10 @@ if ($opc == 'U') {
                 <tr class="align-middle">
                     <th>#</th>
                     <th class="col-5">Destinatario(Persona/Entidad) </th>
+                    <th class="col-5">Ref. </th>
 
                     <th class="text-center">
-                        <button title="Agregar nuevo Items" class="btn bg-transparent" type="button" onclick="fn_agregarFila();" <?php echo $disabled; ?>>
+                        <button title="Agregar nuevo Items" class="btn bg-transparent" type="button" onclick="fn_agregarFila('<?php echo s_crypt($cc_docenviado); ?>','<?php echo s_crypt('I'); ?>');" <?php echo $disabled; ?>>
                             <i class="fas fa-plus fa-lg text-info"></i>
                         </button>
                     </th>
@@ -54,18 +57,36 @@ if ($opc == 'U') {
 
                         <td class="text-center"><?php echo $i . '-' . $detalle['cc_docenviado_det']; ?></td>
 
-                        <td class="buscar-cta">
+                        <td class="buscar">
 
                             <div class="buscar-persona">
                                 <input type="hidden" class="form-control form-control-sm" name="c_persona" id="c_persona" value="<?php echo s_crypt($detalle['c_persona']); ?>">
+
                                 <input type="text" class="form-control form-control-sm typeahead" name="nombres" id="nombres" value="<?php echo $detalle['nombre'] ?>">
                             </div>
 
 
                         </td>
+                        <td class="buscar">
+
+
+
+                            <select id="cargo" name="cargo" class="form-control form-control-sm" required>
+                                <option value="">SIN CARGO</option>
+                                <?php foreach ($data_cargos as $car) { ?>
+                                    <option value="<?php echo $car['c_cargo']; ?>" <?php if ($detalle['cargo'] === $car['c_cargo']) echo 'selected'; ?>>
+                                        <?php echo $car['nombre']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+
+
+                        </td>
+
+
 
                         <td class="text-center">
-                            <button type="button" class="btn btn-icon bg-transparent" onclick="fn_borrarFila('<?php echo s_crypt($detalle['cc_docenviado_det']); ?>');" <?php echo $disabled; ?>><i class="fa fa-lg fa-trash text-danger"></i></a>
+                            <button type="button" class="btn btn-icon bg-transparent" onclick="fn_borrarFila('<?php echo s_crypt($detalle['cc_docenviado_det']); ?>','<?php echo s_crypt('E'); ?>');" <?php echo $disabled; ?>><i class="fa fa-lg fa-trash text-danger"></i></a>
 
                         </td>
                     </tr>
@@ -79,6 +100,7 @@ if ($opc == 'U') {
         </table>
     </form>
 </fieldset>
+
 
 <script>
     var personas = new Bloodhound({
@@ -112,9 +134,42 @@ if ($opc == 'U') {
         .bind("typeahead:selected", function(obj, datum, name) {
             var fila = $(this).parents('tr').attr('id');
             $(`#${fila}`).find(`input[name="c_persona"]`).val(datum.c_persona);
-
             fn_actualizarFila(fila);
         });
+
+    // Ref. (cargo): guarda la fila al cambiar, igual que al elegir el destinatario.
+    // Se enlaza directo (no delegado) porque esta vista se recarga con obtenerDatos y el script se ejecuta de nuevo.
+    $("#formGrabarDetalle select[name='cargo']").on("change", function() {
+        var $fila = $(this).closest('tr');
+        // fila nueva sin destinatario: el cargo se guardará junto con la persona al elegirla
+        if ($.trim($fila.find("input[name='nombres']").val()) === '') {
+            return;
+        }
+        fn_actualizarFila($fila.attr('id'));
+    });
+
+    function fn_agregarFila(cc_docenviado, opc) {
+        fn_control_Det(`cc_docenviado=${cc_docenviado}&opcd=${opc}`)
+    }
+
+    function fn_borrarFila(cc_docenviado_det, opc) {
+        fn_control_Det(`cc_docenviado_det=${cc_docenviado_det}&opcd=${opc}`)
+    }
+
+    function fn_control_Det(str) {
+        swalProcesando();
+        ajax("tramite/documentos_taps_det_update", str)
+            .then(function(res) {
+                if (res !== "0") {
+                    throw res;
+                }
+
+                fn_listarDetalleFrom()
+                swalCerrar(750);
+            }).catch(function(err) {
+                swalError(err);
+            });
+    }
 
     function fn_actualizarFila(fila) {
         const Toast = Swal.mixin({
@@ -138,29 +193,6 @@ if ($opc == 'U') {
                 //fn_listarDetalleFromEgresos();
             }).catch(function(err) {
                 $(".txt_estado").addClass("invisible");
-                swalError(err);
-            });
-    }
-
-    function fn_borrarFila(cc_documento_det) {
-        fn_control_Det(`cc_docenviado_det=${cc_docenviado_det}&opcd=<?php echo s_crypt('E'); ?>`)
-    }
-
-    function fn_agregarFila() {
-        fn_control_Det(`cc_docenviado_det=<?php echo s_crypt($cc_docenviado_det); ?>&opcd=<?php echo s_crypt('I'); ?>`)
-    }
-
-     function fn_control_Det(str) {
-        swalProcesando();
-        ajax("tramite/documentos_taps_det_update", str)
-            .then(function(res) {
-                if (res !== "0") {
-                    throw res;
-                }
-                fn_listarDetalleFromEgresos();
-                fn_calcularTotalMonto();
-                swalCerrar(750);
-            }).catch(function(err) {
                 swalError(err);
             });
     }

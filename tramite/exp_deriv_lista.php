@@ -27,20 +27,32 @@ $sede = ($cc_local == '28') ? 'CN' : 'CR';
 
 $c_area_adm = isset($_REQUEST['c_area_adm'])    ? trim($_REQUEST['c_area_adm'])    : '';
 $gestion = isset($_REQUEST['gestion'])    ? rtrim($_REQUEST['gestion'])    : '00';
-$c_expediente = isset($_REQUEST['c_expediente'])    ? (int)$_REQUEST['c_expediente']    : '';
-$val_expediente = str_pad($_REQUEST["c_expediente"], 7, '0', STR_PAD_LEFT);
+$c_expediente_desde = isset($_REQUEST['c_expediente_desde'])    ? (int)$_REQUEST['c_expediente_desde']    : '';
+$c_expediente_hasta = isset($_REQUEST['c_expediente_hasta'])    ? (int)$_REQUEST['c_expediente_hasta']    : '';
+
+
+$val_expediente = str_pad($_REQUEST["c_expediente_desde"], 7, '0', STR_PAD_LEFT);
+$val_expediente_hasta = str_pad($_REQUEST["c_expediente_hasta"], 7, '0', STR_PAD_LEFT);
 $num_desde = $cc_local . $gestion . $val_expediente;
-if ($c_expediente > 0) {
-    $numero = str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
-    $ent_doc_recibidos->setC_expediente($numero);
+$num_hasta = $cc_local . $gestion . $val_expediente_hasta;
+
+if ($c_expediente_desde > 0) {
+    $numero = str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente_desde, 7, '0', STR_PAD_LEFT);
+    $ent_doc_recibidos->setC_expediente_desde($numero);
 }
+$numerohasta=0;
+if ($c_expediente_hasta > 0) {
+    $numerohasta = str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente_hasta, 7, '0', STR_PAD_LEFT);
+    $ent_doc_recibidos->setC_expediente_hasta($numerohasta);
+}
+
 
 $seccion_req = isset($_REQUEST['seccion'])    ? trim($_REQUEST['seccion'])    : '';
 
 $data_area   = $bo_general->AreaAdministrativa($sede);
 $data_accion = $bo_general->tram_accion();
 
-$numero =    str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
+$numero =    str_pad($cc_local, 2, '0', STR_PAD_LEFT) . str_pad($gestion, 2, '0', STR_PAD_LEFT) . str_pad($c_expediente_desde, 7, '0', STR_PAD_LEFT);
 $ent_doc_recibidos->setC_local($cc_local);
 $ent_doc_recibidos->setGestion($gestion);
 
@@ -603,7 +615,7 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
 
 <?php if ($seccion_req === '' && $num_desde  !== '') { ?>
     <div class="flex-grow-1 ms-2 text-center">
-        <a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde)); ?>', 750); return false;">
+        <a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde).'&cod2='. s_crypt($num_hasta)); ?>', 750); return false;">
             <i class="ri-printer-line me-1"></i> Imprimir
         </a>
     </div>

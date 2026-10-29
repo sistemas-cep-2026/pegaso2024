@@ -25,11 +25,9 @@ s_validar_pagina();
                 <button class="waves-effect btn btn-outline-primary" type="button" onclick="redireccionar_ventana('<?php echo url('tramite/exp_print?cod=' . s_crypt($cc_docrecibidos)); ?>',750);">
                     <i class="fa fa-print"></i> Imprimir
                 </button>
-                <!--<button class="waves-effect btn btn-success" type="button" onclick="fn_ArchivarRegistroFrom({cc_docrecibidos:'<?php //echo s_crypt($cc_docrecibidos) 
-                                                                                                                                    ?>',opc:'<?php //echo s_crypt('A') 
-                                                                                                                                                                                    ?>'});">
-                    <i class="fa fa-cogs"></i> Archivar
-                </button>-->
+                <button type="submit" class="waves-effect btn btn-outline-primary">
+                    <i class="fa fa-sync"></i> Actualizar
+                </button>
                 <button class="waves-effect btn btn-outline-secondary" type="button" onclick="redireccionar('?id=<?php echo s_crypt($id); ?>')">
                     <i class="fa fa-plus"></i> Nuevo
                 </button>

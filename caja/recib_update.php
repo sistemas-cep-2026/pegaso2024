@@ -20,6 +20,19 @@ try {
         throw new Exception("Debe seleccionar al Cliente");
     }
 
+    if ($opc === 'I') {
+        $cod_documento_req = strtoupper(trim($_REQUEST['cod_documento'] ?? ''));
+        $c_persona_ref_req = strtoupper(trim($_REQUEST['c_persona_ref'] ?? ''));
+        $c_punto_venta_req = trim($_REQUEST['c_punto_de_venta'] ?? '');
+
+        if ($c_punto_venta_req === '000137' && !in_array($cod_documento_req, ['FC', 'BC'], true)) {
+            throw new Exception("En Doc. Electrónicos solo se permite Factura o Boleta.");
+        }
+        if (in_array($cod_documento_req, ['FC', 'BC'], true) && $c_persona_ref_req !== 'E') {
+            throw new Exception("Para Factura o Boleta el cliente debe ser Razón social.");
+        }
+    }
+
     $ent_ventas->setCc_ventas($cc_ventas);
     $ent_ventas->setC_persona_ref($_REQUEST["c_persona_ref"] ?? '');
     $ent_ventas->setC_persona($c_persona);

@@ -33,6 +33,9 @@ class tram_documentos_enviados extends Parse
     private $numerox;
 
 
+        private $fecha_desde;
+            private $fecha_hasta;
+
 
     function __construct()
     {
@@ -65,6 +68,9 @@ class tram_documentos_enviados extends Parse
         $this->fecha_max = '';
         $this->d_frac = '';
         $this->numerox = '';
+
+             $this->fecha_desde = '';
+             $this->fecha_hasta = '';
     }
 
     public function setCc_docenviado($cc_docenviado)
@@ -365,4 +371,29 @@ class tram_documentos_enviados extends Parse
     {
         return $this->numerox;
     }
+
+
+    public function setFecha_desde($fecha_desde)
+    {
+        if (empty($fecha_desde)) return;
+        $this->fecha_desde = self::Clean($fecha_desde);
+    }
+
+    public function getFecha_desde()
+    {
+        return $this->fecha_desde;
+    }
+
+    
+    public function setFecha_hasta($fecha_hasta)
+    {
+        if (empty($fecha_hasta)) return;
+        $this->fecha_hasta = self::Clean($fecha_hasta);
+    }
+
+    public function getfecha_hasta()
+    {
+        return $this->fecha_hasta;
+    }
+
 }

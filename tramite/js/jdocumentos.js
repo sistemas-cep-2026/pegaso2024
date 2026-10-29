@@ -1,6 +1,6 @@
 $("#frmRegistroDocumento").validate();
 
- fn_listarDetalleFrom()
+fn_listarDetalleFrom()
 
 function fn_guardarDocumento() {
     swalProcesando();
@@ -11,10 +11,10 @@ function fn_guardarDocumento() {
             redireccionar(data.url);
         })
         .catch(swalError);
-   fn_listarDetalleFrom()
+    fn_listarDetalleFrom()
 }
 
- function fn_procesar(str) {
+function fn_procesar(str) {
     alertaMensaje('¿Desea procesar el Documento?', function () {
         return ajax('tramite/documen_update', str)
             .then(function (data) {
@@ -31,49 +31,71 @@ function fn_guardarDocumento() {
             recargar(750);
         }
     });
-    
+
 
 }
 
 function fn_listarDetalleFrom() {
-  var str = $("#frmRegistroDocumento").serialize();
-  obtenerDatos('divDetalleDetalleDoc', 'tramite/documentos_taps_det_from', str);
+    var str = $("#frmRegistroDocumento").serialize();
+    obtenerDatos('divDetalleDetalleDoc', 'tramite/documentos_taps_det_from', str);
 }
 
- function actualizarAreaDocumento() {
+function actualizarAreaDocumento() {
 
-            var tipo = ($('#c_tipo_de_documento').val() || '')
-                .trim()
-                .toUpperCase();
+    var tipo = ($('#c_tipo_de_documento').val() || '')
+        .trim()
+        .toUpperCase();
 
-            var area = $('#c_area_adm_doc');
-            var areaOculta = $('#c_area_adm_doc_hidden');
+    var area = $('#c_area_adm_doc');
+    var areaOculta = $('#c_area_adm_doc_hidden');
 
-            var tiposBloqueados = ['OF', 'OR', 'R', 'RR'];
+    var tiposBloqueados = ['OF', 'OR', 'R', 'RR'];
 
-            if (tiposBloqueados.includes(tipo)) {
+    if (tiposBloqueados.includes(tipo)) {
 
-                // Seleccionar el área 000006
-                area.val('000006');
+        // Seleccionar el área 000006
+        area.val('000006');
 
-                // Actualizar Select2 y bloquear el campo
-                area.trigger('change');
-                area.prop('disabled', true);
+        // Actualizar Select2 y bloquear el campo
+        area.trigger('change');
+        area.prop('disabled', true);
 
-                // Enviar el valor al servidor
-                areaOculta.val('000006').prop('disabled', false);
+        // Enviar el valor al servidor
+        areaOculta.val('000006').prop('disabled', false);
 
-            } else {
+    } else {
 
-                // Habilitar el área para otros tipos
-                area.prop('disabled', false);
-                areaOculta.val('').prop('disabled', true);
+        // Habilitar el área para otros tipos
+        area.prop('disabled', false);
+        areaOculta.val('').prop('disabled', true);
 
-            }
-        }
+    }
+}
 
-        // Detectar el cambio de tipo de documento
-        $('#c_tipo_de_documento').on('change', actualizarAreaDocumento);
+// Detectar el cambio de tipo de documento
+$('#c_tipo_de_documento').on('change', actualizarAreaDocumento);
 
-        // Ejecutar al cargar el formulario
-        actualizarAreaDocumento();
+// Ejecutar al cargar el formulario
+actualizarAreaDocumento();
+    
+
+function fn_Buscar() {
+    var str = $("#frm").serialize();
+    obtenerDatos("div_listarDoc", "tramite/documen_rep_buscar", str, function () {
+        fn_reporte();
+    });
+}
+
+function fn_reporte() {
+    var str = $("#frmListarRegistros").serialize();
+    obtenerDatos("div_ReporLista", "tramite/documen_rep_listar", str, function () {
+        fn_listaDataTable('table-expedientes', {
+            responsive: true,
+            searching: true,
+            ordering: true,
+            pageLength: 60,
+            lengthChange: false,
+            buttons: []
+        });
+    });
+}

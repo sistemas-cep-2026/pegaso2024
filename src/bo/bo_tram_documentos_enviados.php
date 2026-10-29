@@ -23,7 +23,10 @@ class bo_tram_documentos_enviados
 
     public function listar(tram_documentos_enviados $obj = null)
     {
-        $sql = "";
+        $sql = "select   c_tipo_de_documento,gestion,num_documento,asunto,
+             dbo.fc_fecha_texto_hora1(fecha) as fecha_text,c_area_adm_doc,tipo_persona,c_area_adm_usuario,cc_docenviado ,flag,c_usuario,'' flag_text
+        from documentos_enviados where c_local='{$obj->getC_local()}' and fecha between '{$obj->getfecha_desde()}' and '{$obj->getfecha_hasta()}' order by c_tipo_de_documento,num_documento";
+       // echo $sql;
         return $this->dao->consulta($sql);
     }
 

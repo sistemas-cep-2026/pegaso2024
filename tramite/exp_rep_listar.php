@@ -68,12 +68,17 @@ $color_flag = [
 						<td><span class="badge bg-<?php echo $color; ?>-subtle text-<?php echo $color; ?>"><?php echo htmlspecialchars($row["flag_text"]); ?></span></td>
 						<td>
 							<div class="d-flex gap-1 justify-content-center">
+								<?php if ($row["flag"] === 'P') { ?>
+									<a href="?id=<?php echo s_crypt('400003') ?>&cod=<?php echo s_crypt($row['cc_docrecibidos']) ?>&opc=<?php echo s_crypt('U') ?>"
+										class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" title="Modificar"> <i class="fas fa-edit"></i>
+									</a>
+								<?php } ?>
 								<a href="javascript:void(0);" onclick="fn_verSeguimientoExp('<?php echo s_crypt($row['cc_docrecibidos']); ?>');"
 									class="btn btn-soft-primary btn-sm waves-effect waves-light"
 									data-bs-toggle="tooltip" data-bs-placement="top" title="Ver seguimiento" aria-label="Ver seguimiento">
 									<i class="ri-eye-line"></i>
 								</a>
-								<a href="javascript:void(0);" onclick="redireccionar_ventana('<?php echo url('tramite/exp_print?cod=' . s_crypt($row['cc_docrecibidos'])); ?>',750);"
+								<a href="javascript:void(0);" onclick="redireccionar_ventana('<?php echo url('tramite/exp_print?cod=' . s_crypt($row['cc_docrecibidos']).'&cod2='. s_crypt($row['cc_docrecibidos'])); ?>',750);"
 									class="btn btn-soft-secondary btn-sm waves-effect waves-light"
 									data-bs-toggle="tooltip" data-bs-placement="top" title="Imprimir" aria-label="Imprimir">
 									<i class="ri-printer-line"></i>
@@ -88,9 +93,8 @@ $color_flag = [
 		</table>
 		<?php if ($num_desde  !== '') { ?>
 			<div class="flex-grow-1 ms-2 text-center">
-				<a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde)); ?>', 750); return false;">
-					<i class="ri-printer-line me-1"></i> Imprimir
-				</a>
+				<a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde).'&cod2='. s_crypt($num_hasta)); ?>', 750); return false;">
+					<i class="ri-printer-line me-1"></i> Imprimir				</a>
 			</div>
 		<?php } ?>
 

@@ -36,9 +36,9 @@ if ($opc === 'U') {
 		$ent_doc_recibidos->setC_tipo_de_documento($act["c_tipo_de_documento"]);
 		$ent_doc_recibidos->setNum_documento($act["num_documento"]);
 		$ent_doc_recibidos->setFecha_documento($act["fecha_documento"]);
-		$ent_doc_recibidos->setC_persona($act["c_persona"]);
+		$ent_doc_recibidos->setC_persona(s_crypt($act["c_persona"]));
 		$ent_doc_recibidos->setRazon_social($act["razon_social"]);
-		$ent_doc_recibidos->setC_persona_pf($act["c_persona_pf"]);
+		$ent_doc_recibidos->setC_persona_pf(s_crypt($act["c_persona_pf"]));
 		$ent_doc_recibidos->setNombre_remitente($act["nombre_remitente"]);
 		$ent_doc_recibidos->setAsunto($act["asunto"]);
 		$ent_doc_recibidos->setAsunto2($act["asunto2"]);
@@ -47,7 +47,7 @@ if ($opc === 'U') {
 		$ent_doc_recibidos->setC_local_origen($act["c_local_origen"]);
 		$ent_doc_recibidos->setC_cargo($act["c_cargo"]);
 		$flag = $act["flag"];
-		$disabled =  'disabled';
+		//$disabled =  'disabled';
 	}
 	$disabled_temp = ' disabled';
 }

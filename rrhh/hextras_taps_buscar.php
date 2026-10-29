@@ -7,10 +7,10 @@ require_once(u_src() . "bo/bo_gen_parametro_det.php");
 $bo_parametro_detalle = new bo_gen_parametro_det();
 $bo_actividad = new bo_tram_actividad_sustento();
 
-$ent_actividad= new tram_actividad_sustento();
+$ent_actividad = new tram_actividad_sustento();
 
-$data_anho=$bo_actividad->listarAnhos();
-$mes=u_meses();
+$data_anho = $bo_actividad->listarAnhos();
+$mes = u_meses();
 $data_flag = $bo_parametro_detalle->listarParametroDet("tram_actividad_sustento", "flag");
 ?>
 <div class="row">
@@ -23,10 +23,10 @@ $data_flag = $bo_parametro_detalle->listarParametroDet("tram_actividad_sustento"
 							<option value="">Año</option>
 							<?php
 							foreach ($data_anho as $row) {
-								?>
-								<option value="<?php echo $row['anho'] ?>" <?php if ( $row['anho']==date("Y")) {
-									echo "selected";
-								} ?> ><?php echo $row['anho'] ?></option>
+							?>
+								<option value="<?php echo $row['anho'] ?>" <?php if ($row['anho'] == date("Y")) {
+																				echo "selected";
+																			} ?>><?php echo $row['anho'] ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -34,11 +34,11 @@ $data_flag = $bo_parametro_detalle->listarParametroDet("tram_actividad_sustento"
 						<select name="periodo" id="periodo" class="form-control" onchange="submit()">
 							<option value="">Periodo</option>
 							<?php
-							foreach ($mes as $key=>$value) {
-								?>
-								<option value="<?php echo $key ?>" <?php if ( $key==date("m")) {
-									echo "selected";
-								} ?> ><?php echo $value ?></option>
+							foreach ($mes as $key => $value) {
+							?>
+								<option value="<?php echo $key ?>" <?php if ($key == date("m")) {
+																		echo "selected";
+																	} ?>><?php echo $value ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -63,4 +63,3 @@ $data_flag = $bo_parametro_detalle->listarParametroDet("tram_actividad_sustento"
 		</div>
 	</div> <!-- end col -->
 </div>
-

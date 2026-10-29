@@ -39,7 +39,7 @@ class bo_fin_documentos_de_venta
         return $this->dao->consulta($sql);
     }
 
-   /* public function listar(?fin_documentos_de_venta $obj = null)
+    /* public function listar(?fin_documentos_de_venta $obj = null)
     {
         $sql = "SELECT dv.cc_ventas,
         dv.num_documento,
@@ -95,7 +95,7 @@ class bo_fin_documentos_de_venta
         return $this->dao->consulta($sql);
     }
     */
-         public function listar(?fin_documentos_de_venta $obj = null)
+    public function listar(?fin_documentos_de_venta $obj = null)
     {
         $sql = "SELECT dv.cc_ventas,dv.cod_documento,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,pe.c_cmp,pe.ruc,pe.nombre,pe.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
@@ -111,12 +111,12 @@ FROM Documentos_de_venta dv left join personas pe on pe.c_persona=dv.c_persona
 
         $sql .= " AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta()} 23:59:59'
         ORDER BY dv.num_documento DESC";
-       
+
         return $this->dao->consulta($sql);
     }
-    
- public function reporte_listar(?fin_documentos_de_venta $obj = null)
-  {
+
+    public function reporte_listar(?fin_documentos_de_venta $obj = null)
+    {
         $sql = " SELECT dv.cc_ventas,dv.cod_documento ,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,p.c_cmp,p.ruc,p.nombre,p.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
 FROM Documentos_de_venta dv left join personas p on p.c_persona=dv.c_persona
@@ -125,31 +125,31 @@ AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta(
         return $this->dao->consulta($sql);
     }
 
- public function reporte_listar_detalle(?fin_documentos_de_venta $obj = null)
-  {
+    public function reporte_listar_detalle(?fin_documentos_de_venta $obj = null)
+    {
         $sql = " SELECT dv.cc_ventas,dv.cod_documento,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,p.c_cmp,p.ruc,p.nombre,p.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
 FROM Documentos_de_venta dv left join personas p on p.c_persona=dv.c_persona
 WHERE  dv.c_local='{$obj->getC_local()}'
 AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta()} 23:59:59'";
-//echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 
- public function reporte_listar_detalle_pagos(?fin_documentos_de_venta $obj = null)
-  {
+    public function reporte_listar_detalle_pagos(?fin_documentos_de_venta $obj = null)
+    {
         $sql = " select i.cod_forma_de_pago,i.monto,dbo.fc_fecha_texto(i.fecha_referencia) fecha_referencia, i.cta_cte_deposito,i.num_referencia ,b.nombre nombre_banco  
 from items_planilla_de_cobranza i left join gen_bancos b on b.c_banco=i.c_banco_ref where i.cc_ventas=  '{$obj->getCc_ventas()}'  ";
- //echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 
- public function reporte_listar_detalle_concepto(?fin_documentos_de_venta $obj = null)
-  {
+    public function reporte_listar_detalle_concepto(?fin_documentos_de_venta $obj = null)
+    {
         $sql = " select i.c_articulo,i.nombre_pr,i.cantidad,i.venta,i.ano,i.mes_desde,i.mes_hasta ,(i.cantidad * i.venta) total
  from items_documentos_de_venta i 
  where i.cc_ventas='{$obj->getCc_ventas()}' ";
-//echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 
@@ -413,7 +413,7 @@ INNER JOIN plan_de_cuentas pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ventas
 
     public function detalle_ingresosConceptos_articulo(?fin_documentos_de_venta $obj = null)
     {
-        $sql = "select   d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) AS fecha_texto, p.c_cmp AS cep,
+        $sql = "select i.cc_ventas,  d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) AS fecha_texto, p.c_cmp AS cep,
 RTRIM(p.nombre) AS nombre_cliente, RTRIM(c.cta_cte_deposito) + ' OP:' + RTRIM(c.num_referencia) + ' F:' + RTRIM(dbo.fc_fecha_texto(c.fecha_referencia)) AS banco, 
 SUM(CASE WHEN c.cod_forma_de_pago = 'V' THEN i.precio * i.cantidad ELSE 0 END) AS total_voucher, 
 SUM(CASE WHEN c.cod_forma_de_pago = 'E' THEN i.precio * i.cantidad ELSE 0 END) AS total_efectivo, a.nombre AS nombre_articulo,
@@ -428,7 +428,7 @@ WHERE d.fecha >= '{$obj->getCod_desde()} 00:00:00'
         AND d.fecha <= '{$obj->getCod_hasta()} 23:59:59'
         AND d.c_local = '{$obj->getC_local()}' 
         AND i.c_articulo = '{$obj->getC_articulo()}' 
-group by d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) , p.c_cmp,RTRIM(p.nombre) , 
+group by i.cc_ventas, d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) , p.c_cmp,RTRIM(p.nombre) , 
 a.nombre, RTRIM(c.cta_cte_deposito), RTRIM(c.num_referencia), RTRIM(dbo.fc_fecha_texto(c.fecha_referencia)) ,a.c_articulo";
         // echo $sql;
         return $this->dao->consulta($sql);

@@ -261,6 +261,10 @@ $url_pdf = exp_deriv_buscar_pdf($row, $pdf_buscados);
             <span class="text-muted"><i class="ri-file-list-3-line me-1"></i>Asunto:</span>
             <span class="fw-medium"><?= htmlspecialchars($row['asunto'] ?? '') ?></span>
         </div>
+        <div class="col-12">
+            <span class="text-muted"><i class="ri-file-list-3-line me-1"></i>Obs:</span>
+            <span class="fw-medium"><?= htmlspecialchars($row['asunto2'] ?? '') ?></span>
+        </div>
     </div>
 
     <div class="d-flex align-items-center justify-content-between mb-2">

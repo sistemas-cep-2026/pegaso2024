@@ -27,6 +27,13 @@ $(function () {
   });
 });
 
+/* ====== Tp Doc / Tipo de cliente según punto de venta ====== */
+var PV_DOC_ELECTRONICOS = '000137';           // punto de venta "DOC ELECTRONICOS"
+var CODS_ELECTRONICOS = ['FC', 'BC'];         // FC = Factura, BC = Boleta
+var esEdicion = (getParameterByName('opc') !== '');
+var modoElectronico = false;                  // true mientras el Tp Doc está filtrado a FC/BC
+var opcionesCodDoc = $('#cod_documento option').clone();   // lista completa (se guarda al cargar)
+
 function getRCValue() {
   var $opts = $('#cod_documento option');
   var byValue = $opts.filter(function () { return $(this).val() === 'RC'; });
@@ -35,16 +42,64 @@ function getRCValue() {
   return byText.length ? byText.val() : 'RC';
 }
 
+// Carga en #cod_documento solo los códigos indicados (null = todos)
+function cargarOpcionesCodDoc(codigos) {
+  var $sel = $('#cod_documento');
+  $sel.empty();
+  opcionesCodDoc.each(function () {
+    var v = ($(this).val() || '').toString().trim().toUpperCase();
+    if (!codigos || codigos.indexOf(v) !== -1) {
+      $sel.append($(this).clone());
+    }
+  });
+}
+
+// Factura o Boleta => el cliente debe ser Razón social (E)
+function toggleTipoPersona() {
+  if (esEdicion) return;
+  var cod = ($('#cod_documento').val() || '').toString().trim().toUpperCase();
+  var $tp = $('#tipo_persona');
+
+  if (CODS_ELECTRONICOS.indexOf(cod) !== -1) {
+    if ($tp.val() !== 'E') {
+      $tp.val('E');
+      $('#nombre').val('');
+      $('input[name="c_persona"]').val('');
+      montarTypeahead();
+    }
+    $tp.prop('disabled', true);
+    if (!$('#tipo_persona_hidden').length) {
+      $('<input>', {
+        type: 'hidden',
+        id: 'tipo_persona_hidden',
+        name: 'c_persona_ref',
+        value: 'E'
+      }).appendTo('#frmRegistroRecibo');
+    }
+  } else {
+    $tp.prop('disabled', false);
+    $('#tipo_persona_hidden').remove();
+  }
+}
+
 function toggleCodDocumento() {
   var pv = ($('#c_punto_de_venta').val() || '').toString();
-  var is137 = (pv === '000137');
+  var is137 = (pv === PV_DOC_ELECTRONICOS);
   var $sel = $('#cod_documento');
-  var rcVal = getRCValue();
 
   if (is137) {
+    if (!esEdicion && !modoElectronico) {
+      // Doc. electrónicos: solo Factura y Boleta (por defecto Factura)
+      cargarOpcionesCodDoc(CODS_ELECTRONICOS);
+      $sel.val('FC');
+      modoElectronico = true;
+    }
     $sel.prop('disabled', false);
     $('#cod_documento_hidden').remove();
   } else {
+    modoElectronico = false;
+    cargarOpcionesCodDoc(null);
+    var rcVal = getRCValue();
     $sel.val(rcVal).prop('disabled', true);
     if (!$('#cod_documento_hidden').length) {
       $('<input>', {
@@ -57,16 +112,45 @@ function toggleCodDocumento() {
       $('#cod_documento_hidden').val(rcVal);
     }
   }
+  toggleTipoPersona();
 }
 
 $(function () {
   $('#c_punto_de_venta').on('change', toggleCodDocumento);
+  $('#cod_documento').on('change', toggleTipoPersona);
   toggleCodDocumento();
 });
 
 var parametro = getParameterByName('opc');
 if (parametro !== '') {
   fn_listarDetalleRecibo();
+}
+
+function fn_guardarRecibo() {
+  swalProcesando();
+
+  var $sel = $('#cod_documento');
+  if ($sel.is(':disabled')) {
+    var val = $sel.val() || getRCValue();
+    if (!$('#cod_documento_hidden').length) {
+      $('<input>', { type: 'hidden', id: 'cod_documento_hidden', name: 'cod_documento', value: val })
+        .appendTo('#frmRegistroRecibo');
+    } else {
+      $('#cod_documento_hidden').val(val);
+    }
+  } else {
+    $('#cod_documento_hidden').remove();
+  }
+
+  toggleTipoPersona();
+
+  var str = $("#frmRegistroRecibo").serialize();
+  ajax('caja/recib_update', str)
+    .then(function (data) {
+      if (data.error || typeof data !== 'object') throw (data?.message || data);
+      redireccionar(data.url);
+    })
+    .catch(function (err) { swalError(err); });
 }
 
 function fn_guardarRecibo() {

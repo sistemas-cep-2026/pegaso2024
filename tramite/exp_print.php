@@ -39,6 +39,7 @@ foreach ($data_doc_recibidos as $row) {
 	$numero = $row['num_documento'] ?? '';
 	$fecha_documento = $row['fecha_documento_text'] ?? '';
 	$asunto = $row['asunto'] ?? '';
+		$asunto2 = $row['asunto2'] ?? '';
 	$fecha_ingreso = $row['fecha_ingreso'] ?? '';
 	$c_local_origen_text = $row['c_local_origen_text'] ?? '';
 	$usuario = $row['c_usuario'] ?? '';
@@ -142,7 +143,7 @@ foreach ($data_local as $loc) {
 				</tbody>
 			</table>
 			<div class="border-top pt-1 mb-1 fs-12">
-				<span class="fw-bold">Obs:</span>
+				<span class="fw-bold">Obs:</span> <?php echo htmlspecialchars($asunto2 ?? ''); ?>
 				<div class="text-end mt-1"><?php echo htmlspecialchars($fecha_ingreso . ' (' . $usuario . ')'); ?></div>
 			</div>
 			<div class="text-center text-muted fs-12 my-2">✂- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>

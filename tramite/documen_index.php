@@ -62,7 +62,7 @@ if ($opc === 'U') {
                         <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#crear_documento" aria-controls="crear_documento" role="tab" aria-selected="true">CREAR REGISTRO</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" onclick="fn_BuscarExp();" id="reporte_documento-tab" data-bs-toggle="tab" href="#reporte_documento" aria-controls="reporte_documento" role="tab" aria-selected="false">LISTAR REGISTROS</a>
+                        <a class="nav-link" onclick="fn_Buscar();" id="reporte_documento-tab" data-bs-toggle="tab" href="#reporte_documento" aria-controls="reporte_documento" role="tab" aria-selected="false">LISTAR REGISTROS</a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -72,7 +72,7 @@ if ($opc === 'U') {
                             <input  type="hidden" name="cc_local" id="cc_local" value="<?php echo $cc_local ?>">
                             <input  type="hidden" name="gestion" id="gestion" value="<?php echo $gestion ?>">
                             <input  type="hidden" name="cc_docenviado" id="cc_docenviado" value="<?php echo s_crypt($cc_docenviado, 'in') ?>">
-                                        <input   id="cc_docenviado" value="<?php echo $cc_docenviado ?>">
+                          
                             <input  type="hidden" name="opc" value="<?php echo s_crypt($opc, 'in') ?>">
                             <div class="row">
                                 <div class="col-md-9 p-2 border-end">

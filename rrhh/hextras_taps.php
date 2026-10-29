@@ -149,7 +149,7 @@ if ($opc == 'U') {
                                                         <input type="hidden" name="usuario" value="<?php echo $usuario ?>">
                                                         <?php if ($opc == 'U') { ?>
                                                             <?php echo bt_guardar('Actualizar'); ?>
-                                                            <a href="?id=<?php echo s_crypt('400001', 'in') ?>" class="btn btn-outline-secondary" role="button" aria-pressed="true"><i class="fas fa-file"></i> Nuevo</a>
+                                                            <a href="?id=<?php echo s_crypt('930004', 'in') ?>" class="btn btn-outline-secondary" role="button" aria-pressed="true"><i class="fas fa-file"></i> Nuevo</a>
                                                         <?php } else {
                                                             echo bt_guardar('Continuar');
                                                         } ?>

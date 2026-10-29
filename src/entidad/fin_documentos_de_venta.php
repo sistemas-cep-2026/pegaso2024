@@ -27,7 +27,13 @@ class fin_documentos_de_venta extends Parse
     private $usuario_registro;
     private $fecha_llamada;
 
+    private $c_cuenta_ventas;
+    private $nombre_completo;
+    private $cod_desde;
+    private $cod_hasta;
 
+    private $cod_anho;
+    private $c_articulo;
     private $flag;
 
 
@@ -143,7 +149,17 @@ class fin_documentos_de_venta extends Parse
         $this->host_registro = '';
         $this->usuario_registro = '';
         $this->fecha_llamada = '';
+
+        $this->c_cuenta_ventas = '';
+        $this->nombre_completo = '';
+        $this->cod_desde = '';
+        $this->cod_hasta = '';
+
+        $this->cod_anho = '';
+        $this->c_articulo = '';
         $this->flag = '';
+
+
         $this->cod_moneda = '';
         $this->tipo_de_cambio = 0;
         $this->tipo_de_cambio_actualizacion = 0;
@@ -494,6 +510,73 @@ class fin_documentos_de_venta extends Parse
     {
         return $this->fecha_llamada;
     }
+    public function setNombre_completo($nombre_completo)
+    {
+        if (empty($nombre_completo)) return;
+        $this->nombre_completo = self::Clean($nombre_completo);
+    }
+
+    public function getNombre_completo()
+    {
+        return $this->nombre_completo;
+    }
+
+
+
+    public function setC_cuenta_ventas($c_cuenta_ventas)
+    {
+        if (empty($c_cuenta_ventas)) return;
+        $this->c_cuenta_ventas = self::Clean($c_cuenta_ventas);
+    }
+
+    public function getC_cuenta_ventas()
+    {
+        return $this->c_cuenta_ventas;
+    }
+
+    public function setCod_desde($cod_desde)
+    {
+        if (empty($cod_desde)) return;
+        $this->cod_desde = self::Clean($cod_desde);
+    }
+
+    public function getCod_desde()
+    {
+        return $this->cod_desde;
+    }
+
+    public function setCod_hasta($cod_hasta)
+    {
+        if (empty($cod_hasta)) return;
+        $this->cod_hasta = self::Clean($cod_hasta);
+    }
+
+    public function getCod_hasta()
+    {
+        return $this->cod_hasta;
+    }
+
+    public function setCod_anho($cod_anho)
+    {
+        if (empty($cod_anho)) return;
+        $this->cod_anho = self::Clean($cod_anho);
+    }
+
+    public function getCod_anho()
+    {
+        return $this->cod_anho;
+    }
+
+    public function setC_articulo($c_articulo)
+    {
+        if (empty($c_articulo)) return;
+        $this->c_articulo = self::Clean($c_articulo);
+    }
+
+    public function getC_articulo()
+    {
+        return $this->c_articulo;
+    }
 
     public function setFlag($flag)
     {
@@ -505,6 +588,9 @@ class fin_documentos_de_venta extends Parse
     {
         return $this->flag;
     }
+
+
+
 
     public function setCod_moneda($cod_moneda)
     {

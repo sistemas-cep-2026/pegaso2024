@@ -39,7 +39,13 @@ try {
     $ent_doc_recibidos->setNum_documento($_REQUEST["num_documento"] ?? '');
     $ent_doc_recibidos->setFecha_documento(u_fecha($_REQUEST["fecha_documento"] ?? ''));
     $ent_doc_recibidos->setC_persona(s_crypt($_REQUEST["c_persona"] ?? '', 'out'));
-    $ent_doc_recibidos->setC_persona_pf(s_crypt($_REQUEST["c_persona_pf"] ?? '', 'out'));
+    //$ent_doc_recibidos->setC_persona_pf(s_crypt($_REQUEST["c_persona_pf"] ?? '', 'out'));
+    $c_persona_pf = trim((string) s_crypt($_REQUEST["c_persona_pf"] ?? '', 'out'));
+    if ($c_persona_pf === '') {
+        throw new Exception("Debe seleccionar un Remitente para continuar.");
+    }
+    $ent_doc_recibidos->setC_persona_pf($c_persona_pf);
+
     $ent_doc_recibidos->setAsunto($_REQUEST["asunto"] ?? '');
     $ent_doc_recibidos->setAsunto2($_REQUEST["asunto2"] ?? '');
     $ent_doc_recibidos->setC_local($_REQUEST["c_local"] ?? '');

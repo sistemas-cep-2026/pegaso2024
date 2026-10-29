@@ -61,10 +61,16 @@ $data_gestion = $bo_general->listarGestionActiva();
                                 </div>
                             </div>
 
-                            <div class="col-sm-3">
+                            <div class="col-sm-2">
                                 <div class="input-group mb-1">
-                                    <span class="input-group-text">Expediente:</span>
-                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="" value="">
+                                    <span class="input-group-text">Exp. Desde:</span>
+                                    <input type="text" class="form-control" id="c_expediente_desde" name="c_expediente_desde" placeholder="" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Exp. Hasta:</span>
+                                    <input type="text" class="form-control" id="c_expediente_hasta" name="c_expediente_hasta" placeholder="" value="">
                                 </div>
                             </div>
                             <div class="col-sm-3 text-start">

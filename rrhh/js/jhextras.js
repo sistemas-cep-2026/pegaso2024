@@ -72,7 +72,7 @@ function fn_Eliminar(cc_sustento_det) {
 
 function fn_listarReporte() {
   var str = $("#frm").serialize();
-  obtenerDatos("divlistarHoras", "rrhh/hextras_taps_buscar", str, function () {
+  obtenerDatos("divReporte", "rrhh/hextras_taps_buscar", str, function () {
     fn_reporteMensual();
   });
 }
@@ -103,13 +103,13 @@ function fn_listarConsolidado() {
 function fn_reporteConsolidado() {
   var str = $("#frmFormRegistroConsol").serialize();
   obtenerDatos("divReporteConsolidado", "rrhh/hextras_taps_consoli_lita", str, function () {
-    /*fn_listaDataTable('table-hextras', {
+    fn_listaDataTable('table-hextras', {
       responsive: false,
       searching: false,
       pageLength: -1,
       lengthChange: false,
       buttons: ''
-    });*/
+    });
   });
 }
 

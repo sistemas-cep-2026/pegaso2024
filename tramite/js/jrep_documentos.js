@@ -1,8 +1,8 @@
-fn_buscarExp();
+fn_reporte();
 
-function fn_buscarExp() {
-    var str = $("#frmBuscarExp").serialize();
-    obtenerDatos('divReporExp', 'tramite/rep_documen_lista', str, function () {
+function fn_reporte() {
+    var str = $("#frmListarRegistros").serialize();
+    obtenerDatos('div_ReporLista', 'tramite/rep_documen_lista', str, function () {
         // Sin resultados la lista no trae tabla: no hay nada que ordenar.
         if (!document.getElementById('table-reporte')) {
             return;
@@ -16,8 +16,4 @@ function fn_buscarExp() {
     });
 }
 
-function fn_verSeguimientoExp(cc_docrecibidos_enc) {
-    obtenerDatos(modalContainerXl, 'tramite/exp_rep_show', 'cod=' + encodeURIComponent(cc_docrecibidos_enc), function () {
-        modalRegistroXl.show();
-    });
-}
+ 

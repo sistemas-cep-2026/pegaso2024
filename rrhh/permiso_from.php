@@ -146,7 +146,7 @@ $option = "NUEVA HOJA DE TRAMITE";
     function fn_guardarPermiso() {
         swalProcesando();
         var str = $("#frmRegistroPermiso").serialize();
-        ajax('tramite/permiso_update', str)
+        ajax('rrhh/permiso_update', str)
             .then(function(res) {
                 var data = JSON.parse(res);
                 if (data.error) {

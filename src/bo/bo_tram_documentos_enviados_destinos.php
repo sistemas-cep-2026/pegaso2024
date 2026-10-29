@@ -31,8 +31,8 @@ class bo_tram_documentos_enviados_destinos
 
     public function listar(tram_documentos_enviados_destinos $obj = null)
     {
-        $sql = "select d.cc_docenviado_det,d.c_persona,d.cargo,p.nombre from documentos_enviados_destinos d inner join personas p on p.c_persona=d.c_persona where d.cc_docenviado='{$obj->getCc_docenviado()}' ";
-        //echo $sql;
+        $sql = "select d.cc_docenviado_det,d.c_persona,d.cargo,p.nombre from documentos_enviados_destinos d left join personas p on p.c_persona=d.c_persona where d.cc_docenviado='{$obj->getCc_docenviado()}' ";
+       // echo $sql;
         return $this->dao->consulta($sql);
     }
 

@@ -7,14 +7,17 @@ require_once(u_src() . "bo/bo_general.php");
 require_once(u_src() . "bo/bo_gen_parametro_det.php");
 require_once(u_src() . "bo/bo_banc_comprobantes_de_caja.php");
 require_once(u_src() . "bo/bo_comp_liquidaciones_caja_chica.php");
+require_once(u_src() . "bo/bo_gen_personas.php");
 
 $bo_general = new bo_general();
 $bo_parametro_detalle = new bo_gen_parametro_det();
 $bo_comprobantes_de_caja = new bo_banc_comprobantes_de_caja();
 $bo_compras	=	new bo_comp_liquidaciones_caja_chica();
+$bo_personas = new bo_gen_personas();
 
 $ent_comprobantes_de_caja = new banc_comprobantes_de_caja();
 $ent_compras = new comp_liquidaciones_caja_chica();
+$ent_personas = new gen_personas();
 
 $disabled = '';
 $disabled_temp = '';
@@ -37,6 +40,7 @@ $ent_compras->setC_local($cc_local);
 $data_compras = $bo_compras->CajaChicaPendiente($ent_compras);
 
 $tp_coleg = tipo_cliente();
+$tipo_persona_sel = 'C'; // por defecto: Colegiado
 
 $ent_comprobantes_de_caja->setNumero('000000');
 
@@ -56,6 +60,24 @@ if ($opc === 'U') {
 		$ent_comprobantes_de_caja->setC_liquidacion_caja_chica($act["c_liquidacion_caja_chica"] ?? '');
 		$ent_comprobantes_de_caja->setNumero($act["numero"] ?? '');
 		$ent_comprobantes_de_caja->setMonto($act["monto"] ?? '');
+
+		$c_persona_raw = trim((string)($act["c_persona"] ?? ''));
+		if ($c_persona_raw !== '') {
+			$ent_personas->setC_persona($c_persona_raw);
+			foreach ($bo_personas->listarID($ent_personas) as $per) {
+				$p_cmp    = trim((string)($per['c_cmp'] ?? ''));
+				$p_ruc    = trim((string)($per['ruc'] ?? ''));
+				$p_nombre = trim((string)($per['nombre_completo'] ?? ''));
+				if (is_numeric($p_cmp)) {
+					$tipo_persona_sel = 'C';
+					$p_codigo = $p_cmp;
+				} else {
+					$tipo_persona_sel = 'E';
+					$p_codigo = $p_ruc;
+				}
+				$ent_comprobantes_de_caja->setRazon_social($p_codigo !== '' ? $p_codigo . ' - ' . $p_nombre : $p_nombre);
+			}
+		}
 
 		$flag = $act["flag"] ?? '';
 		$flag_text = $act["flag_text"] ?? '';
@@ -138,7 +160,7 @@ $nombre_mes = $meses[$cod_mes] ?? 'Mes no definido';
 												<select name="c_persona_ref" class="form-control form-select mb-3" id="tipo_persona" onchange="$('#nombre').val('');">
 													<?php
 													foreach ($tp_coleg as $key => $value) { ?>
-														<option value="<?= $key ?>">
+														<option value="<?= $key ?>" <?= ($key === $tipo_persona_sel) ? 'selected' : '' ?>>
 															<?= $value ?>
 														</option>
 													<?php } ?>

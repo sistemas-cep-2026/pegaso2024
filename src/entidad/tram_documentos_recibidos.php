@@ -46,7 +46,9 @@ class tram_documentos_recibidos extends Parse
     private $num_hasta;
     private $c_area_adm;
     private $gestion;
-
+    
+    private $c_expediente_desde;
+    private $c_expediente_hasta;
 
 
     function __construct()
@@ -94,6 +96,9 @@ class tram_documentos_recibidos extends Parse
         $this->num_hasta = '';
         $this->c_area_adm = '';
         $this->gestion = '';
+
+        $this->c_expediente_desde = '';
+        $this->c_expediente_hasta = '';
     }
 
     public function setCc_docrecibidos($cc_docrecibidos)
@@ -556,4 +561,33 @@ class tram_documentos_recibidos extends Parse
     {
         return $this->gestion;
     }
+
+
+    public function setC_expediente_desde($c_expediente_desde)
+    {
+        if (empty($c_expediente_desde)) return;
+        $this->c_expediente_desde = self::Clean($c_expediente_desde);
+    }
+
+    public function getC_expediente_desde()
+    {
+        return $this->c_expediente_desde;
+    }
+
+
+    public function setC_expediente_hasta($c_expediente_hasta)
+    {
+        if (empty($c_expediente_hasta)) return;
+        $this->c_expediente_hasta = self::Clean($c_expediente_hasta);
+    }
+
+    public function getC_expediente_hasta()
+    {
+        return $this->c_expediente_hasta;
+    }
+
+
+
+
+
 }

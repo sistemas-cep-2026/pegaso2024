@@ -23,18 +23,21 @@ class dao_tram_documentos_enviados_destinos
     public function insertar(tram_documentos_enviados_destinos $obj)
     {
         $sql = "insert documentos_enviados_destinos (c_persona,cargo,cc_docenviado,numero) values ('{$obj->getC_persona()}','',{$obj->getCc_docenviado()},{$obj->getCc_docenviado()}) ";
+       // echo $sql;
         return $this->conecta->sql_query($sql);
     }
 
     public function modificar(tram_documentos_enviados_destinos $obj)
     {
-        $sql = "update documentos_enviados_destinos set c_persona={$obj->getC_persona()} where cc_docenviado_det= {$obj->getCc_docenviado_det()}";
+        $sql = "update documentos_enviados_destinos set c_persona='{$obj->getC_persona()}',cargo='{$obj->getCargo()}' where cc_docenviado_det= {$obj->getCc_docenviado_det()}";
+         //echo $sql;
         return $this->conecta->sql_query($sql);
     }
 
     public function eliminar(tram_documentos_enviados_destinos $obj)
     {
         $sql = "delete documentos_enviados_destinos where cc_docenviado_det= {$obj->getCc_docenviado_det()}";
+     //echo $sql;
         return $this->conecta->sql_query($sql);
     }
 }

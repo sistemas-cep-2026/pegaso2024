@@ -8,9 +8,12 @@ require_once(u_src() . "bo/bo_tram_documentos_recibidos.php");
 $bo_doc_recibidos = new bo_tram_documentos_recibidos();
 $ent_doc_recibidos = new tram_documentos_recibidos();
 
-$c_expediente = s_crypt($_REQUEST['cod'], 'out');
+$c_expediente_desde = s_crypt($_REQUEST['cod'], 'out');
+$c_expediente_hasta = s_crypt($_REQUEST['cod2'], 'out');
 $c_local = s_local();
-$ent_doc_recibidos->setC_expediente($c_expediente);
+$ent_doc_recibidos->setC_expediente_desde($c_expediente_desde);
+$ent_doc_recibidos->setC_expediente_hasta($c_expediente_hasta);
+
 $ent_doc_recibidos->setC_local($c_local);
 $data_docume = $bo_doc_recibidos->listarParaImprimirRango($ent_doc_recibidos);
 
@@ -33,7 +36,7 @@ ob_start();
 	<table class="reporte-cabecera">
 		<tr>
 			<td style="width:40%;" class="fw-bold">
-				<?php echo htmlspecialchars($c_expediente); ?>
+				<?php echo htmlspecialchars($c_expediente_desde); ?>
 			</td>
 
 			<td style="width:60%; text-align:right;">

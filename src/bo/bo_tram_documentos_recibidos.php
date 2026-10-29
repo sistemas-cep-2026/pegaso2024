@@ -71,7 +71,7 @@ class bo_tram_documentos_recibidos
 
     public function listar(tram_documentos_recibidos $obj)
     {
-        $sql = "SELECT TOP 100
+        $sql = "SELECT TOP 1000
         d.cc_docrecibidos,
         d.c_expediente,
         d.c_tipo_de_documento,
@@ -189,7 +189,7 @@ class bo_tram_documentos_recibidos
 
     LEFT JOIN tram_acciones ac WITH (NOLOCK)
     ON sd.c_accion = ac.c_accion
-        where d.c_expediente >= '" . $obj->getC_expediente() . "'";
+        where d.c_expediente between '" . $obj->getC_expediente_desde() . "' and '" . $obj->getC_expediente_hasta() . "'";
 
         if (strlen($obj->getC_local()) > 0) {
             $sql .= " AND d.c_local='" . $obj->getC_local() . "'";
@@ -203,7 +203,7 @@ class bo_tram_documentos_recibidos
 
     public function listarDerivacion(tram_documentos_recibidos $obj, $c_area_adm)
     {
-        $sql = "select top 25 d.cc_docrecibidos,
+        $sql = "select top 250 d.cc_docrecibidos,
         d.c_expediente,
         d.c_tipo_de_documento, 
         d.num_documento, 
@@ -234,13 +234,15 @@ class bo_tram_documentos_recibidos
         left join gen_local l
         on l.c_local=d.c_local_origen
         where d.c_local='{$obj->getC_local()}' and d.gestion='{$obj->getGestion()}'";
-        if (strlen($obj->getC_expediente()) > 0) {
-            $sql .= " AND d.c_expediente>='" . $obj->getC_expediente() . "'";
+        if (strlen($obj->getC_expediente_desde()) > 0) {
+            if(strlen($obj->getC_expediente_hasta()) >= strlen($obj->getC_expediente_desde())){
+            $sql .= " AND d.c_expediente between '" . $obj->getC_expediente_desde() . "' and '" . $obj->getC_expediente_hasta() . "'";
+            } else { $sql .= " AND d.c_expediente >= '" . $obj->getC_expediente_desde() . "'"; }
         } else {
             $sql .= " AND d.flag='P'";
         }
 
-        $sql .= "AND EXISTS (
+        $sql .= " AND EXISTS (
         SELECT 1
         FROM seguimiento_documentos_recibid1 s WITH (NOLOCK)
         WHERE s.cc_docrecibidos = d.cc_docrecibidos

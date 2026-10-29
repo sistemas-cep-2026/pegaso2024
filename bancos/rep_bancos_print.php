@@ -154,7 +154,7 @@ foreach ($data_bancos as $ban) {
 				</div>
 			</div>
 		</div>
-		<div class="mb-2">
+		<div style="font-size:12px; letter-spacing:1px;">
 			<div>
 				<strong>PERIODO :</strong>
 				<?php echo $periodo; ?>

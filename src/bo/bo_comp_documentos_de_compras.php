@@ -268,7 +268,7 @@ INNER JOIN Items_documentos_de_compra_cue id ON id.cc_compra=dc.cc_compra AND id
             AND dc.cod_documento = '{$cod_documento}' and  dc.flag = '*') and (  dc.adelanto <> dc.total or dc.flag_cancelado = '&')
            
         ORDER BY fecha_documento DESC";
-        //echo $sql;
+        // echo $sql;
         return $this->dao->consulta($sql);
     }
 

@@ -15,10 +15,12 @@ $(`#nombre`).typeahead(typeaheadOptions, {
   templates: templates,
   source: function (query, sync, async) {
     let tipo = $('#tipo_persona').val();
+    let m = $.trim(query).match(/^(\d{6,11})\s*-/);
+    let q = m ? m[1] : query;
     if (tipo === "C") {
-      dataSetColegiados.search(query, sync, async);
+      dataSetColegiados.search(q, sync, async);
     } else {
-      dataSetEmpresas.search(query, sync, async);
+      dataSetEmpresas.search(q, sync, async);
     }
   }
 }).bind("typeahead:selected", function (_, datum) {
@@ -150,8 +152,8 @@ function fn_recibosCaja(cc_documento, opc) {
 function fn_showCompras(el) {
   var $row = el.closest('tr');
   var str = $row.find(':input').serialize();
-  obtenerDatos(modalContainer, "bancos/egresos_detalle_show", str, function () {
-    modalRegistro.show();
+  obtenerDatos(modalContainerXl, "bancos/egresos_detalle_show", str, function () {
+    modalRegistroXl.show();
   });
 }
 

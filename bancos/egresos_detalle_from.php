@@ -76,12 +76,13 @@ $disabledCajaChica = empty($c_liquidacion_caja_chica) ? 'disabled' : '';
                         </td>
                         <td>
                             <div class="buscar-persona">
-                                <input type="hidden" class="form-control form-control-sm" name="c_persona_hijo" id="c_persona_hijo" value="<?php echo s_crypt($detalle['c_persona_hijo']); ?>">
+                                <?php $v_persona = $detalle['c_persona_hijo'] ?? $detalle['c_persona'] ?? ''; ?>
+                                <input type="hidden" class="form-control form-control-sm" name="c_persona_hijo" id="c_persona_hijo" value="<?php echo $v_persona !== '' ? s_crypt($v_persona) : ''; ?>">
                                 <input type="text" class="form-control form-control-sm typeahead" name="nombres" id="nombres" value="<?php echo $detalle['nombre_completo'] ?>">
                             </div>
                         </td>
                         <td>
-                            <a href="#" class="btn-buscar-compras" onclick="fn_showCompras($(this))"><i class='fas fa-tags'></i></a>
+                            <a href="#" class="btn-buscar-compras<?php echo $disabled ? ' text-muted pe-none opacity-50' : ''; ?>" onclick="<?php echo $disabled ? 'return false;' : 'fn_showCompras($(this)); return false;'; ?>"><i class='fas fa-tags'></i></a>
                         </td>
                         <td><input type="text" class="form-control form-control-sm" name="num_documento" id="num_documento" value="<?php echo $detalle['num_documento'] ?>"></td>
                         <td><input type="text" class="form-control form-control-sm input-decimal" name="monto" id="monto" value="<?php echo $detalle['monto'] ?>"></td>
@@ -168,6 +169,13 @@ $disabledCajaChica = empty($c_liquidacion_caja_chica) ? 'disabled' : '';
     });
     personas.initialize();
 
+    var buscarPersonas = personas.ttAdapter();
+
+    function fuentePersonas(query, sync, async) {
+        var m = $.trim(query).match(/^(\d{8,11})\s*-/);
+        return buscarPersonas(m ? m[1] : query, sync, async);
+    }
+
     var opcionesPersona = {
         hint: true,
         highlight: true,
@@ -177,11 +185,11 @@ $disabledCajaChica = empty($c_liquidacion_caja_chica) ? 'disabled' : '';
     var plantillaPersona = {
         name: "personas",
         display: "nombres",
-        source: personas.ttAdapter(),
+        source: fuentePersonas,
         limit: Infinity,
         templates: {
-            empty: Handlebars.compile(`<div class="text-danger ms-1"><b>No se encontraron personas</b></div>`),
-            pending: Handlebars.compile(`<div class="ms-1"><b>Buscando personas...</b></div>`)
+            empty: Handlebars.compile(`<div class="text-danger ms-1"><b>No se encontraron RUC o Razon Social</b></div>`),
+            pending: Handlebars.compile(`<div class="ms-1"><b>Buscando RUC o Razon Social...</b></div>`)
         }
     };
     $(".buscar-persona .typeahead")

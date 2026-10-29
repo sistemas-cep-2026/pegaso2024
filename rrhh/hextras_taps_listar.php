@@ -34,9 +34,9 @@ $data_activ = $bo_actividad->ListarActiMensual($ent_actividad);
 $ent_usuario->setUsuario($usuario);
 $data_user = $bo_usuario->listarId($ent_usuario);
 foreach ($data_user as $user) {
-	$user_user = $user["c_usuario"];
-	$user_nombre = $user["nombre"];
-	$c_local_text = $user["c_local_text"];
+	$user_user = $user["c_usuario"] ?? '';
+	$user_nombre = $user["nombre"] ?? '';
+	$c_local_text = $user["c_local_text"] ?? '';
 }
 
 ?>
@@ -79,7 +79,7 @@ foreach ($data_user as $user) {
 					<td colspan="3"><?php echo $key["area"] . "&nbsp;&nbsp;" . $key["horaini"] . " => " . $key["horafin"] . "&nbsp;&nbsp;&nbsp;&nbsp;" . $key["obs"] ?></td>
 					<td class="text-center">___________
 						<?php if ($diferencia < 75) { ?>
-							<a href="?id=<?php echo s_crypt('400001', 'in') ?>&cod=<?php echo s_crypt($key["cc_sustento"], 'in') ?>&opc=<?php echo s_crypt('U', 'in') ?>" class="text-primary"><i class="fas fa-edit fa-1x"></i></a>
+							<a href="?id=<?php echo s_crypt('930004', 'in') ?>&cod=<?php echo s_crypt($key["cc_sustento"], 'in') ?>&opc=<?php echo s_crypt('U', 'in') ?>" class="text-primary"><i class="fas fa-edit fa-1x"></i></a>
 						<?php } ?>
 
 						<?php if (count($data_deta) == '') { ?>

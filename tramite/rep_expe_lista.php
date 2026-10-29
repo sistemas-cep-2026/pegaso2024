@@ -16,25 +16,45 @@ $ent_doc_recibidos = new tram_documentos_recibidos();
 $cc_local = s_local();
 $sede     = ($cc_local == '28') ? 'CN' : 'CR';
 
-$c_expediente     = (int) ($_REQUEST['c_expediente'] ?? 0);
-$fecha_desde = u_fecha($_REQUEST["fecha_desde"] ?? '') . ' 01:00';
-$fecha_hasta = u_fecha($_REQUEST["fecha_hasta"] ?? '') . ' 23:59';
+$tipo_filtro      = $_REQUEST['tipo_filtro'] ?? '';
+$exp_digitos      = preg_replace('/\D/', '', $_REQUEST['c_expediente'] ?? '');
 $nombre_remitente = $_REQUEST["nombre_remitente"] ?? '';
 $c_area_adm       = $_REQUEST["c_area_adm"] ?? '';
-$gestion       = $_REQUEST["gestion"] ?? '';
+$gestion          = $_REQUEST["gestion"] ?? '';
 
-if ($c_expediente != 0) {
+// Los campos bloqueados no llegan: sin fecha no se filtra por fecha
+$f_desde     = trim($_REQUEST["fecha_desde"] ?? '');
+$f_hasta     = trim($_REQUEST["fecha_hasta"] ?? '');
+$fecha_desde = ($f_desde !== '') ? u_fecha($f_desde) . ' 01:00' : '';
+$fecha_hasta = ($f_hasta !== '') ? u_fecha($f_hasta) . ' 23:59' : '';
+
+// Filtro EXPEDIENTE: el número es obligatorio
+if ($tipo_filtro === '01' && (int) $exp_digitos === 0) {
+    echo '<div class="alert alert-warning mb-0">Ingrese el número de expediente.</div>';
+    exit;
+}
+
+// Se acepta el correlativo (hasta 7 dígitos) o el número completo (11 dígitos: local + gestión + correlativo)
+if ((int) $exp_digitos === 0) {
+    $numero = '';
+} elseif (strlen($exp_digitos) === 11) {
+    $numero = $exp_digitos;
+} elseif (strlen($exp_digitos) <= 7) {
     $numero =
         str_pad($cc_local, 2, '0', STR_PAD_LEFT) .
         str_pad($gestion, 2, '0', STR_PAD_LEFT) .
-        str_pad($c_expediente, 7, '0', STR_PAD_LEFT);
+        str_pad((int) $exp_digitos, 7, '0', STR_PAD_LEFT);
 } else {
-    $numero = '';
+    echo '<div class="alert alert-warning mb-0">El expediente debe tener hasta 7 dígitos o los 11 completos.</div>';
+    exit;
 }
 
 $ent_doc_recibidos->setFecha_desde($fecha_desde);
 $ent_doc_recibidos->setFecha_hasta($fecha_hasta);
 $ent_doc_recibidos->setC_expediente($numero);
+// listar() filtra el expediente con Num_desde/Num_hasta (igual que exp_rep_listar.php)
+$ent_doc_recibidos->setNum_desde($numero);
+$ent_doc_recibidos->setNum_hasta($numero);
 $ent_doc_recibidos->setNombre_remitente($nombre_remitente);
 $ent_doc_recibidos->setC_area_adm($c_area_adm);
 $ent_doc_recibidos->setC_local($cc_local);
