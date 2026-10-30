@@ -21,6 +21,7 @@ $exp_digitos      = preg_replace('/\D/', '', $_REQUEST['c_expediente'] ?? '');
 $nombre_remitente = $_REQUEST["nombre_remitente"] ?? '';
 $c_area_adm       = $_REQUEST["c_area_adm"] ?? '';
 $gestion          = $_REQUEST["gestion"] ?? '';
+$c_local_origen          = $_REQUEST["c_region"] ?? '';
 
 // Los campos bloqueados no llegan: sin fecha no se filtra por fecha
 $f_desde     = trim($_REQUEST["fecha_desde"] ?? '');
@@ -59,6 +60,7 @@ $ent_doc_recibidos->setNombre_remitente($nombre_remitente);
 $ent_doc_recibidos->setC_area_adm($c_area_adm);
 $ent_doc_recibidos->setC_local($cc_local);
 $ent_doc_recibidos->setGestion($gestion);
+$ent_doc_recibidos->setC_local_origen($c_local_origen);
 $data_exp = $bo_doc_recibidos->listar($ent_doc_recibidos);
 
 $estadoMap = [

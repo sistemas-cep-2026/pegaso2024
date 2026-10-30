@@ -19,6 +19,6 @@ function fn_conceptoVista(cc_articulo, c_local, desde, hasta, cod_anho) {
 }
 
 function fn_imprimir(cc_ventas) {
-  var str = `cc_ventas=${cc_ventas}`;
+  var str = "cod=" + encodeURIComponent(cc_ventas);
   redireccionar_ventana(`${hostname}caja/recib_print?${str}`, 750, "P");
 }

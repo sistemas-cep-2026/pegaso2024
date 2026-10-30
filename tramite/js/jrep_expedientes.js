@@ -1,11 +1,12 @@
-var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm'];
+var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm','#c_region'];
 
 var REGLAS_FILTRO_EXP = {
     '01': ['#c_expediente'],                                                   // EXPEDIENTE
     '02': ['#fecha_desde', '#fecha_hasta'],                                    // FECHA
     '03': ['#fecha_desde', '#fecha_hasta', '#nombre_remitente'],               // FECHA Y PERSONA
     '04': ['#fecha_desde', '#fecha_hasta', '#c_area_adm'],                     // FECHA Y AREA
-    '05': ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_area_adm'] // FECHA Y (PERSONA-AREA)
+    '05': ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_area_adm'], // FECHA Y (PERSONA-AREA)
+    '06': ['#fecha_desde', '#fecha_hasta', '#c_region'] // FECHA Y cr
 };
 
 function fn_aplicarFiltroExp() {

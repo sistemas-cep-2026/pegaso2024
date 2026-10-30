@@ -173,6 +173,7 @@ foreach ($data_bancos as $cabt) {
 				<th class="text-right">SALDO</th>
 				<th class="text-right">SALDO EXTRACTO</th>
 				<th class="text-right">DIFERENCIA</th>
+				<th class="text-right">USUARIO</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -193,6 +194,7 @@ foreach ($data_bancos as $cabt) {
 					<td class="text-right"><?php echo decimal($d["movimiento"], 2) ?></td>
 					<td class="text-right"><?php echo decimal($d["saldo_final"], 2) ?></td>
 					<td class="text-right"><?php echo decimal($d["movimiento"] - $d["saldo_final"], 2) ?></td>
+						<td class="text-right"><?php echo $d["c_usuario"] .' '. $d["fecha_text"]; ?></td>
 				</tr>
 			<?php } ?>
 		</tbody>

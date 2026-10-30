@@ -173,7 +173,8 @@ And c_banco = '" . $cod_banco . "'
     public function saldos_cuenta_banco($c_banco, $cc)
     {
         $sql = " 
-SELECT c.c_ano,c.cod_mes,c.movimiento,c.comprobante,BANCOS.NOMBRE AS BANCO,'" . $cc . "' AS CUENTA ,c.ingreso,c.egreso,bb.saldo_final 
+SELECT c.c_ano,c.cod_mes,c.movimiento,c.comprobante,BANCOS.NOMBRE AS BANCO,'" . $cc . "' AS CUENTA ,c.ingreso,c.egreso,bb.saldo_final
+,bb.c_usuario,DBO.FC_FECHA_TEXTO_hora1(bb.fecha_registro) fecha_text
 FROM movimiento_cta_cte c (NOLOCK) 
 INNER JOIN BANCOS(NOLOCK) ON BANCOS.C_BANCO='" . $c_banco . "'
 left join saldos_bancos_cuentas bb on bb.C_CTA_CTE=c.c_cta_corriente and c.c_banco=bb.c_banco

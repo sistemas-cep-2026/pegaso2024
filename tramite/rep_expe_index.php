@@ -11,6 +11,8 @@ $sede = ($cc_local == '28') ? 'CN' : 'CR';
 
 $data_area = $bo_general->AreaAdministrativa($sede);
 $data_gestion = $bo_general->listarGestionActiva();
+$data_region = $bo_general->listar28Regiones();
+
 ?>
 
 <div class="col-lg-12">
@@ -42,7 +44,7 @@ $data_gestion = $bo_general->listarGestionActiva();
                                         <?php foreach ($data_gestion as $acc): ?>
                                             <option value="<?php echo htmlspecialchars($acc['cod']); ?>"
                                                 <?php echo ($acc['cod'] == '07') ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($acc['cod']); ?>
+                                                <?php echo htmlspecialchars($acc['cod'].'-'.$acc['ref']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -58,6 +60,7 @@ $data_gestion = $bo_general->listarGestionActiva();
                                         <option value="03">FECHA Y PERSONA</option>
                                         <option value="04">FECHA Y AREA</option>
                                         <option value="05">FECHA Y (PERSONA-AREA)</option>
+                                        <option value="06">FECHA Y CR</option>
                                     </select>
                                 </div>
                             </div>
@@ -82,6 +85,12 @@ $data_gestion = $bo_general->listarGestionActiva();
                                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="<?php echo fecha_hoy(); ?>">
                                 </div>
                             </div>
+                            <div id="grupo_expediente" class="col-sm-3 col-xl-2">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Exp.:</span>
+                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="Expediente" value="">
+                                </div>
+                            </div>
 
                         </div>
 
@@ -96,13 +105,7 @@ $data_gestion = $bo_general->listarGestionActiva();
                                 </div>
                             </div>
 
-                            <div id="grupo_expediente" class="col-sm-3 col-xl-2">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text">Exp.:</span>
-                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="Expediente" value="">
-                                </div>
-                            </div>
-
+                            
                             <div id="grupo_area" class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Área:</span>
@@ -112,6 +115,21 @@ $data_gestion = $bo_general->listarGestionActiva();
                                         <?php foreach ($data_area as $area): ?>
                                             <option value="<?php echo htmlspecialchars($area['cc_area_adm']); ?>">
                                                 <?php echo htmlspecialchars($area['nombre']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="grupo_region" class="col-sm-4 col-xl-3">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">CR:</span>
+
+                                    <select name="c_region" id="c_region" class="form-control">
+                                        <option value="">Selecciona CR</option>
+                                        <?php foreach ($data_region as $region): ?>
+                                            <option value="<?php echo htmlspecialchars($region['c_local']); ?>">
+                                                <?php echo htmlspecialchars($region['nombre']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

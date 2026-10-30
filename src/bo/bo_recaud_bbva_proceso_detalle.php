@@ -50,7 +50,7 @@ class bo_recaud_bbva_proceso_detalle
             and SUBSTRING(referencia2,1,1)='T' 
             and referencia2 like 'T3%'
             and flag_tramite is null
-            and YEAR(fechax)>'2025'";
+            and YEAR(fecha_id)>'2025'";
         //echo  $sql;
         return $this->dao->consulta($sql);
     }
