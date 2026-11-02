@@ -2,29 +2,24 @@
 require_once dirname(__DIR__) . "/util/seguridad.php";
 require_once dirname(__DIR__) . "/util/util.php";
 s_validar_pagina();
-require_once(u_src() . "bo/bo_cap_eventos_modulo_nota.php");
+require_once(u_src() . "bo/bo_cap_eventos_matricula.php");
 header('Content-Type: text/plain; charset=utf-8');
 
-$bo_modnota = new bo_cap_eventos_modulo_nota();
+$bo_modnota = new bo_cap_eventos_matricula();
 
-$ent_modnota = new cap_eventos_modulo_nota();
+$ent_modnota = new cap_eventos_matricula();
 
 try {
     $opc = s_crypt($_REQUEST["opc"], 'out');
     $cc_evento_mat = s_crypt($_REQUEST["cc_evento_mat"], 'out');
-    $cc_modnota = isset($_REQUEST["cc_modnota"]) ? s_crypt($_REQUEST["cc_modnota"], 'out') : '';
+
+    $nota_in = trim((string)($_REQUEST["nota"] ?? ''));
+    if (!preg_match('/^\d{1,2}$/', $nota_in) || (int)$nota_in <= 10 || (int)$nota_in > 20) {
+        throw new Exception('La nota debe ser mayor a 10 y menor o igual a 20.');
+    }
 
     $ent_modnota->setCc_evento_mat($cc_evento_mat);
-    $ent_modnota->setCc_modnota($cc_modnota);
-    $ent_modnota->setCc_capmod($_REQUEST["cc_capmod"]);
-    $ent_modnota->setNota($_REQUEST["nota"]);
-
-    if ($opc === 'I') {
-        $data_existe = $bo_modnota->validar($ent_modnota);
-        if (!empty($data_existe)) {
-            throw new Exception('Esta matrícula ya tiene una nota registrada.');
-        }
-    }
+    $ent_modnota->setNota($nota_in);
 
     $val = $bo_modnota->control($ent_modnota, $opc);
     if (!$val) {

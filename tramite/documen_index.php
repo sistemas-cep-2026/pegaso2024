@@ -54,7 +54,7 @@ if ($opc === 'U') {
     <div class="col-lg-12">
         <div class="card" id="orderList">
             <div class="card-header align-items-center d-flex border-0">
-                <h4 class="card-title mb-0 flex-grow-1">EMISIÓN DE EXPEDIENTES</h4>
+                <h4 class="card-title mb-0 flex-grow-1">EMISIÓN DE DOCUMENTOS</h4>
             </div>
             <div class="card-body border border-dashed border-end-0 border-start-0 border-bottom-0">
                 <ul class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3" role="tablist">

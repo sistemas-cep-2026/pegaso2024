@@ -16,9 +16,7 @@ $ent_eventos_det->setCc_evento($cc_evento);
 
 $data_parti = $bo_eventos_det->listarParticipante($ent_eventos_det);
 
-// categorías: enfermero = colegiado (tiene c_cmp), no enfermero = sin c_cmp
-// "Total participantes" solo cuenta a quienes tienen el flag asistente activo
-// (una fila puede ser solo ponente y/o solo organizador, sin ser asistente)
+
 $participantes_asistentes = array_filter($data_parti, function ($row) {
 	return $row['asistente'] == 1;
 });
@@ -85,7 +83,17 @@ foreach ($data_parti as $row) {
 									<?php endif; ?>
 								</td>
 								<td class="text-center">
-									<a href="#" title="Asignar Módulo / Nota" data-bs-toggle="tooltip" onclick="fn_nota('<?php echo s_crypt($row['cc_evento_mat'], 'in') ?>','<?php echo s_crypt($row['cc_evento'], 'in') ?>')" class="btn btn-outline-primary waves-effect waves-light shadow-none btn-sm"><i class="fas fa-graduation-cap"></i></a>
+									<?php
+									$nota_txt = trim((string)($row['nota'] ?? ''));
+									$tiene_nota = ($nota_txt !== ''); // no usar empty(): la nota "0" es válida
+									?>
+									<a href="#" title="<?= $tiene_nota ? 'Modificar Nota' : 'Asignar Nota' ?>" data-bs-toggle="tooltip" onclick="fn_nota('<?php echo s_crypt($row['cc_evento_mat'], 'in') ?>')">
+										<?php if ($tiene_nota) { ?>
+											<span class="badge bg-success-subtle text-success fs-12"><?= htmlspecialchars($nota_txt, ENT_QUOTES, 'UTF-8') ?></span>
+										<?php } else { ?>
+											<span class="badge bg-info-subtle text-info fs-12">?</span>
+										<?php } ?>
+									</a>
 								</td>
 								<td class="text-center">
 									<a href="#" onclick="fn_Eliminar('<?php echo s_crypt($row['cc_evento_mat']) ?>','<?php echo s_crypt('E') ?>')" class="btn btn-outline-danger waves-effect waves-light shadow-none btn-sm"><i class='fas fa-trash'></i></a>

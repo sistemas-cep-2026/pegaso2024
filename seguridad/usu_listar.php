@@ -65,7 +65,7 @@
 								'A' => 'success',
 								'I' => 'danger'
 							];
-							echo u_estado($row["flag_text"], $color_estado[$row['flag']]);/*s_crypt(*/
+							echo u_estado($row["flag_text"], $color_estado[$row['flag']]);
 							?></td>
  					<td class="text-end">
  						<a href="#" onclick="fn_control('<?php echo s_crypt($row['usuario'], 'in'); ?>', '<?php echo s_crypt('U', 'in') ?>')"

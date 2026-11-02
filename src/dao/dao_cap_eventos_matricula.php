@@ -21,7 +21,7 @@ class dao_cap_eventos_matricula
     }
 
 
-/// excep sp_v1_eventos_matricula
+    /// excep sp_v1_eventos_matricula
     public function insertar(cap_eventos_matricula $obj)
     {
         $sql = "insert into cap_eventos_matricula(cc_evento,
@@ -44,13 +44,13 @@ class dao_cap_eventos_matricula
         '{$obj->getUser_crea()}',
         GETDATE()
     )";
-    //echo $sql;
-    return $this->conecta->sql_query($sql);
-}
+        //echo $sql;
+        return $this->conecta->sql_query($sql);
+    }
 
-public function modificar(cap_eventos_matricula $obj)
-{
-    $sql = "update cap_eventos_matricula set 
+    public function modificar(cap_eventos_matricula $obj)
+    {
+        $sql = "update cap_eventos_matricula set 
     asistente={$obj->getAsistente()},
     ponente={$obj->getPonente()},
     organizador={$obj->getOrganizador()},
@@ -61,15 +61,24 @@ public function modificar(cap_eventos_matricula $obj)
     FROM dbo.cap_eventos_matricula
     WHERE cc_evento_mat='{$obj->getCc_evento_mat()}'";
         //echo $sql;
-    return $this->conecta->sql_query($sql);
-}
+        return $this->conecta->sql_query($sql);
+    }
 
-public function eliminar(cap_eventos_matricula $obj)
-{
-    $sql = "delete from dbo.cap_eventos_matricula 
+    public function eliminar(cap_eventos_matricula $obj)
+    {
+        $sql = "delete from dbo.cap_eventos_matricula 
     where cc_evento_mat='{$obj->getCc_evento_mat()}'";
         //echo $sql;
-    return $this->conecta->sql_query($sql);
-}
+        return $this->conecta->sql_query($sql);
+    }
 
+    public function modificarNota(cap_eventos_matricula $obj)
+    {
+        $sql = "update cap_eventos_matricula set 
+    nota={$obj->getNota()}
+    FROM dbo.cap_eventos_matricula
+    WHERE cc_evento_mat='{$obj->getCc_evento_mat()}'";
+        //echo $sql;
+        return $this->conecta->sql_query($sql);
+    }
 }

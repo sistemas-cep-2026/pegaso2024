@@ -23,19 +23,16 @@ $c_area_adm       = $_REQUEST["c_area_adm"] ?? '';
 $gestion          = $_REQUEST["gestion"] ?? '';
 $c_local_origen          = $_REQUEST["c_region"] ?? '';
 
-// Los campos bloqueados no llegan: sin fecha no se filtra por fecha
 $f_desde     = trim($_REQUEST["fecha_desde"] ?? '');
 $f_hasta     = trim($_REQUEST["fecha_hasta"] ?? '');
 $fecha_desde = ($f_desde !== '') ? u_fecha($f_desde) . ' 01:00' : '';
 $fecha_hasta = ($f_hasta !== '') ? u_fecha($f_hasta) . ' 23:59' : '';
 
-// Filtro EXPEDIENTE: el número es obligatorio
 if ($tipo_filtro === '01' && (int) $exp_digitos === 0) {
     echo '<div class="alert alert-warning mb-0">Ingrese el número de expediente.</div>';
     exit;
 }
 
-// Se acepta el correlativo (hasta 7 dígitos) o el número completo (11 dígitos: local + gestión + correlativo)
 if ((int) $exp_digitos === 0) {
     $numero = '';
 } elseif (strlen($exp_digitos) === 11) {

@@ -262,7 +262,7 @@ class bo_general
             $sql .= " and cc.flag_colegiacion='" . $flag_colegiacion . "' ";
         }
         $sql .= " order by  b.nombre,cc.c_banco,cc.c_cta_corriente";
-       // echo $sql;
+        // echo $sql;
         return $this->dao->consulta($sql);
     }
     public function ListarcuentasBancarias_activas($c_local, $c_banco, $c_cuenta, $flag_colegiacion = '')
@@ -309,7 +309,7 @@ class bo_general
         if (!empty($tipo)) {
             $sql .= " and tramite= '" . $tipo . "' ";
         }
-//echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 
@@ -429,7 +429,7 @@ class bo_general
     public function listarGestionActiva()
     {
         $sql = "SELECT cod, fecha_ini, fecha_fin,ref 
-        FROM gestiones_directivas 
+        FROM gestiones_directivas  
         WHERE flag ='*' order by cod ";
         //echo $sql;
         return $this->dao->consulta($sql);

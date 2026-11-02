@@ -14,7 +14,7 @@ class bo_seg_usuarios
         return $this->dao->procesar_usuarios($obj);
     }
 
-
+    /*
     public function control(seg_usuarios $obj, $opc)
     {
         switch ($opc) {
@@ -24,14 +24,15 @@ class bo_seg_usuarios
             case "U":
                 return $this->dao->modificar($obj);
                 break;
-            case "CN":
+
+            case "C":
                 return $this->dao->cambiaClave($obj);
                 break;
             case "UPLOAD":
                 return $this->dao->actualizarFoto($obj);
                 break;
         }
-    }
+    }*/
 
     public function errores()
     {

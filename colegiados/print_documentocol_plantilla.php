@@ -9,11 +9,34 @@
             padding: 0.14rem .21rem !important;
         }
 
+        .pdf-img {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 190mm;
+            max-height: 250mm;
+            margin: 0 auto;
+            object-fit: contain;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
         @media print {
 
-        .page {
-            margin: 0;
-        }
+            .pdf-img {
+                max-width: 190mm;
+                max-height: 250mm;
+                width: auto;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .page {
+                margin: 0;
+            }
 
             h4,
             h5,
@@ -65,7 +88,7 @@
                     <b>COLEGIO DE ENFERMEROS DELPER&Uacute;<br>
                         DECRETO DE LEY N&ordm; 22315<br>
                         FICHA UNICA DE INSCRIPCI&Oacute;N<br>
-                         <?= $region; ?></b>
+                        <?= $region; ?></b>
                 </td>
                 <td class="col-2 align-middle text-end"><img alt="image" src="<?= $foto ?>" width="90" /></td>
             </tr>
@@ -224,7 +247,7 @@
                         };
                     } ?>
                     <div class="text-center">
-                        <img src="<?= $urlfoto . rtrim($fot["archivo"]) . ".jpg" ?>" alt="<?= $fot["tipo"]; ?>" class="img-fluid" style="max-width: 90%; max-height: 100vh; object-fit: contain;">
+                        <img src="<?= $urlfoto . rtrim($fot["archivo"]) . ".jpg" ?>" alt="<?= $fot["tipo"]; ?>" class="img-fluid pdf-img">
                     </div>
                 </div>
             <?php $i++;

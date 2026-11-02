@@ -280,14 +280,6 @@ function u_file_verificar_post()
     }
 }
 
-/* ---------------------------------------------------------------------------
- * Rutas
- * ------------------------------------------------------------------------- */
-
-/**
- * Valida una carpeta RELATIVA a la raíz del proyecto: sin "..", sin unidad (C:) ni rutas absolutas.
- * Devuelve la ruta normalizada con "/" y sin barras en los extremos.
- */
 function u_file_ruta_relativa_valida($relativa)
 {
     $normal = str_replace('\\', '/', trim((string) $relativa));
@@ -302,12 +294,6 @@ function u_file_ruta_relativa_valida($relativa)
     return $relativa;
 }
 
-/**
- * Valida una carpeta ABSOLUTA: unidad de Windows ("D:/file_tramites") o ruta Unix ("/mnt/archivos").
- * Rechaza "..", rutas de red (\\servidor\...) y unidades de Windows si el servidor no es Windows
- * (en Linux "D:/x" sería una carpeta relativa llamada "D:"). Devuelve la ruta con "/" y sin barra final.
- * $es_windows solo se pasa en pruebas; por defecto se detecta con DIRECTORY_SEPARATOR.
- */
 function u_file_ruta_absoluta_valida($ruta, $es_windows = null)
 {
     if ($es_windows === null) {
@@ -325,11 +311,6 @@ function u_file_ruta_absoluta_valida($ruta, $es_windows = null)
     return $ruta;
 }
 
-/**
- * Ruta absoluta (con separador final) de la carpeta del perfil $tipo.
- * Si no existe la crea (salvo $crear = false, en cuyo caso devuelve null).
- * La raíz es la carpeta que contiene util/ (igual que u_src()).
- */
 function u_file_carpeta($tipo, $carpeta = null, $crear = true)
 {
     $p = u_file_perfil($tipo);
@@ -337,8 +318,6 @@ function u_file_carpeta($tipo, $carpeta = null, $crear = true)
     $base_abs  = $explicita ? '' : trim((string) $p['ruta_base']);
 
     if ($base_abs !== '') {
-        // Carpeta ABSOLUTA fuera del proyecto (ej. D:/file_tramites). Se crea solo el último nivel:
-        // si la unidad no existe, mkdir falla y no se escribe en otro lugar.
         $destino = str_replace('/', DIRECTORY_SEPARATOR, u_file_ruta_absoluta_valida($base_abs));
     } else {
         $relativa = $explicita ? $carpeta : $p['carpeta'];
@@ -358,18 +337,15 @@ function u_file_carpeta($tipo, $carpeta = null, $crear = true)
         if (!$crear) {
             return null;
         }
-        // Ruta absoluta: sin crear niveles intermedios (recursivo solo dentro del proyecto)
         if (!@mkdir($destino, 0775, $base_abs === '') && !is_dir($destino)) {
             error_log("config_file: no se pudo crear la carpeta " . $destino);
             throw new Exception("No se pudo crear la carpeta de archivos.");
         }
     }
-    // realpath solo funciona con carpetas que existen: por eso se resuelve DESPUÉS de crearla
     $real = realpath($destino);
     if ($real === false) {
         throw new Exception("No se pudo resolver la carpeta de archivos.");
     }
-    // El permiso de escritura solo importa al GUARDAR; para leer/mostrar un PDF basta con poder leer la carpeta.
     if ($crear && !is_writable($real)) {
         error_log("config_file: sin permiso de escritura en " . $real);
         throw new Exception("La carpeta de archivos no tiene permiso de escritura.");
@@ -377,17 +353,11 @@ function u_file_carpeta($tipo, $carpeta = null, $crear = true)
     return $real . DIRECTORY_SEPARATOR;
 }
 
-/** Deja solo letras, números, guion y guion bajo (el nombre final lo vuelve a sanear Upload). */
 function u_file_nombre_seguro($texto)
 {
     return preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $texto);
 }
 
-/* ---------------------------------------------------------------------------
- * Validación
- * ------------------------------------------------------------------------- */
-
-/** Tipo MIME real del archivo (por su contenido). Cadena vacía si no se pudo detectar. */
 function u_file_detectar_mime($ruta)
 {
     if (function_exists('finfo_open')) {
@@ -405,11 +375,6 @@ function u_file_detectar_mime($ruta)
     return '';
 }
 
-/**
- * Valida un elemento de $_FILES contra el perfil $tipo: errores de PHP, vacío, tamaño,
- * extensión y contenido real (MIME; en imágenes además que sea una imagen legible).
- * Devuelve array('ext' =>, 'mime' =>, 'size' =>, 'nombre_original' =>) o lanza Exception.
- */
 function u_file_validar($archivo, $tipo)
 {
     $p = u_file_perfil($tipo);
@@ -537,8 +502,6 @@ function u_file_subir($archivo, $tipo, $nombre_base, $opciones = array())
 
     $nombre_final = $uploader->file_dst_name;
     $uploader->clean();
-
-    // Con _1, _2... el nombre puede crecer: si ya no cabe se descarta el archivo
     if ($max_nombre > 0 && strlen($nombre_final) > $max_nombre) {
         @unlink($carpeta . $nombre_final);
         throw new Exception("El nombre del archivo generado supera los " . $max_nombre . " caracteres.");
@@ -546,13 +509,6 @@ function u_file_subir($archivo, $tipo, $nombre_base, $opciones = array())
 
     return $nombre_final;
 }
-
-/**
- * Elimina del servidor el archivo $nombre de la carpeta del perfil $tipo.
- * Solo acepta un nombre simple (sin rutas) con una extensión permitida por el perfil,
- * así que no puede borrar scripts ni salir de la carpeta.
- * Devuelve true si lo eliminó, false si no existía. Lanza Exception si no pudo borrarlo.
- */
 function u_file_eliminar($tipo, $nombre, $carpeta = null)
 {
     $ruta = u_file_ruta($tipo, $nombre, $carpeta);
@@ -565,11 +521,6 @@ function u_file_eliminar($tipo, $nombre, $carpeta = null)
     return true;
 }
 
-/**
- * Ruta absoluta de un archivo YA guardado, o null si no existe. Solo acepta un nombre simple
- * (sin rutas) con una extensión permitida por el perfil, así que no puede salir de la carpeta
- * ni apuntar a un script. Lanza Exception si el nombre es vacío o no corresponde al tipo.
- */
 function u_file_ruta($tipo, $nombre, $carpeta = null)
 {
     $p = u_file_perfil($tipo);
@@ -590,12 +541,6 @@ function u_file_ruta($tipo, $nombre, $carpeta = null)
     return is_file($ruta) ? $ruta : null;
 }
 
-/**
- * ENVÍA el archivo al navegador (para carpetas no públicas como D:/file_tramites). Es la única
- * función de este archivo que escribe salida; úsela en un script que ya validó la sesión con
- * s_validar_pagina(), como tramite/exp_file_ver.php. No envía nada si el archivo no existe o su
- * contenido real no es del tipo del perfil: en esos casos lanza Exception antes de escribir cabeceras.
- */
 function u_file_servir($tipo, $nombre, $descargar = false)
 {
     $p = u_file_perfil($tipo);
@@ -605,7 +550,6 @@ function u_file_servir($tipo, $nombre, $descargar = false)
     }
     $mime = u_file_detectar_mime($ruta);
     if ($mime === '' && $tipo === 'pdf') {
-        // Sin la extensión fileinfo de PHP: se comprueba la firma del PDF ("%PDF-" al inicio)
         $fh = @fopen($ruta, 'rb');
         if ($fh) {
             $mime = (fread($fh, 5) === '%PDF-') ? 'application/pdf' : '';
@@ -620,21 +564,16 @@ function u_file_servir($tipo, $nombre, $descargar = false)
         throw new Exception("No se pudo leer el archivo.");
     }
 
-    // Libera el bloqueo de la sesión: un PDF grande no debe frenar otras pantallas del mismo usuario
     if (function_exists('session_status') && session_status() === PHP_SESSION_ACTIVE) {
         session_write_close();
     }
-    // Todo lo que se haya escrito antes (espacios de un include, avisos de PHP) se descarta: un solo byte
-    // extra antes del "%PDF" hace que el visor del navegador diga que el PDF está dañado.
     while (ob_get_level() > 0) {
         ob_end_clean();
     }
-    // Sin compresión: Content-Length debe coincidir con los bytes enviados
     @ini_set('zlib.output_compression', '0');
     if (function_exists('apache_setenv')) {
         @apache_setenv('no-gzip', '1');
     }
-    // Cabeceras que deja la sesión/config del sistema (no-store, Pragma, Expires) y que confunden al visor de PDF
     header_remove('Pragma');
     header_remove('Expires');
 
@@ -648,7 +587,6 @@ function u_file_servir($tipo, $nombre, $descargar = false)
 
     $fh = @fopen($ruta, 'rb');
     if ($fh === false) {
-        // las cabeceras ya salieron: se corta sin escribir texto dentro del PDF
         error_log("config_file: no se pudo abrir para lectura " . $ruta);
         return false;
     }
@@ -662,4 +600,63 @@ function u_file_servir($tipo, $nombre, $descargar = false)
     }
     fclose($fh);
     return true;
+}
+
+function u_file_buscar_pdf_expediente($row, &$buscados)
+{
+    $buscados = [];
+    $cc  = (int) ($row['cc_docrecibidos'] ?? 0);
+    $exp = preg_replace('/[^A-Za-z0-9]/', '', trim((string) ($row['c_expediente'] ?? '')));
+
+    $nombres = [];
+    foreach (array('documento_enviado', 'file_adjunto') as $campo) {
+        $n = trim((string) ($row[$campo] ?? ''));
+        if ($n !== '') {
+            $nombres[] = $n;
+        }
+    }
+    if ($exp !== '') {
+        $nombres[] = 'TRAM_' . $exp . '.pdf';
+    }
+
+    try {
+        $dir = u_file_carpeta('pdf', null, false);
+    } catch (Throwable $e) {
+        $dir = null;
+    }
+    if ($dir !== null) {
+        $patrones = [];
+        if ($cc > 0) {
+            $patrones[] = $cc . '_*.pdf';
+        }
+        if ($exp !== '') {
+            $patrones[] = 'TRAM_' . $exp . '*.pdf';
+        }
+        foreach ($patrones as $patron) {
+            $buscados[] = $patron;
+            $hallados = glob($dir . $patron);
+            if ($hallados) {
+                usort($hallados, function ($a, $b) {
+                    return filemtime($b) - filemtime($a);
+                });
+                foreach ($hallados as $h) {
+                    $nombres[] = basename($h);
+                }
+            }
+        }
+    }
+
+    foreach (array_unique($nombres) as $nombre) {
+        if (strtolower(substr($nombre, -4)) !== '.pdf') {
+            continue;
+        }
+        $buscados[] = $nombre;
+        try {
+            if (u_file_ruta('pdf', $nombre) !== null) {
+                return u_file_url('pdf', $nombre);
+            }
+        } catch (Throwable $e) {
+        }
+    }
+    return null;
 }

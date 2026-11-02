@@ -44,7 +44,7 @@ $data_region = $bo_general->listar28Regiones();
                                         <?php foreach ($data_gestion as $acc): ?>
                                             <option value="<?php echo htmlspecialchars($acc['cod']); ?>"
                                                 <?php echo ($acc['cod'] == '07') ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($acc['cod'].'-'.$acc['ref']); ?>
+                                                <?php echo htmlspecialchars($acc['cod'] . '-' . $acc['ref']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -105,7 +105,7 @@ $data_region = $bo_general->listar28Regiones();
                                 </div>
                             </div>
 
-                            
+
                             <div id="grupo_area" class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Área:</span>

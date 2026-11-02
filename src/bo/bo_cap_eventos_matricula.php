@@ -21,6 +21,9 @@ class bo_cap_eventos_matricula
             case "E":
                 return $this->dao->eliminar($obj);
                 break;
+            case "N":
+                return $this->dao->modificarNota($obj);
+                break;
         }
     }
 
@@ -63,7 +66,8 @@ class bo_cap_eventos_matricula
         m.asistente,
         m.ponente,
         m.organizador,
-        e.print_documento
+        e.print_documento,
+        m.nota
         FROM cap_eventos_matricula m (nolock) INNER JOIN Personas p (nolock)
         ON m.c_persona=p.c_persona
         left join cap_eventos e (nolock)
@@ -76,7 +80,25 @@ class bo_cap_eventos_matricula
 
     public function listarID(?cap_eventos_matricula $obj = null)
     {
-        $sql = "";
+        $sql = "SELECT cc_evento_mat, 
+        cc_evento, 
+        c_persona, 
+        tipo,
+        user_crea, 
+        user_mod,
+        fech_crea, 
+        flag,
+        fech_mod,
+        obs,
+        asistente, 
+        ponente, 
+        organizador,
+        nota, 
+        documento,
+        modalidad
+        FROM cap_eventos_matricula
+        where cc_evento_mat='{$obj->getCc_evento_mat()}'";
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
 

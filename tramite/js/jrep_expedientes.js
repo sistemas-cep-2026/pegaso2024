@@ -1,4 +1,4 @@
-var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm','#c_region'];
+var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm', '#c_region'];
 
 var REGLAS_FILTRO_EXP = {
     '01': ['#c_expediente'],                                                   // EXPEDIENTE
@@ -44,10 +44,10 @@ function fn_buscarExp() {
             return;
         }
         fn_listaDataTable('table-reporte', {
-            searching: false,
+            searching: true,
             lengthChange: false,
             paging: false,
-            buttons: []
+            buttons: buttonsDataTable
         });
     });
 }

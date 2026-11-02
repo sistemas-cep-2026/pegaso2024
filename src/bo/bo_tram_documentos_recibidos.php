@@ -167,15 +167,12 @@ class bo_tram_documentos_recibidos
     a.nombre AS c_area_adm_text,
     ac.nombre AS c_accion_text,
     dbo.fc_v1_fecha_texto(sd.fecha_entrega) AS fecha_entrega_text
-
     FROM documentos_recibidos1 d WITH (NOLOCK)
-
     LEFT JOIN personas p WITH (NOLOCK)
     ON d.c_persona = p.c_persona
 
     LEFT JOIN personas pf WITH (NOLOCK)
     ON d.c_persona_pf = pf.c_persona
-
     LEFT JOIN seguimiento_documentos_recibid1 sd WITH (NOLOCK)
     ON sd.cc_docrecibidos = d.cc_docrecibidos
     AND sd.cc_docrecibidos_det = (
@@ -183,21 +180,26 @@ class bo_tram_documentos_recibidos
         FROM seguimiento_documentos_recibid1 sd2 WITH (NOLOCK)
         WHERE sd2.cc_docrecibidos = d.cc_docrecibidos
     )
-
     LEFT JOIN gen_area_adm a WITH (NOLOCK)
     ON sd.c_area_adm = a.cc_area_adm
-
     LEFT JOIN tram_acciones ac WITH (NOLOCK)
-    ON sd.c_accion = ac.c_accion
-        where d.c_expediente between '" . $obj->getC_expediente_desde() . "' and '" . $obj->getC_expediente_hasta() . "'";
+    ON sd.c_accion = ac.c_accion";
+        // ===== CAMBIO: solo "desde" => ese expediente como mínimo y todos los superiores =====
+        $exp_desde = $obj->getC_expediente_desde();
+        $exp_hasta = $obj->getC_expediente_hasta();
+
+        if (strlen($exp_desde) > 0 && strlen($exp_hasta) == 0) {
+            $sql .= " where d.c_expediente >= '" . $exp_desde . "'";
+        } else {
+            $sql .= " where d.c_expediente between '" . $exp_desde . "' and '" . $exp_hasta . "'";
+        }
+        // ===== FIN CAMBIO =====
 
         if (strlen($obj->getC_local()) > 0) {
             $sql .= " AND d.c_local='" . $obj->getC_local() . "'";
         }
         $sql .= " order by d.c_expediente";
-
         //echo $sql;
-
         return $this->dao->consulta($sql);
     }
 
@@ -235,9 +237,11 @@ class bo_tram_documentos_recibidos
         on l.c_local=d.c_local_origen
         where d.c_local='{$obj->getC_local()}' and d.gestion='{$obj->getGestion()}'";
         if (strlen($obj->getC_expediente_desde()) > 0) {
-            if(strlen($obj->getC_expediente_hasta()) >= strlen($obj->getC_expediente_desde())){
-            $sql .= " AND d.c_expediente between '" . $obj->getC_expediente_desde() . "' and '" . $obj->getC_expediente_hasta() . "'";
-            } else { $sql .= " AND d.c_expediente >= '" . $obj->getC_expediente_desde() . "'"; }
+            if (strlen($obj->getC_expediente_hasta()) >= strlen($obj->getC_expediente_desde())) {
+                $sql .= " AND d.c_expediente between '" . $obj->getC_expediente_desde() . "' and '" . $obj->getC_expediente_hasta() . "'";
+            } else {
+                $sql .= " AND d.c_expediente >= '" . $obj->getC_expediente_desde() . "'";
+            }
         } else {
             $sql .= " AND d.flag='P'";
         }

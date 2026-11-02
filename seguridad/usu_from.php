@@ -24,6 +24,9 @@ $sede = ($cc_local_sesion === '28') ? 'CN' : 'CR';
 $data_area = $bo_general->AreaAdministrativa($sede);
 
 $opc = isset($_REQUEST['opc']) ? s_crypt($_REQUEST['opc'], 'out') : 'I';
+if (!in_array($opc, ['I', 'U'], true)) {
+    $opc = 'I'; // este formulario solo atiende alta (I) y modificación (U)
+}
 $usuario_original = isset($_REQUEST['usuario']) ? s_crypt($_REQUEST['usuario'], 'out') : '';
 
 $cc_persona = '';
@@ -66,7 +69,7 @@ if ($opc == 'U' && $usuario_original) {
             <div class="col-sm-12 mb-3">
                 <label class="form-label">Persona:</label>
                 <?php if ($opc == 'U') { ?>
-                    <input type="text" class="form-control" value="<?php echo $nombre_persona ?>" disabled>
+                    <input type="text" class="form-control" value="<?php echo htmlspecialchars((string)$nombre_persona) ?>" disabled>
                 <?php } else { ?>
                     <div class="row g-2">
                         <div class="col-sm-4">
@@ -84,15 +87,15 @@ if ($opc == 'U' && $usuario_original) {
 
             <div class="col-sm-6 mb-3">
                 <label for="usuario" class="form-label">Usuario:</label>
-                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo $usuario ?>" <?php echo ($opc == 'U') ? 'disabled' : 'required' ?>>
+                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo htmlspecialchars((string)$usuario) ?>" <?php echo ($opc == 'U') ? 'disabled' : 'required' ?>>
             </div>
             <div class="col-sm-6 mb-3">
                 <label for="cc_perfil" class="form-label">Perfil:</label>
                 <select class="form-control" id="cc_perfil" name="cc_perfil" required>
                     <option value="">Seleccione...</option>
                     <?php foreach ($data_perfil as $perf) { ?>
-                        <option value="<?php echo $perf['cc_perfil'] ?>" <?= ($perf['cc_perfil'] == $cc_perfil) ? 'selected' : '' ?>>
-                            <?php echo $perf['ct_perfil'] ?>
+                        <option value="<?php echo htmlspecialchars($perf['cc_perfil']) ?>" <?= ($perf['cc_perfil'] == $cc_perfil) ? 'selected' : '' ?>>
+                            <?php echo htmlspecialchars($perf['ct_perfil']) ?>
                         </option>
                     <?php } ?>
                 </select>
@@ -103,23 +106,23 @@ if ($opc == 'U' && $usuario_original) {
                 <select class="form-control" id="cc_local" name="cc_local" required>
                     <option value="">Seleccione...</option>
                     <?php foreach ($data_local as $loc) { ?>
-                        <option value="<?php echo $loc['c_local'] ?>" <?= ($loc['c_local'] == $cc_local) ? 'selected' : '' ?>>
-                            <?php echo $loc['nombre'] ?>
+                        <option value="<?php echo htmlspecialchars($loc['c_local']) ?>" <?= ($loc['c_local'] == $cc_local) ? 'selected' : '' ?>>
+                            <?php echo htmlspecialchars($loc['nombre']) ?>
                         </option>
                     <?php } ?>
                 </select>
             </div>
             <div class="col-sm-6 mb-3">
                 <label for="tp_user" class="form-label">Tipo de usuario:</label>
-                <input type="text" class="form-control" id="tp_user" name="tp_user" value="<?php echo $tp_user ?>" maxlength="2" placeholder="Ej. A">
+                <input type="text" class="form-control" id="tp_user" name="tp_user" value="<?php echo htmlspecialchars(trim((string)$tp_user)) ?>" maxlength="2" placeholder="Ej. A">
             </div>
             <div class="col-sm-6 mb-3">
                 <label for="c_area" class="form-label">Área:</label>
                 <select class="form-control" id="c_area" name="c_area">
                     <option value="">Seleccione...</option>
                     <?php foreach ($data_area as $ar) { ?>
-                        <option value="<?php echo $ar['cc_area_adm'] ?>" <?= ($ar['cc_area_adm'] == $c_area) ? 'selected' : '' ?>>
-                            <?php echo $ar['nombre'] ?>
+                        <option value="<?php echo htmlspecialchars($ar['cc_area_adm']) ?>" <?= ($ar['cc_area_adm'] == $c_area) ? 'selected' : '' ?>>
+                            <?php echo htmlspecialchars($ar['nombre']) ?>
                         </option>
                     <?php } ?>
                 </select>
@@ -132,13 +135,13 @@ if ($opc == 'U' && $usuario_original) {
                 </div>
                 <div class="col-sm-6 mb-3">
                     <label for="tiempo_sesion" class="form-label">Tiempo de sesión (seg.):</label>
-                    <input type="text" class="form-control" id="tiempo_sesion" name="tiempo_sesion" value="<?php echo $tiempo_sesion ?>">
+                    <input type="text" class="form-control" id="tiempo_sesion" name="tiempo_sesion" value="<?php echo htmlspecialchars((string)$tiempo_sesion) ?>">
                 </div>
             <?php } ?>
 
             <div class="col-sm-12 mb-3">
                 <label for="obs" class="form-label">Observación:</label>
-                <textarea class="form-control" id="obs" name="obs" rows="2"><?php echo $obs ?></textarea>
+                <textarea class="form-control" id="obs" name="obs" rows="2"><?php echo htmlspecialchars((string)$obs) ?></textarea>
             </div>
 
             <div class="col-sm-12 text-center">

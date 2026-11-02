@@ -1,17 +1,17 @@
 fn_buscarUsuarios();
 
 function fn_buscarUsuarios() {
-    var str = $("#frmBuscarUsuarios").serialize();
-    obtenerDatos('divListarUsuarios', 'seguridad/usu_listar', str, function () {
-        fn_listaDataTable('table_usuarios', {
-          ordering: true,
-          responsive: false,
-          searching: false,
-          pageLength: 30,
-          lengthChange: false,
-          buttons: []
-      });
+  var str = $("#frmBuscarUsuarios").serialize();
+  obtenerDatos('divListarUsuarios', 'seguridad/usu_listar', str, function () {
+    fn_listaDataTable('table_usuarios', {
+      ordering: true,
+      responsive: false,
+      searching: false,
+      pageLength: 30,
+      lengthChange: false,
+      buttons: []
     });
+  });
 }
 
 function fn_Anular(usuario, opc) {
