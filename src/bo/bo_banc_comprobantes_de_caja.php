@@ -130,7 +130,7 @@ class bo_banc_comprobantes_de_caja
         }
 
         $sql . " order by bo.fc_v1_fecha_texto(cc.fecha) desc,cc.num_boleta_cheque desc";
-      //  echo $sql;
+        //echo $sql;
         return $this->dao->consulta($sql);
     }
     /*estado de cuenta reportes*/
@@ -202,7 +202,7 @@ and flag='*'";
             $sql = $sql . " AND YEAR(fecha_concluir)='" . $anho . "' AND MONTH(fecha_concluir)='" . $hasta . "'";
         }
         $sql = $sql . ' order by fecha asc';
-        //echo $sql;
+        echo $sql;
         return $this->dao->consulta($sql);
     }
 

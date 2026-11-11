@@ -8,6 +8,10 @@ $desde = date('Y-m-d');
 $hasta = date('Y-m-d');
 $numero = '';
 $flag = 'T';
+$nombre_institucion = '';
+$c_expediente = '';
+$cod_codigo = '';
+$id_doc = '';
 $flag_text = $arr_color = [
     'T' => 'PENDIENTE',
     '*' => 'PROCESADO',
@@ -101,7 +105,7 @@ if (isset($_REQUEST['opc']) && s_crypt($_REQUEST['opc'], 'out') === 'U') {
                             <input type="number" class="form-control" id="expediente" name="expediente" placeholder="N° Expediente" value="<?= $c_expediente ?>" required <?= $disabled ?>>
                         </div>
                         <div class="col-lg-8">
-                            <input type="text" class="form-control" id="nombre_institucion" name="nombre_institucion" placeholder="Institución u Organismo" value="<?= $nombre_institucion; ?>" readonly>
+                            <input type="text" class="form-control" id="nombre_institucion" name="nombre_institucion" placeholder="Institución u Organismo" value="<?= htmlspecialchars((string)($nombre_institucion ?? '')) ?>" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">

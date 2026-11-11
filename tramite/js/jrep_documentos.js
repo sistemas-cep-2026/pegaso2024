@@ -8,12 +8,11 @@ function fn_reporte() {
             return;
         }
         fn_listaDataTable('table-reporte', {
-            searching: false,
+            searching: true,
             lengthChange: false,
-            paging: false,
-            buttons: []
+            paging: true,
+            pageLength: 30,
+            buttons: buttonsDataTable
         });
     });
 }
-
- 

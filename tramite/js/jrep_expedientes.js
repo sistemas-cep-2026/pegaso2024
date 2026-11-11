@@ -46,7 +46,8 @@ function fn_buscarExp() {
         fn_listaDataTable('table-reporte', {
             searching: true,
             lengthChange: false,
-            paging: false,
+            paging: true,
+            pageLength: 45,
             buttons: buttonsDataTable
         });
     });

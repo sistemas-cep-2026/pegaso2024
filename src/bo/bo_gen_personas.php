@@ -162,7 +162,7 @@ class bo_gen_personas
          as razon_social
         FROM personas 
         WHERE (ruc LIKE '%" . $obj->getRuc() . "%' OR nombre LIKE '%" . $obj->getRuc() . "%')
-         and c_cmp is null";
+        ";
         //echo $sql;
         return $this->dao->consulta($sql);
     }

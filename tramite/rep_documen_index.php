@@ -10,6 +10,8 @@ $cc_local = s_local();
 $sede = ($cc_local == '28') ? 'CN' : 'CR';
 $data_area   = $bo_general->AreaAdministrativa($sede);
 $data_gestion = $bo_general->listarGestionActiva();
+// Mismos tipos que usa la emisión de documentos (documen_index.php)
+$data_tipo_doc = $bo_general->tipo_documento('T');
 
 ?>
 
@@ -34,6 +36,20 @@ $data_gestion = $bo_general->listarGestionActiva();
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">F. Hasta:</span>
                                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="<?= fecha_hoy() ?>">
+                                </div>
+                            </div>
+                            <!-- Tipo de documento -->
+                            <div class="col-sm-3">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Tipo Doc.:</span>
+                                    <select name="c_tipo_de_documento" id="c_tipo_de_documento" class="form-select">
+                                        <option value="">TODOS</option>
+                                        <?php foreach ($data_tipo_doc as $tipo): ?>
+                                            <option value="<?= htmlspecialchars($tipo['c_tipo_de_documento']) ?>">
+                                                <?= htmlspecialchars($tipo['nombre']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                             </div>
                         </div>

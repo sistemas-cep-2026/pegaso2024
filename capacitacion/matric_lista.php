@@ -5,6 +5,8 @@ s_validar_pagina();
 
 require_once(u_src() . "bo/bo_general.php");
 require_once(u_src() . "bo/bo_cap_eventos_matricula.php");
+require_once(u_src() . "bo/bo_cap_eventos_modulo.php");
+require_once(u_src() . "bo/bo_cap_eventos_modulo_nota.php");
 
 $bo_general = new bo_general();
 $bo_eventos_det = new bo_cap_eventos_matricula();
@@ -33,6 +35,32 @@ foreach ($data_parti as $row) {
 	if ($row['ponente'] == 1) $ponentes++;
 	if ($row['organizador'] == 1) $organizadores++;
 }
+
+// Módulos asignados a cada ponente: cc_evento_mat => [nombres de módulo]
+$modulos_ponente = [];
+if ($ponentes > 0 && ctype_digit((string)$cc_evento)) {
+	$bo_modulo = new bo_cap_eventos_modulo();
+	$bo_modnota = new bo_cap_eventos_modulo_nota();
+	$ent_modulo = new cap_eventos_modulo();
+	$ent_modnota = new cap_eventos_modulo_nota();
+
+	$ent_modulo->setCc_evento($cc_evento);
+	$nombre_modulo = [];
+	foreach ($bo_modulo->listar($ent_modulo) as $m) {
+		$nom = trim((string)$m['ct_modulo']);
+		if (trim((string)$m['flag']) !== '*') $nom .= ' (anulado)';
+		$nombre_modulo[(int)$m['cc_capmod']] = $nom;
+	}
+	foreach ($data_parti as $row) {
+		if ($row['ponente'] != 1) continue;
+		$ent_modnota->setCc_evento_mat($row['cc_evento_mat']);
+		$lista = [];
+		foreach ($bo_modnota->listarID($ent_modnota) as $a) {
+			$lista[] = $nombre_modulo[(int)$a['cc_capmod']] ?? 'Módulo no disponible';
+		}
+		$modulos_ponente[$row['cc_evento_mat']] = $lista;
+	}
+}
 ?>
 <div class="row">
 	<div class="col-xl-8">
@@ -48,7 +76,7 @@ foreach ($data_parti as $row) {
 							<th scope="col">A</th>
 							<th scope="col">P</th>
 							<th scope="col">C</th>
-							<th scope="col">NOTA</th>
+							<th scope="col">NOTA / MÓDULO</th>
 							<th class="text-center"><a href="#" onclick="fn_nuevoMatriculado('<?php echo s_crypt($cc_evento) ?>')" class="btn btn-outline-success waves-effect waves-light shadow-none btn-sm"><i class='fas fa-plus-square'></i></a></th>
 						</tr>
 					</thead>
@@ -84,16 +112,38 @@ foreach ($data_parti as $row) {
 								</td>
 								<td class="text-center">
 									<?php
-									$nota_txt = trim((string)($row['nota'] ?? ''));
-									$tiene_nota = ($nota_txt !== ''); // no usar empty(): la nota "0" es válida
+									$es_asistente = ($row['asistente'] == 1);
+									$es_ponente = ($row['ponente'] == 1);
 									?>
-									<a href="#" title="<?= $tiene_nota ? 'Modificar Nota' : 'Asignar Nota' ?>" data-bs-toggle="tooltip" onclick="fn_nota('<?php echo s_crypt($row['cc_evento_mat'], 'in') ?>')">
-										<?php if ($tiene_nota) { ?>
-											<span class="badge bg-success-subtle text-success fs-12"><?= htmlspecialchars($nota_txt, ENT_QUOTES, 'UTF-8') ?></span>
-										<?php } else { ?>
-											<span class="badge bg-info-subtle text-info fs-12">?</span>
+									<div class="d-flex justify-content-center align-items-center gap-1">
+										<?php if ($es_asistente) {
+											$nota_txt = trim((string)($row['nota'] ?? ''));
+											$tiene_nota = ($nota_txt !== ''); // no usar empty(): la nota "0" es válida
+										?>
+											<a href="#" title="<?= $tiene_nota ? 'Modificar Nota' : 'Asignar Nota' ?>" data-bs-toggle="tooltip" onclick="fn_nota('<?php echo s_crypt($row['cc_evento_mat'], 'in') ?>')">
+												<?php if ($tiene_nota) { ?>
+													<span class="badge bg-success-subtle text-success fs-12"><?= htmlspecialchars($nota_txt, ENT_QUOTES, 'UTF-8') ?></span>
+												<?php } else { ?>
+													<span class="badge bg-info-subtle text-info fs-12">?</span>
+												<?php } ?>
+											</a>
 										<?php } ?>
-									</a>
+										<?php if ($es_ponente) {
+											$mods_ponente = $modulos_ponente[$row['cc_evento_mat']] ?? [];
+											$tiene_modulo = !empty($mods_ponente);
+										?>
+											<a href="#" title="<?= $tiene_modulo ? htmlspecialchars('Módulos: ' . implode(', ', $mods_ponente), ENT_QUOTES, 'UTF-8') : 'Asignar Módulo' ?>" data-bs-toggle="tooltip" onclick="fn_modulo('<?php echo s_crypt($row['cc_evento_mat'], 'in') ?>')">
+												<?php if ($tiene_modulo) { ?>
+													<span class="badge bg-success-subtle text-success fs-12"><i class="ri-book-open-line me-1"></i><?= count($mods_ponente) > 1 ? count($mods_ponente) : '<i class="ri-check-line"></i>' ?></span>
+												<?php } else { ?>
+													<span class="badge bg-info-subtle text-info fs-12"><i class="ri-book-open-line me-1"></i>?</span>
+												<?php } ?>
+											</a>
+										<?php } ?>
+										<?php if (!$es_asistente && !$es_ponente) { ?>
+											<span class="text-muted">&mdash;</span>
+										<?php } ?>
+									</div>
 								</td>
 								<td class="text-center">
 									<a href="#" onclick="fn_Eliminar('<?php echo s_crypt($row['cc_evento_mat']) ?>','<?php echo s_crypt('E') ?>')" class="btn btn-outline-danger waves-effect waves-light shadow-none btn-sm"><i class='fas fa-trash'></i></a>

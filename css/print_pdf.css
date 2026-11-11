@@ -1255,3 +1255,7 @@ th {
 .reporte-expedientes .accion {
   text-decoration: underline;
 }
+
+.reporte-expedientes .tabla-expedientes tbody tr {
+  page-break-inside: avoid;
+}

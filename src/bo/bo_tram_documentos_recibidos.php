@@ -296,7 +296,7 @@ class bo_tram_documentos_recibidos
     public function buscarExpedienteHabilidad(tram_documentos_recibidos $obj)
     {
         $sql = "SELECT p.nombre as nombre_institucion, dr.c_persona as c_persona_institucion,
-        dr.c_expediente as c_expediente FROM documentos_recibidos dr (NOLOCK)
+        dr.c_expediente as c_expediente FROM documentos_recibidos1 dr (NOLOCK)
         INNER JOIN personas p (NOLOCK) ON dr.c_persona = p.c_persona
         WHERE dr.c_expediente = (SELECT '" . $obj->getC_local() . "'+(SELECT MAX(cod) 
         from gestiones_directivas (NOLOCK))+'" . $obj->getC_expediente() . "')";

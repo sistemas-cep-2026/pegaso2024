@@ -22,7 +22,8 @@ $tipo_persona = $bo_parametro_detalle->listarParametroDet("documentos_recibidos1
 
 $data_doc = $bo_general->tipo_documento('T');
 //$data_cargos = $bo_general->listarCargos();
-$sede = (s_local() == '28') ? 'CN' : 'CR';
+//$sede = (s_local() == '28') ? 'CN' : 'CR';
+$sede =  'CN' ;
 $data_area = $bo_general->AreaAdministrativa($sede);
 
 $gestion = s_gestion();

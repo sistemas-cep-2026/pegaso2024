@@ -11,10 +11,10 @@ try {
 
     $opc = s_crypt($_REQUEST["opc"] ?? '', 'out');
     $cc_evento_mat = s_crypt($_REQUEST["cc_evento_mat"] ?? '', 'out');
-    $cc_persona = s_crypt($_REQUEST["c_persona"],"out");
+    $cc_persona = s_crypt($_REQUEST["c_persona"] ?? '', 'out');
     $cc_evento = s_crypt($_REQUEST["cc_evento"] ?? '', 'out');
 
-    if($opc==='I'){
+    if ($opc === 'I') {
         $ent_matricula->setC_persona($cc_persona);
         $ent_matricula->setCc_evento($cc_evento);
 

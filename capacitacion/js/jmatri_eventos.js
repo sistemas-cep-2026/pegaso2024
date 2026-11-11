@@ -47,6 +47,13 @@ function fn_nuevoMatriculado(cc_evento) {
   });
 }
 
+function fn_modulo(cc_evento_mat) {
+  var str = `cc_evento_mat=${cc_evento_mat}`;
+  obtenerDatos(modalContainer, "capacitacion/matric_modulo_from", str, function () {
+    modalRegistro.show();
+  });
+}
+
 function fn_nota(cc_evento_mat) {
   var str = `cc_evento_mat=${cc_evento_mat}`;
   obtenerDatos(modalContainerSm, "capacitacion/matric_nota_from", str, function () {

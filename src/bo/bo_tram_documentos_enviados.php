@@ -21,12 +21,24 @@ class bo_tram_documentos_enviados
         return $this->dao->errores();
     }
 
-    public function listar(tram_documentos_enviados $obj = null)
+    public function listar(?tram_documentos_enviados $obj = null)
     {
-        $sql = "select   c_tipo_de_documento,gestion,num_documento,asunto,
-             dbo.fc_fecha_texto_hora1(fecha) as fecha_text,c_area_adm_doc,tipo_persona,c_area_adm_usuario,cc_docenviado ,flag,c_usuario,'' flag_text
-        from documentos_enviados where c_local='{$obj->getC_local()}' and fecha between '{$obj->getfecha_desde()}' and '{$obj->getfecha_hasta()}' order by c_tipo_de_documento,num_documento";
-       // echo $sql;
+        $sql = "select d.c_tipo_de_documento, 
+        dbo.fc_v1_fecha_texto_hora(d.fecha) as fecha_text, 
+        d.gestion,d.num_documento,d.asunto,
+        d.c_area_adm_doc,d.tipo_persona,
+        d.c_area_adm_usuario,d.cc_docenviado,
+        d.flag,d.c_usuario,
+        a.nombre as area
+        from documentos_enviados d inner join gen_area_adm a
+        on d.c_Area_adm_usuario=a.cc_area_adm
+                
+        where d.c_local='{$obj->getC_local()}' and d.fecha between '{$obj->getfecha_desde()}' and '{$obj->getfecha_hasta()}'";
+        if (!empty($obj->getC_tipo_de_documento())) {
+            $sql .= " and d.c_tipo_de_documento='{$obj->getC_tipo_de_documento()}'";
+        }
+        $sql .= " order by d.c_tipo_de_documento,d.num_documento";
+        echo $sql;
         return $this->dao->consulta($sql);
     }
 

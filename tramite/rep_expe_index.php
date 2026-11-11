@@ -61,6 +61,8 @@ $data_region = $bo_general->listar28Regiones();
                                         <option value="04">FECHA Y AREA</option>
                                         <option value="05">FECHA Y (PERSONA-AREA)</option>
                                         <option value="06">FECHA Y CR</option>
+                                        <option value="07">FECHA Y REFERENCIA</option>
+                                        <option value="08">FECHA Y NUMERO DE DOC.</option>
                                     </select>
                                 </div>
                             </div>
@@ -135,6 +137,28 @@ $data_region = $bo_general->listar28Regiones();
                                     </select>
                                 </div>
                             </div>
+
+                        </div>
+
+                        <!-- asunto - NRO.DOC -->
+                        <div class="mb-1 row justify-content-center align-items-center">
+
+                            <div id="grupo_asunto" class="col-sm-4 col-xl-3">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">REFERENCIA:</span>
+
+                                    <input type="text" class="form-control" id="asunto" name="asunto" placeholder="Referencia/Obs." value="">
+                                </div>
+                            </div>
+
+                            <div id="grupo_nro_doc" class="col-sm-4 col-xl-3">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Nro. Doc.:</span>
+
+                                    <input type="text" class="form-control" id="nro_doc" name="nro_doc" placeholder="Num. documento" value="">
+                                </div>
+                            </div>
+
 
                         </div>
 

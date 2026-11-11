@@ -27,6 +27,8 @@ $f_desde     = trim($_REQUEST["fecha_desde"] ?? '');
 $f_hasta     = trim($_REQUEST["fecha_hasta"] ?? '');
 $fecha_desde = ($f_desde !== '') ? u_fecha($f_desde) . ' 01:00' : '';
 $fecha_hasta = ($f_hasta !== '') ? u_fecha($f_hasta) . ' 23:59' : '';
+$asunto = $_REQUEST["asunto"] ?? '';
+$nro_doc = $_REQUEST["nro_doc"] ?? '';
 
 if ($tipo_filtro === '01' && (int) $exp_digitos === 0) {
     echo '<div class="alert alert-warning mb-0">Ingrese el número de expediente.</div>';
@@ -57,6 +59,8 @@ $ent_doc_recibidos->setNombre_remitente($nombre_remitente);
 $ent_doc_recibidos->setC_area_adm($c_area_adm);
 $ent_doc_recibidos->setC_local($cc_local);
 $ent_doc_recibidos->setGestion($gestion);
+$ent_doc_recibidos->setAsunto($asunto);
+$ent_doc_recibidos->setTokenumero($nro_doc);
 $ent_doc_recibidos->setC_local_origen($c_local_origen);
 $data_exp = $bo_doc_recibidos->listar($ent_doc_recibidos);
 

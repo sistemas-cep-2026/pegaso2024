@@ -22,6 +22,7 @@ class dao_cap_eventos_modulo_nota
 
     public function insertar(cap_eventos_modulo_nota $obj)
     {
+        $nota_sql = ($obj->getNota() === null || $obj->getNota() === '') ? 'NULL' : "'" . $obj->getNota() . "'";
         $sql = "INSERT INTO cap_eventos_modulo_nota (
             cc_capmod,
             cc_evento_mat,
@@ -29,7 +30,7 @@ class dao_cap_eventos_modulo_nota
         VALUES (
             {$obj->getCc_capmod()},
             {$obj->getCc_evento_mat()},
-            {$obj->getNota()})";
+            {$nota_sql})";
         return $this->conecta->sql_query($sql);
     }
 

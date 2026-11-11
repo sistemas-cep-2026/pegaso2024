@@ -18,8 +18,8 @@
     $ent_bancos_comp->setCod_mes($cod_mes);
     $ent_bancos_comp->setC_local($cc_local);
 
-    $ent_bancos_comp->setC_banco(substr($_REQUEST['c_banco'], 0, 6));
-    $ent_bancos_comp->setC_cta_corriente(substr($_REQUEST['c_banco'], 7, 35));
+    $ent_bancos_comp->setC_banco(substr($_REQUEST['c_banco'] ?? '', 0, 6));
+    $ent_bancos_comp->setC_cta_corriente(substr($_REQUEST['c_banco'] ?? '', 7, 35));
 
     $ent_bancos_comp->setNum_boleta_cheque($_REQUEST['num_boleta_cheque']);
     $ent_bancos_comp->setMonto($_REQUEST['monto']);
@@ -33,8 +33,8 @@
      <table class="table table-nowrap">
          <thead class='table-light'>
              <tr>
-               <th>N°</th>    
-             <th>Comprobante</th>
+                 <th>N°</th>
+                 <th>Comprobante</th>
 
                  <th>fecha</th>
                  <th>Benef.</th>
@@ -51,7 +51,7 @@
          </thead>
          <tbody>
              <?php foreach ($data_egresos as $banco) {
-                $n++; ?>
+                    $n++; ?>
                  <tr>
                      <td><?php echo $n; ?></td>
                      <td><?php echo digitos($banco['comprobante'], 6) ?></td>
