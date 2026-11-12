@@ -101,7 +101,7 @@ $estadoMap = [
                     <td><?= htmlspecialchars($row['nombre_remitente'] ?? ($row['razon_social'] ?? '')) ?></td>
                     <td><?= htmlspecialchars($row['num_documento'] ?? '') ?></td>
                     <td><?= htmlspecialchars($row['fecha_documento_text'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($row['asunto'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($row['asunto'] ?? '').' // '.htmlspecialchars($row['asunto2'] ?? ''); ?></td>
                     <td><?= htmlspecialchars($row['c_usuario'] ?? '') ?></td>
                     <td><span class="badge bg-<?= $estadoColor ?>-subtle text-<?= $estadoColor ?>"><?= $estadoTexto ?></span></td>
                     <td>

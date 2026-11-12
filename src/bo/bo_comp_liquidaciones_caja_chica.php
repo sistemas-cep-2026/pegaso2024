@@ -124,7 +124,7 @@ class bo_comp_liquidaciones_caja_chica
         FROM liquidaciones_caja_chica c inner join personas p 
         on c.c_persona=p.c_persona
         WHERE c.c_local = '{$obj->getC_local()}' 
-        AND  c.flag in ('&','I') order by c.fecha desc";
+        AND  c.flag in ('*') and flag_bancos='&' and isnumeric(c_liquidacion_caja_chica)=1 order by c.fecha desc";
         //echo $sql;
         return $this->dao->consulta($sql);
     }

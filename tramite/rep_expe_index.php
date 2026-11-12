@@ -62,11 +62,16 @@ $data_region = $bo_general->listar28Regiones();
                                         <option value="05">FECHA Y (PERSONA-AREA)</option>
                                         <option value="06">FECHA Y CR</option>
                                         <option value="07">FECHA Y REFERENCIA</option>
-                                        <option value="08">FECHA Y NUMERO DE DOC.</option>
+                                        <option value="08">FECHA Y NUM. DOC.</option>
                                     </select>
                                 </div>
                             </div>
-
+                            <div id="grupo_expediente" class="col-sm-3 col-xl-2">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Exp.:</span>
+                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="Expediente" value="">
+                                </div>
+                            </div>
                         </div>
 
                         <!-- FECHAS -->
@@ -87,42 +92,6 @@ $data_region = $bo_general->listar28Regiones();
                                     <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="<?php echo fecha_hoy(); ?>">
                                 </div>
                             </div>
-                            <div id="grupo_expediente" class="col-sm-3 col-xl-2">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text">Exp.:</span>
-                                    <input type="text" class="form-control" id="c_expediente" name="c_expediente" placeholder="Expediente" value="">
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- NOMBRE, EXPEDIENTE Y AREA -->
-                        <div class="mb-1 row justify-content-center align-items-center">
-
-                            <div id="grupo_nombre" class="col-sm-4 col-xl-3">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text">Nombre:</span>
-
-                                    <input type="text" class="form-control" id="nombre_remitente" name="nombre_remitente" placeholder="Nombre" value="">
-                                </div>
-                            </div>
-
-
-                            <div id="grupo_area" class="col-sm-4 col-xl-3">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text">Área:</span>
-
-                                    <select name="c_area_adm" id="c_area_adm" class="form-control">
-                                        <option value="">Selecciona área</option>
-                                        <?php foreach ($data_area as $area): ?>
-                                            <option value="<?php echo htmlspecialchars($area['cc_area_adm']); ?>">
-                                                <?php echo htmlspecialchars($area['nombre']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div id="grupo_region" class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">CR:</span>
@@ -140,22 +109,50 @@ $data_region = $bo_general->listar28Regiones();
 
                         </div>
 
-                        <!-- asunto - NRO.DOC -->
+                        <!-- NOMBRE, EXPEDIENTE Y AREA -->
                         <div class="mb-1 row justify-content-center align-items-center">
 
-                            <div id="grupo_asunto" class="col-sm-4 col-xl-3">
+                            <div id="grupo_nombre" class="col-sm-4 col-xl-3">
                                 <div class="input-group mb-1">
-                                    <span class="input-group-text">REFERENCIA:</span>
+                                    <span class="input-group-text">Nombre:</span>
 
-                                    <input type="text" class="form-control" id="asunto" name="asunto" placeholder="Referencia/Obs." value="">
+                                    <input type="text" class="form-control" id="nombre_remitente" name="nombre_remitente" placeholder="Nombre" value="">
                                 </div>
                             </div>
 
-                            <div id="grupo_nro_doc" class="col-sm-4 col-xl-3">
+
+                            <div id="grupo_area" class="col-sm-3 col-xl-2">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">Área:</span>
+
+                                    <select name="c_area_adm" id="c_area_adm" class="form-control">
+                                        <option value="">Selecciona área</option>
+                                        <?php foreach ($data_area as $area): ?>
+                                            <option value="<?php echo htmlspecialchars($area['cc_area_adm']); ?>">
+                                                <?php echo htmlspecialchars($area['nombre']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <div id="grupo_asunto" class="col-sm-3 col-xl-2">
+                                <div class="input-group mb-1">
+                                    <span class="input-group-text">REFERENCIA:</span>
+
+                                    <input type="text" class="form-control" id="asunto" name="asunto" placeholder="Referencia/Obs." value="" minlength="4" required>
+                                </div>
+                            </div>
+
+                            <div id="grupo_nro_doc" class="col-sm-3 col-xl-2">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text">Nro. Doc.:</span>
 
-                                    <input type="text" class="form-control" id="nro_doc" name="nro_doc" placeholder="Num. documento" value="">
+                                    <input type="text" class="form-control" id="nro_doc" name="nro_doc" placeholder="Num. documento" value="" minlength="2" required>
                                 </div>
                             </div>
 

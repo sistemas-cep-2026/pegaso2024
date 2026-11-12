@@ -220,7 +220,7 @@ $nombre_mes = $meses[$cod_mes] ?? 'Mes no definido';
 											<div class="col-lg-2">
 												<div class="form-check form-switch form-switch-md" dir="ltr">
 													<input type="checkbox" class="form-check-input" id="cajachica" <?= $tieneCajaChica ? 'checked' : '' ?>>
-													<label class="form-check-label" for="cajachica">Activar</label>
+													<label class="form-check-label" for="cajachica">CajaChica</label>
 												</div>
 											</div>
 											<div class="col-lg-10">

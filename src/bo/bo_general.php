@@ -223,7 +223,7 @@ class bo_general
     rtrim(c_cuenta) +' '+ rtrim(nombre) as nombre_cuenta
     FROM plan_de_cuentas_year
     WHERE version='5'
-    and (substring(c_cuenta,1,2) in ('16','18','30','31','32','33','34','35','40','41','42','43','44','46','60','61','62','63','64','65','67') or 
+    and (substring(c_cuenta,1,2) in ('16','18','30','31','32','33','34','35','40','41','42','43','44','59','46','60','61','62','63','64','65','67') or 
     substring(c_cuenta,1,3) in ('103','102'))
     and (c_cuenta like '{$c_cuenta}%' or nombre like '%{$c_cuenta}%') and len(c_cuenta)=10
     and flag_general_movimiento='M'";

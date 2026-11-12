@@ -146,6 +146,13 @@ class bo_tram_documentos_recibidos
               AND s.c_area_adm = '{$obj->getC_area_adm()}'
         )";
         }
+         if (strlen($obj->getTokenumero()) > 0) {
+            $sql .= " AND d.tokenumero like '%" . $obj->getTokenumero() . "%'";
+        }
+
+         if (strlen($obj->getAsunto()) > 0) {
+            $sql .= " AND (d.asunto like '%" . $obj->getAsunto() . "%' or d.asunto2 like '%" . $obj->getAsunto() . "%')";
+        }
 
         $sql .= " ORDER BY d.c_expediente ASC";
 

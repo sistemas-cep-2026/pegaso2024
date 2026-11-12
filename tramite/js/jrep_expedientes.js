@@ -1,4 +1,4 @@
-var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm', '#c_region'];
+var CAMPOS_FILTRO_EXP = ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_expediente', '#c_area_adm', '#c_region', '#asunto', '#nro_doc'];
 
 var REGLAS_FILTRO_EXP = {
     '01': ['#c_expediente'],                                                   // EXPEDIENTE
@@ -6,7 +6,9 @@ var REGLAS_FILTRO_EXP = {
     '03': ['#fecha_desde', '#fecha_hasta', '#nombre_remitente'],               // FECHA Y PERSONA
     '04': ['#fecha_desde', '#fecha_hasta', '#c_area_adm'],                     // FECHA Y AREA
     '05': ['#fecha_desde', '#fecha_hasta', '#nombre_remitente', '#c_area_adm'], // FECHA Y (PERSONA-AREA)
-    '06': ['#fecha_desde', '#fecha_hasta', '#c_region'] // FECHA Y cr
+    '06': ['#fecha_desde', '#fecha_hasta', '#c_region'], // FECHA Y cr
+    '07': ['#fecha_desde', '#fecha_hasta', '#asunto'], // FECHA Y asunto
+    '08': ['#fecha_desde', '#fecha_hasta', '#nro_doc'] // FECHA Y nro_doc
 };
 
 function fn_aplicarFiltroExp() {
@@ -38,6 +40,26 @@ if ($('#tipo_filtro').val() !== '01') {
 }
 
 function fn_buscarExp() {
+    var filtro = $('#tipo_filtro').val();
+    var campo = null;
+    var minimo = 0;
+    var nombre = '';
+
+    if (filtro === '07') {
+        campo = $('#asunto');
+        minimo = 4;
+        nombre = 'La Referencia';
+    } else if (filtro === '08') {
+        campo = $('#nro_doc');
+        minimo = 2;
+        nombre = 'El número de documento';
+    }
+
+    if (campo && campo.val().trim().length < minimo) {
+        alertaMensaje(nombre + ' debe tener como mínimo ' + minimo + ' caracteres.');
+        campo.focus();
+        return false;
+    }
     var str = $("#frmBuscarExp").serialize();
     obtenerDatos('divReporExp', 'tramite/rep_expe_lista', str, function () {
         if (!document.getElementById('table-reporte')) {
