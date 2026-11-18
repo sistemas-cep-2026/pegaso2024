@@ -32,7 +32,7 @@ if ((string) $cc_local !== (string) s_local_vinculado()) {
 
 try {
     $bo = new bo_contabilidad_centralizar();
-    $bo->procesarCompras($cc_local, $anho, $periodo);
+    $bo->procesarPlanilla728($cc_local, $anho, $periodo);
     echo json_encode(['ok' => true, 'mensaje' => 'El procedimiento de centralización se ejecutó sin errores reportados.']);
 } catch (Throwable $e) {
     error_log('Centralización compras: ' . $e->getMessage());

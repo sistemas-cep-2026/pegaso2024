@@ -47,7 +47,7 @@ class bo_comp_liquidaciones_caja_chica
             $sql .= " and l.flag LIKE '{$obj->getFlag()}'";
         }
         $sql .= " order by l.fecha desc";
-        echo $sql;
+       // echo $sql;
         return $this->dao->consulta($sql);
     }
 

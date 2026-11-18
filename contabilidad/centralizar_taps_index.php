@@ -11,21 +11,21 @@ s_validar_pagina();
                     <div class="col-sm">
                         <h5 class="card-title mb-0">CENTRALIZAR</h5>
                     </div>
-                </div>
+                </div> 
             </div>
             <div class="card-body border border-dashed border-end-0 border-start-0 border-bottom-0">
                 <ul class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#compras" onclick="fn_BuscarCompras('<?php echo s_local(); ?>');" aria-controls="rcompras" role="tab" aria-selected="true">COMPRAS</a>
+                        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#compras" onclick="fn_BuscarCompras('<?php echo s_local_vinculado(); ?>');" aria-controls="rcompras" role="tab" aria-selected="true">COMPRAS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#bancos" onclick="fn_BuscarBancos('<?php echo s_local(); ?>');" aria-controls="rbancos" role="tab" aria-selected="false">BANCOS</a>
+                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#bancos" onclick="fn_BuscarBancos('<?php echo s_local_vinculado(); ?>');" aria-controls="rbancos" role="tab" aria-selected="false">BANCOS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#planilla728" onclick="fn_BuscarPlanilla();" aria-controls="rdiario" role="tab" aria-selected="false">PLANILLA 728</a>
+                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#planilla728" onclick="fn_BuscarPlanilla728('<?php echo s_local_vinculado(); ?>');" aria-controls="rplanilla728" role="tab" aria-selected="false">PLANILLA 728</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#ventas" onclick="fn_BuscarVentas();" aria-controls="rventas" role="tab" aria-selected="false">VENTAS</a>
+                        <a class="nav-link" id="reporte_documento-tab" data-bs-toggle="tab" href="#ventas" onclick="fn_BuscarVentas('<?php echo s_local_vinculado(); ?>');" aria-controls="rventas" role="tab" aria-selected="false">VENTAS</a>
                     </li>
 
 

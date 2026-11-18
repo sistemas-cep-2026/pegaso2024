@@ -18,7 +18,7 @@ $usuario = s_usuario();
 <div class="row">
     <div class="col-xxl-12">
 
-        <form action="contabilidad/centralizar_compras_listar.php" method="POST" target="reporteIframeCompras" id="formlibroCompras">
+        <form action="contabilidad/centralizar_planilla728_listar.php" method="POST" target="reporteIframePlanilla728" id="formlibroPlanilla728">
             <div class="row mb-3 justify-content-center">
                 <div class="col-sm-1">
                      <input type="hidden" name="cc_local" value="<?php echo $cc_local; ?>">
@@ -52,7 +52,7 @@ $usuario = s_usuario();
                 <div class="col-sm-3">
                    
 
-                    <button type="submit" class="btn btn-primary btnBuscar" onclick="desactivarBotonBuscar(event, formlibroCompras)"><i class="fas fa-search"></i> Buscar</button>
+                    <button type="submit" class="btn btn-primary btnBuscar" onclick="desactivarBotonBuscar(event, formlibroPlanilla728)"><i class="fas fa-search"></i> Buscar</button>
                     <?php bt_cancelar() ?>
                 </div>
             </div>
@@ -65,7 +65,7 @@ $usuario = s_usuario();
                         <span class="sr-only">Cargando...</span>
                     </div>
                 </div>
-                <iframe name="reporteIframeCompras" loading="lazy" class="iframe-loader d-none" id="reporteIframeCompras" style="width: 100%; height: 600px; border: none;" onload="cargadorReportes()"></iframe>
+                <iframe name="reporteIframePlanilla728" loading="lazy" class="iframe-loader d-none" id="reporteIframePlanilla728" style="width: 100%; height: 600px; border: none;" onload="cargadorReportes()"></iframe>
 
             </div>
         </div>

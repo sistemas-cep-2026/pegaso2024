@@ -33,7 +33,7 @@ try {
             }
         }
     }
-
+ 
     $ent_doc_recibidos->setCc_docrecibidos($cc_docrecibidos);
     $ent_doc_recibidos->setC_tipo_de_documento($_REQUEST["c_tipo_de_documento"] ?? '');
     $ent_doc_recibidos->setNum_documento($_REQUEST["num_documento"] ?? '');
@@ -41,7 +41,7 @@ try {
     $ent_doc_recibidos->setC_persona(s_crypt($_REQUEST["c_persona"] ?? '', 'out'));
     //$ent_doc_recibidos->setC_persona_pf(s_crypt($_REQUEST["c_persona_pf"] ?? '', 'out'));
     $c_persona_pf = trim((string) s_crypt($_REQUEST["c_persona_pf"] ?? '', 'out'));
-    if ($c_persona_pf === '') {
+    if ($c_persona_pf === '' &&  $opc <>'A') {
         throw new Exception("Debe seleccionar un Remitente para continuar.");
     }
     $ent_doc_recibidos->setC_persona_pf($c_persona_pf);

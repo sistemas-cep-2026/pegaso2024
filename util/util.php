@@ -603,7 +603,7 @@ $color_flag_listar = [
     '*' => 'success',
     'V' => 'danger',
     'C' => 'success',
-    '&' => 'success',
+    '&' => 'danger',
     'I' => 'success',
     'P' => 'info',
 ];

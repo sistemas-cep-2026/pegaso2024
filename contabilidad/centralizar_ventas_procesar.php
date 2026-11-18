@@ -32,10 +32,10 @@ if ((string) $cc_local !== (string) s_local_vinculado()) {
 
 try {
     $bo = new bo_contabilidad_centralizar();
-    $bo->procesarCompras($cc_local, $anho, $periodo);
+    $bo->procesarVentas($cc_local, $anho, $periodo);
     echo json_encode(['ok' => true, 'mensaje' => 'El procedimiento de centralización se ejecutó sin errores reportados.']);
 } catch (Throwable $e) {
-    error_log('Centralización compras: ' . $e->getMessage());
+    error_log('Centralización Ventas: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['ok' => false, 'mensaje' => 'Error al procesar compras. Consulte el registro del servidor.']);
+    echo json_encode(['ok' => false, 'mensaje' => 'Error al procesar Ventas. Consulte el registro del servidor.']);
 }

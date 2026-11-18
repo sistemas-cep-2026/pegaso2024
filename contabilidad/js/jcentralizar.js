@@ -176,3 +176,145 @@ function fn_ProcesarBancos(boton) {
 
   });
 }
+
+function fn_ProcesarVentas(boton) {
+  var $boton = $(boton);
+  if ($boton.prop('disabled')) return;
+
+  var $doc = $(boton.ownerDocument);
+  var cc_local = $doc.find('#centralizar_cc_local').val();
+  var anho = $doc.find('#centralizar_anho').val();
+  var periodo = $doc.find('#centralizar_periodo').val();
+  var $mensaje = $doc.find('#mensajeProcesarCompras');
+
+  Swal.fire({
+    title: '¿Desea centralizar las Ventas?',
+    text: 'Se procesarán las Ventas del período ' + anho + '-' + periodo + '.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, procesar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33'
+  }).then(function (result) {
+
+    if (!result.isConfirmed) return;
+
+    $boton.prop('disabled', true);
+    $mensaje.text('Procesando, espere por favor...');
+
+    $.ajax({
+      url: 'contabilidad/centralizar_ventas_procesar.php',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        cc_local: cc_local,
+        anho: anho,
+        periodo: periodo
+      }
+    }).done(function (respuesta) {
+
+      $mensaje.text(respuesta.mensaje || 'Proceso finalizado.');
+
+      if (respuesta.ok) {
+
+        Swal.fire({
+          title: 'Proceso completado',
+          text: respuesta.mensaje || 'Las compras fueron centralizadas correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        });
+
+        var formulario = document.getElementById('formlibroVentas');
+        if (formulario) formulario.submit();
+
+      } else {
+        alertaMensaje(respuesta.mensaje || 'No se pudo centralizar las compras.');
+      }
+
+    }).fail(function (xhr) {
+
+      var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje)
+        || 'No se pudo ejecutar el proceso.';
+
+      $mensaje.text(mensaje);
+      alertaMensaje(mensaje);
+
+    }).always(function () {
+      $boton.prop('disabled', false);
+    });
+
+  });
+}
+
+
+
+function fn_ProcesarPlanilla728(boton) {
+  var $boton = $(boton);
+  if ($boton.prop('disabled')) return;
+
+  var $doc = $(boton.ownerDocument);
+  var cc_local = $doc.find('#centralizar_cc_local').val();
+  var anho = $doc.find('#centralizar_anho').val();
+  var periodo = $doc.find('#centralizar_periodo').val();
+  var $mensaje = $doc.find('#mensajeProcesarCompras');
+
+  Swal.fire({
+    title: '¿Desea centralizar las Planilla?',
+    text: 'Se procesarán las Planilla del período ' + anho + '-' + periodo + '.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, procesar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33'
+  }).then(function (result) {
+
+    if (!result.isConfirmed) return;
+
+    $boton.prop('disabled', true);
+    $mensaje.text('Procesando, espere por favor...');
+
+    $.ajax({
+      url: 'contabilidad/centralizar_planilla728_procesar.php',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        cc_local: cc_local,
+        anho: anho,
+        periodo: periodo
+      }
+    }).done(function (respuesta) {
+
+      $mensaje.text(respuesta.mensaje || 'Proceso finalizado.');
+
+      if (respuesta.ok) {
+
+        Swal.fire({
+          title: 'Proceso completado',
+          text: respuesta.mensaje || 'Las compras fueron centralizadas correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        });
+
+        var formulario = document.getElementById('formlibroPlanilla728');
+        if (formulario) formulario.submit();
+
+      } else {
+        alertaMensaje(respuesta.mensaje || 'No se pudo centralizar las compras.');
+      }
+
+    }).fail(function (xhr) {
+
+      var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje)
+        || 'No se pudo ejecutar el proceso.';
+
+      $mensaje.text(mensaje);
+      alertaMensaje(mensaje);
+
+    }).always(function () {
+      $boton.prop('disabled', false);
+    });
+
+  });
+}
