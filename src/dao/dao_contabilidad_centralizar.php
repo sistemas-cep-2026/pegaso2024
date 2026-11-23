@@ -82,14 +82,14 @@ class dao_contabilidad_centralizar
         return $resultado;
     }
 
-   public function procesarCerrrar($cc_local, $anho, $periodo,$mod,$usu)
+   public function procesarCerrrar($cc_local, $anho, $periodo,$mod,$flag,$usu)
     {
 
         $local = str_replace("'", "''", $cc_local);
         $anho = (int) $anho;
         $periodo = (int) $periodo;
   
-        $sql="EXEC dbo.sp_v1_periodos_local_actualizar   '".$anho ."','".$periodo."','". $cc_local."','".$mod."','".$usu."';";
+        $sql="EXEC dbo.sp_v1_periodos_local_actualizar   '".$anho ."','".$periodo."','". $cc_local."','".$mod."','".$flag."','".$usu."';";
         $resultado = $this->conecta->ArrayLista($sql);
         if ($resultado === false) {
             throw new RuntimeException('No se pudo ejecutar el procedimiento almacenado.');

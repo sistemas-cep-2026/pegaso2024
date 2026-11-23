@@ -1,1 +1,0 @@
-http://localhost/HTML/Admin/dist/default/

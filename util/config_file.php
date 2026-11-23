@@ -49,6 +49,33 @@ if (!defined('FILE_TRAMITES_DIR')) {
     define('FILE_TRAMITES_DIR', 'D:/file_tramites');
 }
 
+/*
+ * Carpeta FÍSICA de las fotos de colegiados (solo lectura desde PEGASO: las sube otro proceso).
+ *   - Puede ser una unidad local ('D:/fotos') o una ruta de red UNC ('//192.168.88.9/fotos').
+ *   - Se define en util/config.php ANTES de cargar este archivo. Vacío = perfil sin carpeta.
+ *   - Igual que los PDF: la cuenta del servicio Apache necesita permiso de LECTURA en esa carpeta.
+ */
+if (!defined('FOTOS_DIR')) {
+    define('FOTOS_DIR', '');
+}
+
+/*
+ * Carpeta FÍSICA de las fichas del colegiado: <cep>.pdf con toda su documentación. Solo lectura.
+ *   Ej.: '//192.168.88.9/fichas'. Se define en util/config.php. Vacío = perfil sin carpeta.
+ *   Datos personales sensibles: los entrega comun/api_ficha.php (sesión o enlace firmado con tipo 'ficha').
+ */
+if (!defined('FICHAS_DIR')) {
+    define('FICHAS_DIR', '');
+}
+
+/*
+ * Vigencia máxima (segundos) de un enlace firmado para otros sistemas (portal del colegiado,
+ * buscador público). Un enlace con vencimiento mayor se rechaza aunque la firma sea correcta.
+ */
+if (!defined('U_FILE_API_MAX_SEG')) {
+    define('U_FILE_API_MAX_SEG', 3600);
+}
+
 /**
  * Perfiles de archivo del proyecto. ÚNICO lugar donde se definen tipo, tamaño y ruta.
  *
@@ -101,6 +128,32 @@ function u_file_perfiles()
             'msg_formato'  => 'Formato no permitido. Solo se aceptan JPG, JPEG o PNG.',
             'msg_tamano'   => 'La imagen supera el límite de 300 KB.',
             'msg_invalido' => 'El archivo subido no es una imagen válida.',
+        ),
+
+        // Foto del colegiado (<num_documento>.jpg o .png). Solo lectura: la entrega comun/api_foto.php.
+        'foto_colegiado' => array(
+            'etiqueta'     => 'JPG o PNG',
+            'extensiones'  => array('jpg', 'png'),
+            'mimes'        => array('image/jpeg', 'image/png'),
+            'max_bytes'    => 2 * 1024 * 1024,
+            'carpeta'      => null,
+            'ruta_base'    => FOTOS_DIR,
+            'visor'        => 'comun/api_foto.php',
+            'sobrescribir' => false,
+            'imagen'       => null,
+        ),
+
+        // Ficha del colegiado (<cep>.pdf). Solo lectura: la entrega comun/api_ficha.php.
+        'ficha_colegiado' => array(
+            'etiqueta'     => 'PDF',
+            'extensiones'  => array('pdf'),
+            'mimes'        => array('application/pdf'),
+            'max_bytes'    => 50 * 1024 * 1024,
+            'carpeta'      => null,
+            'ruta_base'    => FICHAS_DIR,
+            'visor'        => 'comun/api_ficha.php',
+            'sobrescribir' => false,
+            'imagen'       => null,
         ),
 
         // Imagen genérica sin redimensionar (ej.: fondos de certificado). SIN USO TODAVÍA:
@@ -300,7 +353,18 @@ function u_file_ruta_absoluta_valida($ruta, $es_windows = null)
         $es_windows = (DIRECTORY_SEPARATOR === '\\');
     }
     $ruta = rtrim(str_replace('\\', '/', trim((string) $ruta)), '/');
-    if ($ruta === '' || strpos($ruta, '..') !== false || strpos($ruta, "\0") !== false || strpos($ruta, '//') === 0) {
+    if ($ruta === '' || strpos($ruta, '..') !== false || strpos($ruta, "\0") !== false) {
+        throw new Exception("Carpeta de archivos no válida.");
+    }
+    // Ruta de red UNC (\\servidor\recurso[\carpeta]): solo en Windows, servidor y recurso obligatorios.
+    $es_unc = (preg_match('#^//[A-Za-z0-9._-]+/[A-Za-z0-9$._ -]+(/[^/]+)*$#', $ruta) === 1);
+    if ($es_unc) {
+        if (!$es_windows) {
+            throw new Exception("Carpeta de archivos no válida: la ruta no corresponde a este servidor.");
+        }
+        return $ruta;
+    }
+    if (strpos($ruta, '//') === 0) {
         throw new Exception("Carpeta de archivos no válida.");
     }
     $es_unidad = (preg_match('#^[A-Za-z]:/[^/]#', $ruta) === 1);
@@ -541,7 +605,12 @@ function u_file_ruta($tipo, $nombre, $carpeta = null)
     return is_file($ruta) ? $ruta : null;
 }
 
-function u_file_servir($tipo, $nombre, $descargar = false)
+/**
+ * Envía el archivo al navegador.
+ *   $cache_seg  0 (por defecto) = sin caché, como siempre.
+ *               > 0 = el navegador lo guarda ese tiempo y lo revalida con ETag (responde 304 si no cambió).
+ */
+function u_file_servir($tipo, $nombre, $descargar = false, $cache_seg = 0)
 {
     $p = u_file_perfil($tipo);
     $ruta = u_file_ruta($tipo, $nombre);
@@ -549,7 +618,7 @@ function u_file_servir($tipo, $nombre, $descargar = false)
         throw new Exception("El archivo no existe.");
     }
     $mime = u_file_detectar_mime($ruta);
-    if ($mime === '' && $tipo === 'pdf') {
+    if ($mime === '' && in_array('application/pdf', $p['mimes'], true)) {
         $fh = @fopen($ruta, 'rb');
         if ($fh) {
             $mime = (fread($fh, 5) === '%PDF-') ? 'application/pdf' : '';
@@ -577,12 +646,25 @@ function u_file_servir($tipo, $nombre, $descargar = false)
     header_remove('Pragma');
     header_remove('Expires');
 
+    $cache_seg = (int) $cache_seg;
+    if ($cache_seg > 0) {
+        $etag = '"' . md5(basename($ruta) . '|' . $tam . '|' . @filemtime($ruta)) . '"';
+        header('ETag: ' . $etag);
+        header('Cache-Control: private, max-age=' . $cache_seg);
+        $si_cambio = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim((string) $_SERVER['HTTP_IF_NONE_MATCH']) : '';
+        if ($si_cambio !== '' && $si_cambio === $etag) {
+            http_response_code(304);
+            return true;
+        }
+    } else {
+        header('Cache-Control: private, max-age=0, must-revalidate');
+    }
+
     $nombre_visible = preg_replace('/[^A-Za-z0-9_.\-]/', '_', basename($ruta));
     header('Content-Type: ' . $mime);
     header('Content-Length: ' . $tam);
     header('Content-Disposition: ' . ($descargar ? 'attachment' : 'inline') . '; filename="' . $nombre_visible . '"');
     header('X-Content-Type-Options: nosniff');
-    header('Cache-Control: private, max-age=0, must-revalidate');
     header('Accept-Ranges: none');
 
     $fh = @fopen($ruta, 'rb');
@@ -660,3 +742,133 @@ function u_file_buscar_pdf_expediente($row, &$buscados)
     }
     return null;
 }
+
+/* ---------------------------------------------------------------------------
+ * Repositorio del colegiado: fotos (<num_documento>.jpg|.png) y fichas (<cep>.pdf).
+ * Lo usan comun/api_foto.php y comun/api_ficha.php.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Normaliza y valida un identificador (DNI, CE, CEP): solo letras y números, 4 a 15 caracteres.
+ * Devuelve el id en mayúsculas o '' si no es válido. Evita que se pida otro archivo del servidor.
+ */
+function u_file_id_valido($id)
+{
+    $id = strtoupper(trim((string) $id));
+    return preg_match('/^[A-Z0-9]{4,15}$/', $id) === 1 ? $id : '';
+}
+
+/**
+ * Nombre del archivo de foto del colegiado que existe en el repositorio (.jpg primero, luego .png),
+ * o null si no hay foto o la carpeta no está configurada.
+ */
+function u_file_foto_colegiado_nombre($num_documento)
+{
+    $id = u_file_id_valido($num_documento);
+    if ($id === '') {
+        return null;
+    }
+    foreach (array('jpg', 'png') as $ext) {
+        try {
+            if (u_file_ruta('foto_colegiado', $id . '.' . $ext) !== null) {
+                return $id . '.' . $ext;
+            }
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+/**
+ * Valida un número de CEP: solo dígitos, 1 a 8. Devuelve el CEP sin espacios o '' si no es válido.
+ */
+function u_file_cep_valido($cep)
+{
+    $cep = trim((string) $cep);
+    return preg_match('/^[0-9]{1,8}$/', $cep) === 1 ? $cep : '';
+}
+
+/**
+ * Nombre de la ficha (<cep>.pdf) que existe en el repositorio, o null.
+ * Prueba el CEP tal como llega, con 6 dígitos (025412) y sin ceros a la izquierda (25412),
+ * porque el CEP se guarda y se escribe de las dos formas.
+ */
+function u_file_ficha_colegiado_nombre($cep)
+{
+    $cep = u_file_cep_valido($cep);
+    if ($cep === '') {
+        return null;
+    }
+    $sin_ceros = ltrim($cep, '0');
+    $candidatos = array_unique(array($cep, str_pad($sin_ceros, 6, '0', STR_PAD_LEFT), $sin_ceros));
+    foreach ($candidatos as $c) {
+        if ($c === '') {
+            continue;
+        }
+        try {
+            if (u_file_ruta('ficha_colegiado', $c . '.pdf') !== null) {
+                return $c . '.pdf';
+            }
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+    return null;
+}
+
+/**
+ * Sistemas externos autorizados a pedir archivos con enlace firmado.
+ * Se leen de util/api_clientes.php (NO versionado; ver util/api_clientes.ejemplo.php):
+ *   return array('portal' => array('clave' => '<64 hex>', 'tipos' => array('foto', 'ficha')), ...);
+ */
+function u_file_api_clientes()
+{
+    static $clientes = null;
+    if ($clientes === null) {
+        $archivo = __DIR__ . '/api_clientes.php';
+        $clientes = is_file($archivo) ? include $archivo : array();
+        if (!is_array($clientes)) {
+            $clientes = array();
+        }
+    }
+    return $clientes;
+}
+
+/** Firma HMAC-SHA256 de un enlace. Los otros sistemas deben calcularla exactamente igual. */
+function u_file_api_firma($clave, $cliente, $tipo, $id, $vence)
+{
+    return hash_hmac('sha256', $cliente . '|' . $tipo . '|' . $id . '|' . (int) $vence, (string) $clave);
+}
+
+/**
+ * Valida un enlace firmado (?c=<cliente>&id=<id>&e=<vence unix>&s=<firma>) para el $tipo
+ * ('foto' o 'ficha'). Devuelve el id normalizado; lanza Exception si no es válido.
+ */
+function u_file_api_verificar($tipo)
+{
+    $cliente = isset($_GET['c']) ? (string) $_GET['c'] : '';
+    $id      = u_file_id_valido(isset($_GET['id']) ? $_GET['id'] : '');
+    $vence   = isset($_GET['e']) ? (int) $_GET['e'] : 0;
+    $firma   = isset($_GET['s']) ? strtolower((string) $_GET['s']) : '';
+
+    $clientes = u_file_api_clientes();
+    if ($cliente === '' || !isset($clientes[$cliente]) || !is_array($clientes[$cliente])) {
+        throw new Exception("Acceso no autorizado.");
+    }
+    $conf  = $clientes[$cliente];
+    $clave = isset($conf['clave']) ? (string) $conf['clave'] : '';
+    $tipos = isset($conf['tipos']) && is_array($conf['tipos']) ? $conf['tipos'] : array();
+    if (strlen($clave) < 32 || !in_array($tipo, $tipos, true)) {
+        throw new Exception("Acceso no autorizado.");
+    }
+    $ahora = time();
+    if ($id === '' || $vence < $ahora || $vence > $ahora + U_FILE_API_MAX_SEG) {
+        throw new Exception("Enlace no válido o vencido.");
+    }
+    if (!hash_equals(u_file_api_firma($clave, $cliente, $tipo, $id, $vence), $firma)) {
+        throw new Exception("Acceso no autorizado.");
+    }
+    return $id;
+}
+

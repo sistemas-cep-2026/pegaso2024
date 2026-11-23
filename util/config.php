@@ -31,6 +31,8 @@ session_start();
 //define('BASE_URI', 'http://'.$_SERVER['SERVER_NAME'].'/');
 define('BASE_URI', 'http://' . $_SERVER['SERVER_NAME'] . '/pegaso2024/');
 define('BASE_MAIN_PATH', $_SERVER['CONTEXT_DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'pegaso2024' . DIRECTORY_SEPARATOR);
+// PRUEBA LOCAL api_foto: repositorio real de fotos (quitar o ajustar antes de subir a git)
+define('FOTOS_DIR', '//192.168.88.9/fotos');
 
 
 date_default_timezone_set('America/Lima');

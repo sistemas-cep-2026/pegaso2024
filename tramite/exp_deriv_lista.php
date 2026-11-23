@@ -615,7 +615,7 @@ function renderDerivNode($node, $rowDoc, $nivel, $data_area, $data_accion, $est_
 
 <?php if ($seccion_req === '' && $num_desde  !== '') { ?>
     <div class="flex-grow-1 ms-2 text-center">
-        <a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde).'&cod2='. s_crypt($num_hasta)); ?>', 750); return false;">
+        <a href="#" class="btn btn-outline-primary" title="Imprimir" onclick="redireccionar_ventana('<?php echo url('tramite/exp_rep_print.php?cod=' . s_crypt($num_desde).'&cod2='. s_crypt($num_hasta).'&area='. s_crypt($c_area_adm)); ?>', 750); return false;">
             <i class="ri-printer-line me-1"></i> Imprimir
         </a>
     </div>

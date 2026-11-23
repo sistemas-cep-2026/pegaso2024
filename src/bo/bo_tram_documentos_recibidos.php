@@ -173,6 +173,7 @@ class bo_tram_documentos_recibidos
 
     a.nombre AS c_area_adm_text,
     ac.nombre AS c_accion_text,
+    sd.observacion,
     dbo.fc_v1_fecha_texto(sd.fecha_entrega) AS fecha_entrega_text
     FROM documentos_recibidos1 d WITH (NOLOCK)
     LEFT JOIN personas p WITH (NOLOCK)

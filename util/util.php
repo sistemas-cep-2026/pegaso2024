@@ -530,8 +530,40 @@ function compararFechas($fecha_registro)
 }
 
 
+/**
+ * URL de la foto del colegiado para <img src="...">.
+ * Con FOTOS_DIR configurado (util/config.php) usa el repositorio interno vía comun/api_foto.php
+ * (requiere sesión; si no hay foto devuelve sinfoto.jpg). Sin configurar, usa la URL pública anterior.
+ */
+function u_foto_colegiado($num_documento)
+{
+    $id = strtoupper(trim((string) $num_documento));
+    if (!defined('FOTOS_DIR') || FOTOS_DIR === '') {
+        return 'https://cep.org.pe/fotos/' . rawurlencode($id) . '.jpg';
+    }
+    return url('comun/api_foto.php?f=' . rawurlencode((string) s_crypt($id, 'in')));
+}
+
+/**
+ * URL de la ficha del colegiado (<cep>.pdf) vía comun/api_ficha.php (requiere sesión).
+ * Devuelve '' si FICHAS_DIR no está configurado en util/config.php o el CEP no es válido.
+ */
+function u_ficha_colegiado($cep)
+{
+    $cep = trim((string) $cep);
+    if ($cep === '' || !defined('FICHAS_DIR') || FICHAS_DIR === '') {
+        return '';
+    }
+    return url('comun/api_ficha.php?f=' . rawurlencode((string) s_crypt($cep, 'in')));
+}
+
 function buscarFoto($num_documento)
 {
+    // Con el repositorio interno configurado, la foto la entrega comun/api_foto.php (sin consultar Internet).
+    if (defined('FOTOS_DIR') && FOTOS_DIR !== '') {
+        return u_foto_colegiado($num_documento);
+    }
+
     // Directorio base
     $directorio = "https://www.cep.org.pe/fotos/";
 
