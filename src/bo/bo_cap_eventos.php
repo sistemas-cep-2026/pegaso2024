@@ -268,4 +268,85 @@ class bo_cap_eventos
             END";
         return $this->dao->consulta($sql);
     }
+
+    /**
+     * Listado de cursos para eve_listar.php: paginado en SQL Server (ROW_NUMBER, compatible con 2008),
+     * filtros parametrizados y contadores de roles en la misma consulta.
+     * Devuelve las filas de la página; cada fila trae 'total' (cantidad total de cursos del filtro).
+     */
+    public function listarPaginado($nombre, $anho, $cc_local, $tipo, $pagina, $por_pagina)
+    {
+        $where  = " WHERE 1 = 1";
+        $params = array();
+
+        $nombre = trim((string) $nombre);
+        if ($nombre !== '') {
+            $where .= " AND e.nombre LIKE ?";
+            $params[] = '%' . str_replace(array('[', '%', '_'), array('[[]', '[%]', '[_]'), $nombre) . '%';
+        }
+        if (preg_match('/^[0-9]{4}$/', (string) $anho) === 1) {
+            $where .= " AND e.fecha_ini >= ? AND e.fecha_ini < ?";
+            $params[] = $anho . '0101';
+            $params[] = ((int) $anho + 1) . '0101';
+        }
+        if (preg_match('/^[0-9]{2}$/', (string) $cc_local) === 1) {
+            $where .= " AND e.cc_local = ?";
+            $params[] = $cc_local;
+        }
+        if (preg_match('/^[A-Za-z0-9]{1,2}$/', trim((string) $tipo)) === 1) {
+            $where .= " AND RTRIM(e.tipo) = ?";
+            $params[] = trim((string) $tipo);
+        }
+
+        $pagina     = max(1, (int) $pagina);
+        $por_pagina = max(1, (int) $por_pagina);
+        $params[] = ($pagina - 1) * $por_pagina + 1;
+        $params[] = $pagina * $por_pagina;
+
+        $sql = "SELECT t.cc_evento,
+            RTRIM(e.codigo) AS codigo,
+            e.nombre,
+            e.cc_local,
+            RTRIM(l.nombre) AS cc_local_text,
+            dbo.fc_v1_parametro_valor('cap_eventos','tipo',e.tipo) AS tipo,
+            dbo.fc_fecha_texto(e.fecha_ini) AS fecha_inicio,
+            dbo.fc_fecha_texto(e.fecha_fin) AS fecha_fin,
+            e.fecha_evento_text,
+            e.horascreditos_text,
+            e.img_asistente,
+            e.img_ponente,
+            CAST(e.detalle AS VARCHAR(1000)) AS detalle,
+            RTRIM(e.flag) AS flag,
+            RTRIM(ISNULL(e.portal, 'N')) AS portal,
+            ISNULL(r.asistentes, 0) AS asistentes,
+            ISNULL(r.ponentes, 0) AS ponentes,
+            ISNULL(r.organizadores, 0) AS organizadores,
+            t.total
+        FROM (
+            SELECT e.cc_evento,
+                ROW_NUMBER() OVER (ORDER BY e.cc_evento DESC) AS fila,
+                COUNT(*) OVER () AS total
+            FROM cap_eventos e (NOLOCK)
+            " . $where . "
+        ) t
+        INNER JOIN cap_eventos e (NOLOCK) ON e.cc_evento = t.cc_evento
+        LEFT JOIN gen_local l (NOLOCK) ON l.c_local = e.cc_local
+        LEFT JOIN (
+            SELECT cc_evento,
+                SUM(CASE WHEN asistente = 1 THEN 1 ELSE 0 END) AS asistentes,
+                SUM(CASE WHEN ponente = 1 THEN 1 ELSE 0 END) AS ponentes,
+                SUM(CASE WHEN organizador = 1 THEN 1 ELSE 0 END) AS organizadores
+            FROM cap_eventos_matricula (NOLOCK)
+            GROUP BY cc_evento
+        ) r ON r.cc_evento = t.cc_evento
+        WHERE t.fila BETWEEN ? AND ?
+        ORDER BY t.fila";
+        return $this->dao->consultaParams($sql, $params);
+    }
+
+    /** Ejecuta sp_v1_publicar_eventos_portal. $opc: SC, EC, PU o DP. */
+    public function publicarPortal($cc_evento, $opc)
+    {
+        return $this->dao->publicarPortal($cc_evento, $opc);
+    }
 }

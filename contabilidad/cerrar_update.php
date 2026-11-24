@@ -4,6 +4,7 @@ require_once(dirname(__DIR__) . "/util/util.php");
 s_validar_pagina();
 
 require_once(u_src() . "bo/bo_contabilidad_centralizar.php");
+$bo = new bo_contabilidad_centralizar();
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -14,25 +15,7 @@ try {
     $modulo = trim($_POST['modulo'] ?? '');
     $estado = $_POST['estado'] ?? null;
 
-    if (
-        $cc_local === '' ||
-        !preg_match('/^\d{4}$/', $anho) ||
-        !preg_match('/^(0?[1-9]|1[0-2])$/', $periodo) ||
-        !in_array($modulo, ['compras', 'bancos', 'contabilidad'], true) ||
-        !in_array((string)$estado, ['0', '1'], true)
-    ) {
-        throw new Exception('Parámetros inválidos.');
-    }
-
-    $bo = new bo_contabilidad_centralizar();
-
-    $resultado = $bo->actualizarCierre(
-        $cc_local,
-        $anho,
-        $periodo,
-        $modulo,
-        (int)$estado
-    );
+    $resultado = $bo->procesarCerrrar($cc_local, $anho, $periodo, $modulo, $estado);
 
     echo json_encode([
         'ok' => (bool)$resultado,
@@ -40,7 +23,6 @@ try {
             ? 'Estado actualizado correctamente.'
             : 'No se pudo actualizar el período.'
     ]);
-
 } catch (Throwable $e) {
     http_response_code(400);
 

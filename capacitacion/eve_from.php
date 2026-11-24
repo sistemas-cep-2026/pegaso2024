@@ -33,6 +33,7 @@ if ($opc == 'U') {
         $ent_eventos->setImg_asistente($row['img_asistente']);
         $ent_eventos->setImg_ponente($row['img_ponente']);
         $ent_eventos->setFecha_evento_text($row['fecha_evento_text']);
+        $ent_eventos->setHorascreditos_text($row['horascreditos_text']);
         $ent_eventos->setDetalle($row['detalle']);
         $ent_eventos->setDetalle_ponente($row['detalle_ponente']);
         $ent_eventos->setPrint_documento($row['print_documento']);
@@ -110,6 +111,14 @@ if ($opc == 'U') {
                                         <div class="mb-3">
                                             <label for="fecha_evento_text" class="form-label">Fecha diploma: </label>
                                             <input type="text" class="form-control" name="fecha_evento_text" id="fecha_evento_text" value="<?php echo $ent_eventos->getFecha_evento_text() ?: ''; ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="mb-3">
+                                            <label for="horascreditos_text" class="form-label">Horas / créditos / resolución</label>
+                                            <input type="text" class="form-control" name="horascreditos_text" id="horascreditos_text" maxlength="250"
+                                                placeholder="Ej.: RS Nº 01558-2026/UPeU-FCS-CF"
+                                                value="<?php echo htmlspecialchars((string) ($ent_eventos->getHorascreditos_text() ?? ''), ENT_QUOTES, 'UTF-8', false); ?>">
                                         </div>
                                     </div>
                                 </div>

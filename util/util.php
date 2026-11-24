@@ -212,7 +212,8 @@ function decimal_millar(?float $total, int $digito): string
 
 function digitos($number, $n)
 {
-    return str_pad((string) intval($number), $n, '0', STR_PAD_LEFT);
+    // Completa con ceros a la izquierda hasta $n dígitos
+    return str_pad((string) $number, $n, '0', STR_PAD_LEFT);
 }
 
 function bt_insertar($text = "Insertar", $callback_js = '')
@@ -448,7 +449,7 @@ function restarMeses($mes)
 function restarDias($dias)
 {
     $fecha = date('Y-m-d');
-    $nuevafecha = strtotime('-' . $dias . ' day', strtotime($fecha));
+    $nuevafecha = strtotime('-' . $dias . ' days', strtotime($fecha));
     $nuevafecha = date('Y-m-d', $nuevafecha);
     return $nuevafecha;
 }
@@ -582,10 +583,10 @@ function buscarFoto($num_documento)
         curl_close($ch);
 
         if ($httpCode === 200) {
-            return $urlFoto . '?v=' . time();
+            return $urlFoto;
         }
     }
-    return $directorio . "sinfoto.jpg?v=" . time();
+    return $directorio . "sinfoto.jpg";
 }
 
 /*colegiados*/
@@ -619,17 +620,6 @@ $color_flag_cont = [
     '*' => 'bg-success',
 ];
 
-$icon_flag = [
-    'A' => 'fas fa-times-circle',
-    'C' => 'fas fa-check-circle',
-    'I' => 'fas fa-check-double',
-    'P' => 'fas fa-clock',
-    '&' => 'fas fa-hourglass-half',
-    '*' => 'fas fa-clipboard-check',
-];
-
-/*==============fin======*/
-
 $color_flag_listar = [
     'A' => 'danger',
     '*' => 'success',
@@ -646,6 +636,11 @@ $color_flag_listar_caja = [
     '&' => 'info'
 ];
 
+function u_limpiarCadena($texto)
+{
+    return preg_replace('/[^A-Za-z0-9]/', '', $texto);
+}
+
 function calcularDiferenciaHoras($horaInicio, $horaFinal)
 {
     /**para asistencia*/
@@ -660,10 +655,7 @@ function calcularDiferenciaHoras($horaInicio, $horaFinal)
 }
 
 /*contabilidad*/
-function ultimo_dia($mes, $anho)
-{
-    return date("d", (mktime(0, 0, 0, $mes + 1, 1, $anho) - 1));
-}
+
 function listarAnhos($inicio = 2000, $futuro = 0)
 {
     $anioActual = date("Y");
@@ -677,6 +669,11 @@ function listarAnhos($inicio = 2000, $futuro = 0)
     });
 
     return $anios;
+}
+/*contabilidad*/
+function ultimo_dia($mes, $anho)
+{
+    return date("d", (mktime(0, 0, 0, $mes + 1, 1, $anho) - 1));
 }
 
 function quitarComa($numero)
@@ -694,11 +691,6 @@ function recortarCadena($cadena, $caracter)
 function u_limpiarMonto($monto)
 {
     return preg_replace('/[^\d.]/', '', $monto);
-}
-
-function u_limpiarCadena($texto)
-{
-    return preg_replace('/[^A-Za-z0-9]/', '', $texto);
 }
 
 function periodo_contable()
@@ -808,11 +800,7 @@ function anulaRecibo(string $fechaDoc, ?DateTimeInterface $hoy = null): bool
 
 function tipo_estudio() //ya esta en la tabla detalle 
 {
-    $tipo = [
-        '2' => 'PRESENCIAL',
-        '1' => 'SEMI PRESENCIAL',
-        '3' => 'A DISTANCIA',
-    ];
+    $tipo = array('2' => 'PRESENCIAL', '1' => 'SEMI PRESENCIAL', '3' => 'A DISTANCIA');
     return $tipo;
 }
 
@@ -855,21 +843,10 @@ function fechaPeriodoActual($anho, $mes)
     return $anho . '-' . str_pad($mes, 2, '0', STR_PAD_LEFT) . '-' . str_pad($diaHoy, 2, '0', STR_PAD_LEFT);
 }
 
-
 function essalud_y_recaudo($tipo, $valor)
 {
     switch ($tipo) {
         case "Bcp66":
-            switch ($valor) {
-                case "0":
-                    $texto = "*PEND.-CONCILIAR EECC*";
-                    break;
-                case "9":
-                    $texto = "*CONCILIADO*";
-                    break;
-            }
-            break;
-        case "bbva571":
             switch ($valor) {
                 case "0":
                     $texto = "*PEND.-CONCILIAR EECC*";

@@ -19,6 +19,18 @@ class dao_cap_eventos
     {
         return $this->conecta->errores();
     }
+
+    public function consultaParams($sql, $params)
+    {
+        return $this->conecta->ArrayListaParams($sql, $params);
+    }
+
+    public function publicarPortal($cc_evento, $opc)
+    {
+        $sql = "EXEC dbo.sp_v1_publicar_eventos_portal @cc_evento = ?, @opc = ?";
+        $data = $this->conecta->ArrayListaParams($sql, array((int) $cc_evento, (string) $opc));
+        return isset($data[0]) ? $data[0] : array('ok' => 0, 'mensaje' => 'El procedimiento no devolvió respuesta.');
+    }
     public function creaeventos(?cap_eventos $obj)
     {
         $sql = "exec sp_v1_crear_curso
@@ -34,7 +46,8 @@ class dao_cap_eventos
                 '" . $obj->getDetalle_ponente() . "',
                 '" . $obj->getPrint_documento() . "',
                 '" . $obj->getText_documento() . "',
-                '" . $obj->getUser_crea() . "'";
+                '" . $obj->getUser_crea() . "',
+                '" . str_replace("'", "''", (string) $obj->getHorascreditos_text()) . "'";
         //echo $sql;
         if ($obj->getOpc() == "I") {
             $result = $this->conecta->sql_query($sql);

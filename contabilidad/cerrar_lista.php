@@ -26,18 +26,31 @@ $data_compras = $bo_centralizar->ListarPeriodosCerrar($cc_local, $anho);
     <link rel="stylesheet" href="../css/style_print.css">
 
     <style>
+        html,
+        body {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+        }
+
         body {
             font-family: Arial, sans-serif !important;
             font-size: 16px !important;
-            margin: 20px;
             background-color: #ffffff;
+            padding: 10px !important;
         }
 
-        /* TABLA */
         table {
             width: 100% !important;
             border-collapse: collapse !important;
             font-size: 17px !important;
+            table-layout: fixed !important;
+        }
+
+        table td {
+            overflow-wrap: break-word;
         }
 
         /* ENCABEZADOS */
@@ -124,9 +137,9 @@ $data_compras = $bo_centralizar->ListarPeriodosCerrar($cc_local, $anho);
             </tr>
             <?php
             $modulos = [
-                'compras' => 'flag_cierre_compras',
-                'bancos' => 'flag_cierre_bancos',
-                'contabilidad' => 'flag_cierre_contabilidad'
+                'C' => 'flag_cierre_compras',
+                'B' => 'flag_cierre_bancos',
+                'P' => 'flag_cierre_contabilidad'
             ];
 
             foreach ($data_compras as $row) {

@@ -1,71 +1,118 @@
- fn_BuscarCerrar();
+fn_BuscarCerrar();
+
 function fn_BuscarCerrar() {
-  var str = $("#frm").serialize();
-  obtenerDatos("divBuscarCerrar", "contabilidad/cerrar_buscar", str, function () {
-    
-  });
+    var str = $("#frm").serialize();
+
+    obtenerDatos(
+        "divBuscarCerrar",
+        "contabilidad/cerrar_buscar",
+        str,
+        function () {}
+    );
+      // Ocultar indicador de carga
+        $('#cargandoCerrar').hide();
+
+        // Habilitar nuevamente el botón Buscar
+        $('#btnBuscarCerrar').prop('disabled', false);
 }
 
 function fn_CambiarCierre(boton) {
+
     var $boton = $(boton);
+
     if ($boton.prop('disabled')) return;
 
-    var modulo = $boton.data('modulo');
-    var anho = String($boton.data('anho'));
-    var periodo = String($boton.data('periodo'));
+    var modulo = $boton.attr('data-modulo');
+    var anho = $boton.attr('data-anho');
+    var periodo = $boton.attr('data-periodo');
 
     var $doc = $(boton.ownerDocument);
     var cc_local = $doc.find('#centralizar_cc_local').val();
 
     var cerrado = $boton.hasClass('cerrado');
-    var nuevoEstado = cerrado ? 0 : 1;
 
-    Swal.fire({
-        title: cerrado ? '¿Abrir período?' : '¿Cerrar período?',
-        text: 'Módulo: ' + modulo.toUpperCase() +
-              ' | Período: ' + anho + '-' + periodo,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, confirmar',
-        cancelButtonText: 'Cancelar'
-    }).then(function (result) {
+    // * = CERRADO
+    // & = ABIERTO
+    var nuevoEstado = cerrado ? '&' : '*';
 
-        if (!result.isConfirmed) return;
+    // Bloquear los botones durante la actualización
+    var $botones = $doc.find('.btn-estado');
+    $botones.prop('disabled', true);
 
-        $boton.prop('disabled', true);
+    $.ajax({
+        url: 'contabilidad/cerrar_update.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            cc_local: cc_local,
+            anho: anho,
+            periodo: periodo,
+            modulo: modulo,
+            estado: nuevoEstado
+        }
 
-        $.ajax({
-            url: 'contabilidad/cerrar_update.php',
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                cc_local: cc_local,
-                anho: anho,
-                periodo: periodo,
-                modulo: modulo,
-                estado: nuevoEstado
-            }
-        }).done(function (respuesta) {
+    }).done(function (respuesta) {
 
-            if (respuesta.ok) {
-                $boton
-                    .removeClass('cerrado abierto')
-                    .addClass(nuevoEstado === 1 ? 'cerrado' : 'abierto')
-                    .text(nuevoEstado === 1 ? '🔒 CERRADO' : '🔓 ABIERTO');
+        if (respuesta.ok) {
 
-                Swal.fire({
-                    title: 'Actualizado',
-                    text: respuesta.mensaje || 'Estado actualizado correctamente.',
-                    icon: 'success'
-                });
-            } else {
-                alertaMensaje(respuesta.mensaje || 'No se pudo actualizar.');
-            }
+            // Refrescar únicamente cerrar_lista.php
+            var formulario = document.getElementById(
+                'formlibroCerrar'
+            );
 
-        }).fail(function () {
-            alertaMensaje('Error al actualizar el cierre del período.');
-        }).always(function () {
-            $boton.prop('disabled', false);
-        });
+            formulario.elements['anho'].value = anho;
+            formulario.elements['cc_local'].value = cc_local;
+
+            formulario.submit();
+
+        } else {
+
+            $botones.prop('disabled', false);
+
+            alertaMensaje(
+                respuesta.mensaje || 
+                'No se pudo actualizar el período.'
+            );
+        }
+
+    }).fail(function () {
+
+        $botones.prop('disabled', false);
+
+        alertaMensaje(
+            'Error al actualizar el cierre del período.'
+        );
+
     });
+}
+function fn_AjustarIframeCerrar(iframe) {
+
+    try {
+
+        var doc = iframe.contentDocument ||
+                  iframe.contentWindow.document;
+
+        // Ajustar automáticamente la altura
+        iframe.style.height = '0px';
+
+        var altura = Math.max(
+            doc.body.scrollHeight,
+            doc.documentElement.scrollHeight
+        );
+
+        iframe.style.height = (altura + 20) + 'px';
+
+    } catch (error) {
+
+        console.error('Error al ajustar iframe:', error);
+
+    } finally {
+
+        // Ocultar indicador de carga
+        $('#cargandoCerrar').hide();
+
+        // Habilitar nuevamente el botón Buscar
+        $('#btnBuscarCerrar').prop('disabled', false);
+
+    }
 }

@@ -1,27 +1,41 @@
 <?php
+/*
+ * capacitacion/eve_update_file.php
+ * Sube o elimina la imagen del diploma (img_asistente / img_ponente) de un evento.
+ * Los archivos se guardan con util/config_file.php, perfil 'certificado':
+ *   CERTIFICADOS_DIR (ej. \\192.168.88.9\capacitacion\certificados) o, si no está definido, capacitacion/img.
+ * Responde '0' si todo salió bien, o el mensaje de error (convención de jeventos_from.js).
+ */
 require_once(dirname(__DIR__) . "/util/seguridad.php");
 require_once(dirname(__DIR__) . "/util/util.php");
-require_once(dirname(__DIR__) . "/util/class_upload.php");
+require_once(dirname(__DIR__) . "/util/config_file.php");
 
 s_validar_pagina();
 
 try {
     require_once(u_src() . "bo/bo_cap_eventos.php");
 
+    u_file_verificar_post();
+
     $bo_evento   = new bo_cap_eventos();
     $ent_eventos = new cap_eventos();
 
-    $opc       = isset($_REQUEST["opc"]) ? s_crypt($_REQUEST["opc"], 'out') : '';
-    $cc_evento = isset($_REQUEST["cc_evento"]) ? s_crypt($_REQUEST["cc_evento"], 'out') : '';
+    $opc       = isset($_REQUEST["opc"]) ? (string) s_crypt($_REQUEST["opc"], 'out') : '';
+    $cc_evento = isset($_REQUEST["cc_evento"]) ? (string) s_crypt($_REQUEST["cc_evento"], 'out') : '';
 
-    if (empty($opc) || empty($cc_evento)) {
+    if ($opc === '' || !ctype_digit($cc_evento)) {
         throw new Exception("Parámetros requeridos faltantes.");
     }
 
-    $ruta_carpeta = __DIR__ . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR;
-
     // Lista blanca: solo estos 2 campos pueden manejarse aquí.
-    $camposPermitidos = ['img_asistente', 'img_ponente'];
+    $camposPermitidos = array('img_asistente', 'img_ponente');
+
+    // Datos actuales del evento (el nombre del archivo a borrar sale de la BD, nunca del navegador)
+    $ent_eventos->setCc_evento($cc_evento);
+    $actual = $bo_evento->listarID($ent_eventos);
+    if (empty($actual)) {
+        throw new Exception("No se encontró el evento.");
+    }
 
     if ($opc === 'UPLOAD') {
         $campo = null;
@@ -31,74 +45,49 @@ try {
                 break;
             }
         }
-
-        if ($campo === null || $_FILES[$campo]['error'] !== UPLOAD_ERR_OK) {
-            $recibidos = empty($_FILES) ? '(ninguno)' : implode(', ', array_keys($_FILES));
-            $detalleError = ($campo !== null) ? " | código de error PHP: {$_FILES[$campo]['error']}" : '';
-            throw new Exception("Error al subir el archivo. [Diagnóstico temporal: campos recibidos en \$_FILES = {$recibidos}{$detalleError}]");
+        if ($campo === null) {
+            throw new Exception("No se recibió ninguna imagen.");
         }
 
-        $archivo_cargado = $_FILES[$campo];
-        $uploader = new Upload($archivo_cargado);
+        $nombre = u_file_subir($_FILES[$campo], 'certificado', $cc_evento . '_' . $campo . '_' . date('dmYHis'));
 
-        if ($uploader->uploaded) {
-            $uploader->file_new_name_body = $cc_evento . '_' . $campo . '_' . date('dmYHis');
-            $uploader->file_overwrite     = true;
-            $uploader->image_convert      = 'jpeg';
-            $uploader->jpeg_quality       = 85;
-
-            $uploader->Process($ruta_carpeta);
-
-            if (!$uploader->processed) {
-                throw new Exception("Error al procesar imagen: " . $uploader->error);
-            }
-
-            $foto = $uploader->file_dst_name;
-            $uploader->clean();
-
-            if ($campo === 'img_ponente') {
-                $ent_eventos->setImg_ponente($foto);
-            } else {
-                $ent_eventos->setImg_asistente($foto);
-            }
-            $ent_eventos->setCc_evento($cc_evento);
-
-            if (!$bo_evento->control($ent_eventos, $opc, $campo)) {
-                throw new Exception($bo_evento->errores());
-            }
-
-            echo '0';
-            exit;
+        if ($campo === 'img_ponente') {
+            $ent_eventos->setImg_ponente($nombre);
         } else {
-            throw new Exception("Error en el archivo: " . $uploader->error);
+            $ent_eventos->setImg_asistente($nombre);
         }
+
+        if (!$bo_evento->control($ent_eventos, $opc, $campo)) {
+            u_file_eliminar('certificado', $nombre);
+            throw new Exception($bo_evento->errores() ?: "No se pudo registrar la imagen.");
+        }
+
+        echo '0';
+        exit;
     }
 
     if ($opc === 'EA') {
-        $campo = $_REQUEST['campo'] ?? '';
+        $campo = (string) ($_REQUEST['campo'] ?? '');
         if (!in_array($campo, $camposPermitidos, true)) {
             throw new Exception("Campo de imagen no válido.");
         }
 
-        $archivo = isset($_REQUEST[$campo]) ? $_REQUEST[$campo] : '';
-        if (empty($archivo)) {
-            throw new Exception("Nombre del archivo no proporcionado.");
-        }
-
-        $ruta_archivo = $ruta_carpeta . $archivo;
-        if (file_exists($ruta_archivo)) {
-            unlink($ruta_archivo);
-        }
-
-        if ($campo === 'img_ponente') {
-            $ent_eventos->setImg_ponente($archivo);
-        } else {
-            $ent_eventos->setImg_asistente($archivo);
-        }
-        $ent_eventos->setCc_evento($cc_evento);
+        $archivo = u_file_certificado_nombre_valido($actual[0][$campo] ?? '');
 
         if (!$bo_evento->control($ent_eventos, $opc, $campo)) {
-            throw new Exception($bo_evento->errores());
+            throw new Exception($bo_evento->errores() ?: "No se pudo quitar la imagen.");
+        }
+
+        // Borrar el archivo (en el repositorio o en la carpeta antigua). Si falla, la BD ya quedó limpia.
+        if ($archivo !== '') {
+            $ubicacion = u_file_certificado_ubicar($archivo);
+            if ($ubicacion !== null) {
+                try {
+                    u_file_eliminar('certificado', $archivo, $ubicacion['carpeta']);
+                } catch (Throwable $e) {
+                    error_log("eve_update_file: no se pudo borrar " . $archivo . ": " . $e->getMessage());
+                }
+            }
         }
 
         echo '0';
@@ -106,6 +95,6 @@ try {
     }
 
     throw new Exception("Opción inválida.");
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo $e->getMessage();
 }

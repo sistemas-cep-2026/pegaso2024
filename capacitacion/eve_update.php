@@ -28,6 +28,7 @@ try {
     $ent_eventos->setFecha_ini(u_fecha($_REQUEST['fecha_ini']));
     $ent_eventos->setFecha_fin(u_fecha($_REQUEST['fecha_fin']));
     $ent_eventos->setFecha_evento_text($_REQUEST['fecha_evento_text']);
+    $ent_eventos->setHorascreditos_text(htmlspecialchars(trim((string) ($_REQUEST['horascreditos_text'] ?? '')), ENT_QUOTES, 'UTF-8', false));
     $ent_eventos->setDetalle($_REQUEST['detalle']);
     $ent_eventos->setDetalle_ponente($_REQUEST['detalle_ponente']);
     $ent_eventos->setPrint_documento($_REQUEST['print_documento']);

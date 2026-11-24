@@ -35,7 +35,7 @@ class bo_contabilidad_centralizar
     public function ListarPeriodosCerrar($c_local, $c_anho)
     {
         $sql = "SELECT c_ano,c_mes,flag_cierre_compras,flag_cierre_bancos,flag_cierre_contabilidad FROM periodos_local WHERE c_local='" . $c_local . "' and c_ano='" . $c_anho . "'";
-        //echo $sql;
+      //  echo $sql;
         return $this->dao->consulta($sql);
     }
 
@@ -106,8 +106,8 @@ order by YEAR(documentos_de_venta.fecha),month(documentos_de_venta.fecha),fecha"
         return $this->dao->procesarPlanilla728($cc_local, $anho, $periodo);
     }
 
-    public function procesarCerrrar($cc_local, $anho, $periodo, $mod, $usu)
+    public function procesarCerrrar($cc_local, $anho, $periodo, $mod, $estado)
     {
-        return $this->dao->procesarCerrrar($cc_local, $anho, $periodo, $mod, $usu);
+        return $this->dao->procesarCerrrar($cc_local, $anho, $periodo, $mod, $estado);
     }
 }

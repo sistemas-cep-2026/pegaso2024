@@ -69,6 +69,17 @@ if (!defined('FICHAS_DIR')) {
 }
 
 /*
+ * Carpeta FÍSICA de las imágenes de certificados de capacitación (fondo del diploma de asistente y ponente).
+ *   Ej.: '//192.168.88.9/capacitacion/certificados'. Se define en util/config.php.
+ *   PEGASO SUBE y BORRA aquí: la cuenta de Apache necesita permiso de MODIFICAR.
+ *   Vacío = se sigue usando capacitacion/img dentro del proyecto (como antes).
+ *   Las imágenes antiguas que aún estén en capacitacion/img se siguen mostrando (ver u_file_certificado_ruta()).
+ */
+if (!defined('CERTIFICADOS_DIR')) {
+    define('CERTIFICADOS_DIR', '');
+}
+
+/*
  * Vigencia máxima (segundos) de un enlace firmado para otros sistemas (portal del colegiado,
  * buscador público). Un enlace con vencimiento mayor se rechaza aunque la firma sea correcta.
  */
@@ -154,6 +165,22 @@ function u_file_perfiles()
             'visor'        => 'comun/api_ficha.php',
             'sobrescribir' => false,
             'imagen'       => null,
+        ),
+
+        // Imagen de certificado de capacitación (cap_eventos.img_asistente / img_ponente).
+        // Se sube con capacitacion/eve_update_file.php y se muestra con comun/api_certificado.php.
+        'certificado' => array(
+            'etiqueta'     => 'JPG o PNG',
+            'extensiones'  => array('jpg', 'jpeg', 'png'),
+            'mimes'        => array('image/jpeg', 'image/png'),
+            'max_bytes'    => 5 * 1024 * 1024,
+            'carpeta'      => 'capacitacion/img',          // solo se usa si CERTIFICADOS_DIR = ''
+            'ruta_base'    => CERTIFICADOS_DIR,
+            'visor'        => 'comun/api_certificado.php',
+            'sobrescribir' => false,
+            'imagen'       => array('convertir' => 'jpeg', 'calidad' => 85),
+            'msg_formato'  => 'Formato no permitido. Solo se aceptan JPG, JPEG o PNG.',
+            'msg_invalido' => 'El archivo subido no es una imagen válida.',
         ),
 
         // Imagen genérica sin redimensionar (ej.: fondos de certificado). SIN USO TODAVÍA:
@@ -610,10 +637,10 @@ function u_file_ruta($tipo, $nombre, $carpeta = null)
  *   $cache_seg  0 (por defecto) = sin caché, como siempre.
  *               > 0 = el navegador lo guarda ese tiempo y lo revalida con ETag (responde 304 si no cambió).
  */
-function u_file_servir($tipo, $nombre, $descargar = false, $cache_seg = 0)
+function u_file_servir($tipo, $nombre, $descargar = false, $cache_seg = 0, $carpeta = null)
 {
     $p = u_file_perfil($tipo);
-    $ruta = u_file_ruta($tipo, $nombre);
+    $ruta = u_file_ruta($tipo, $nombre, $carpeta);
     if ($ruta === null) {
         throw new Exception("El archivo no existe.");
     }
@@ -817,6 +844,52 @@ function u_file_ficha_colegiado_nombre($cep)
     return null;
 }
 
+/* ---------------------------------------------------------------------------
+ * Certificados de capacitación (cap_eventos.img_asistente / img_ponente)
+ * ------------------------------------------------------------------------- */
+
+/** Nombre de imagen de certificado válido (sin rutas): letras, números, _ - . y extensión permitida; '' si no. */
+function u_file_certificado_nombre_valido($nombre)
+{
+    $nombre = trim((string) $nombre);
+    if ($nombre === '' || strtoupper($nombre) === 'NULL' || preg_match('/^[A-Za-z0-9_\-]+\.(jpg|jpeg|png)$/i', $nombre) !== 1) {
+        return '';
+    }
+    return $nombre;
+}
+
+/**
+ * Dónde está el archivo: array('carpeta' => null|'capacitacion/img') o null si no existe.
+ * Primero el repositorio (CERTIFICADOS_DIR); si no está, la carpeta antigua capacitacion/img del proyecto.
+ */
+function u_file_certificado_ubicar($nombre)
+{
+    $nombre = u_file_certificado_nombre_valido($nombre);
+    if ($nombre === '') {
+        return null;
+    }
+    $opciones = array(null);
+    if (trim((string) CERTIFICADOS_DIR) !== '') {
+        $opciones[] = 'capacitacion/img';
+    }
+    foreach ($opciones as $carpeta) {
+        try {
+            if (u_file_ruta('certificado', $nombre, $carpeta) !== null) {
+                return array('carpeta' => $carpeta);
+            }
+        } catch (Throwable $e) {
+        }
+    }
+    return null;
+}
+
+/** URL para <img src> o para ver el certificado. '' si el nombre no es válido. */
+function u_file_certificado_url($nombre)
+{
+    $nombre = u_file_certificado_nombre_valido($nombre);
+    return $nombre === '' ? '' : u_file_url('certificado', $nombre);
+}
+
 /**
  * Sistemas externos autorizados a pedir archivos con enlace firmado.
  * Se leen de util/api_clientes.php (NO versionado; ver util/api_clientes.ejemplo.php):
@@ -843,7 +916,7 @@ function u_file_api_firma($clave, $cliente, $tipo, $id, $vence)
 
 /**
  * Valida un enlace firmado (?c=<cliente>&id=<id>&e=<vence unix>&s=<firma>) para el $tipo
- * ('foto' o 'ficha'). Devuelve el id normalizado; lanza Exception si no es válido.
+ * ('foto', 'ficha' o 'certificado'). Devuelve el id normalizado; lanza Exception si no es válido.
  */
 function u_file_api_verificar($tipo)
 {

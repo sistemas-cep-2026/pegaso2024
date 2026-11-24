@@ -51,7 +51,13 @@ $usuario = s_usuario();
                         <span class="sr-only">Cargando...</span>
                     </div>
                 </div>
-                <iframe name="reporteIframeCerrar" loading="lazy" class="iframe-loader d-none" id="reporteIframeCerrar" style="width: 100%; height: 600px; border: none;" onload="cargadorReportes()"></iframe>
+                <iframe
+    id="reporteIframeCerrar"
+    name="reporteIframeCerrar"
+    onload="fn_AjustarIframeCerrar(this)"
+    scrolling="no"
+    style="width: 100%; height: 100px; border: 0; display: block;">
+</iframe>
 
             </div>
         </div>
