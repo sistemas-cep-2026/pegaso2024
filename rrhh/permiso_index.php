@@ -37,8 +37,10 @@ $mes = u_meses();
                                 <span class="input-group-text">Tipo:</span>
                                 <select name="tipo_permisos" id="tipo_permisos" class="form-control" onchange="submit()">
                                     <?php
-                                    foreach ($data_permisos as $per) { ?>
-                                        <option value="<?php echo $per['cc_codigo'] ?>"><?php echo $per['detalle']  ?></option>
+                                    foreach ($data_permisos as $per) {
+                                        // Por defecto: Comisión de servicio (se ubica por el texto, sin depender del código)
+                                        $sel = (stripos(trim((string) $per['detalle']), 'comisi') !== false) ? 'selected' : ''; ?>
+                                        <option value="<?php echo $per['cc_codigo'] ?>" <?php echo $sel ?>><?php echo $per['detalle']  ?></option>
                                     <?php } ?>
                                 </select>
                             </div>

@@ -15,36 +15,39 @@ class dao_cont_asistencia
         return $this->conecta->ArrayLista($sql);
     }
 
+    /** Consulta con parámetros (?). */
+    public function consultaParams($sql, $params)
+    {
+        return $this->conecta->ArrayListaParams($sql, $params);
+    }
+
     public function errores()
     {
         return $this->conecta->errores();
     }
 
+    // Grabaciones con parámetros: ArrayListaParams corta con el error de SQL si algo falla.
     public function insertar(cont_asistencia $obj)
     {
-        $sql = "insert into cont_asistencia(cc_persona, 
-        punch_time, 
-        flag,
-        status
-        )values(
-        '".$obj->getCc_persona()."',
-        '".$obj->getPunch_time()."',
-        '".$obj->getFlag()."',
-        '".$obj->getStatus()."'
-    )";
-    //echo $sql;
-    return $this->conecta->sql_query($sql);
-}
+        $sql = "INSERT INTO cont_asistencia (cc_persona, punch_time, flag, status) VALUES (?, ?, ?, ?)";
+        $this->conecta->ArrayListaParams($sql, array(
+            (string) $obj->getCc_persona(),
+            (string) $obj->getPunch_time(),
+            (string) $obj->getFlag(),
+            (int) $obj->getStatus(),
+        ));
+        return true;
+    }
 
-public function modificar(cont_asistencia $obj)
-{
-    $sql = "update cont_asistencia set 
-    punch_time='".$obj->getPunch_time()."',
-    flag= '".$obj->getFlag()."',
-    status= '".$obj->getStatus()."'
-    where id='".$obj->getId()."'";
-        //echo $sql;
-    return $this->conecta->sql_query($sql);
-}
-
+    public function modificar(cont_asistencia $obj)
+    {
+        $sql = "UPDATE cont_asistencia SET punch_time = ?, flag = ?, status = ? WHERE id = ?";
+        $this->conecta->ArrayListaParams($sql, array(
+            (string) $obj->getPunch_time(),
+            (string) $obj->getFlag(),
+            (int) $obj->getStatus(),
+            (int) $obj->getId(),
+        ));
+        return true;
+    }
 }

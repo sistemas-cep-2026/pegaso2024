@@ -131,14 +131,15 @@ $grados = [
 		<tr class="align-middle">
 			<td><?= $i++ ?></td>
 			<td><a href="<?= $urlIndividual ?>" target="_blank"><?= $r["c_cmp"] ?></a></td>
+			<?php $foto_api = htmlspecialchars(u_foto_colegiado($r['num_documento']), ENT_QUOTES, 'UTF-8'); /* foto vía comun/api_foto.php */ ?>
 			<?php
 			if($tipo === 'C') {
 			?>
-				<td class="text-center"><a href="<?= 'https://www.cep.org.pe/colegiacion/imag/fotos/index.php?root=' . $r['num_documento'] . '.jpg' ?>" download><img src="https://www.cep.org.pe/colegiacion/imag/fotos/<?= $r['num_documento'] ?>.jpg" loading="lazy" width="45" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';"></a></td>
+				<td class="text-center"><a href="<?= $foto_api ?>" download="<?= htmlspecialchars(trim($r['num_documento']), ENT_QUOTES, 'UTF-8') ?>.jpg"><img src="<?= $foto_api ?>" loading="lazy" width="45" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';"></a></td>
 				<?php
 			}
 			?>
-			<td class="text-center"><a href="<?= 'https://cep.org.pe/fotos/?root=' . $r['num_documento'] . '.jpg' ?>" download><img src="https://cep.org.pe/fotos/<?= $r['num_documento'] ?>.jpg" loading="lazy" width="45" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';"></a></td>
+			<td class="text-center"><a href="<?= $foto_api ?>" download="<?= htmlspecialchars(trim($r['num_documento']), ENT_QUOTES, 'UTF-8') ?>.jpg"><img src="<?= $foto_api ?>" loading="lazy" width="45" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';"></a></td>
 			<td><?= $r["nombre"] ?></td>
 			<td><?= $r["fecha"] ?></td>
 			<td><?= $r["c_local_colegiacion"] ?></td>

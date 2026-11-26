@@ -51,14 +51,15 @@ $visible = $_REQUEST["v"];
         $enf = 'Enfermero';
         $incor = 'incorporado';
       }
-      $foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      // Foto desde el repositorio interno (FOTOS_DIR) vía comun/api_foto.php; sin FOTOS_DIR usa la URL pública anterior
+      $foto = u_foto_colegiado($num_documento);
       ?>
       <tr>
         <td>
           <table width="87%" border="0" align="center" cellpadding="1" cellspacing="0">
             <tr>
               <td colspan="5" height="205" align="left" valign="bottom"> </td>
-              <td colspan="5" height="205" align="left" valign="bottom"><a href="javascript:window.print()"><img src="<?= $foto ?>" width="100" style="position:relative;right:15px;top:50px;" /></a> </td>
+              <td colspan="5" height="205" align="left" valign="bottom"><a href="javascript:window.print()"><img src="<?= htmlspecialchars($foto, ENT_QUOTES, 'UTF-8') ?>" width="100" style="position:relative;right:15px;top:50px;" /></a> </td>
             </tr>
             <tr>
               <td colspan="5" align="center"> <span class="texto01">Diploma de <?= ucfirst(strtolower(grados_academicos($tipo))); ?></span></td>

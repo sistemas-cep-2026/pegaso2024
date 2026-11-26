@@ -917,11 +917,13 @@ function u_file_api_firma($clave, $cliente, $tipo, $id, $vence)
 /**
  * Valida un enlace firmado (?c=<cliente>&id=<id>&e=<vence unix>&s=<firma>) para el $tipo
  * ('foto', 'ficha' o 'certificado'). Devuelve el id normalizado; lanza Exception si no es válido.
+ * $validar: función que valida el id (por defecto u_file_id_valido; para certificados
+ * se usa u_file_certificado_nombre_valido, porque el id es el nombre de la imagen).
  */
-function u_file_api_verificar($tipo)
+function u_file_api_verificar($tipo, $validar = 'u_file_id_valido')
 {
     $cliente = isset($_GET['c']) ? (string) $_GET['c'] : '';
-    $id      = u_file_id_valido(isset($_GET['id']) ? $_GET['id'] : '');
+    $id      = (string) call_user_func($validar, isset($_GET['id']) ? (string) $_GET['id'] : '');
     $vence   = isset($_GET['e']) ? (int) $_GET['e'] : 0;
     $firma   = isset($_GET['s']) ? strtolower((string) $_GET['s']) : '';
 

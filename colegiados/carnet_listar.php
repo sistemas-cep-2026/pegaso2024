@@ -40,11 +40,13 @@ if(empty($data_coleg)) {
 		<?php
 		$i = 1;
 		foreach ($data_coleg as $row) {
+			// Foto del repositorio interno (FOTOS_DIR) vía comun/api_foto.php
+			$foto_api = htmlspecialchars(u_foto_colegiado($row['dni']), ENT_QUOTES, 'UTF-8');
 		?>
 			<tr class="align-middle">
 				<td ><?= $i ?></td>
 				<td class="text-center"><a href="#" onclick="fn_verfoto({dni:'<?= $row['dni']; ?>',nombre:'<?= $row['nombre_completo']; ?>',foto:`<?= 'https://www.cep.org.pe/colegiacion/imag/fotos/'.$row['dni'].'.jpg' ?>`});"><img src="https://www.cep.org.pe/colegiacion/imag/fotos/<?= $row['dni'] ?>.jpg" loading="lazy" width="45" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';"></a></td>
-				<td><a href="#" onclick="fn_verfoto({dni:'<?= $row['dni']; ?>',nombre:'<?= $row['nombre_completo']; ?>',foto:`<?= 'https://cep.org.pe/fotos/'.$row['dni'].'.jpg' ?>`});"> <img src="<?= 'https://cep.org.pe/fotos/'.$row['dni'].'.jpg' ?>" width="40" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';" /></a></td>
+				<td><a href="#" onclick="fn_verfoto({dni:'<?= $row['dni']; ?>',nombre:'<?= $row['nombre_completo']; ?>',foto:`<?= $foto_api ?>`});"> <img src="<?= $foto_api ?>" width="40" class="rounded img-fluid material-shadow" onerror="this.onerror=null; this.src='images/sinfoto.jpg';" /></a></td>
 				<td><?= $row["C_CMP"]; ?></td>
 				<td><?= $row["dni"]; ?></td>
 				<td><?= $row["nombre_completo"]; ?></td>

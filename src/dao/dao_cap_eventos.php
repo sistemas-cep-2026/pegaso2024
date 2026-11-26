@@ -47,7 +47,8 @@ class dao_cap_eventos
                 '" . $obj->getPrint_documento() . "',
                 '" . $obj->getText_documento() . "',
                 '" . $obj->getUser_crea() . "',
-                '" . str_replace("'", "''", (string) $obj->getHorascreditos_text()) . "'";
+                '" . str_replace("'", "''", (string) $obj->getHorascreditos_text()) . "',
+                '" . str_replace("'", "''", (string) $obj->getCodigo()) . "'";
         //echo $sql;
         if ($obj->getOpc() == "I") {
             $result = $this->conecta->sql_query($sql);

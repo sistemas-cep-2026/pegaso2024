@@ -35,6 +35,14 @@ try {
     $ent_eventos->setText_documento($_REQUEST['text_documento'] ?? '');
     $ent_eventos->setUser_crea(s_usuario());
 
+    // Código del evento (cap_eventos.codigo CHAR(7)). Opcional; se valida antes de grabar nada.
+    $codigo = trim((string) ($_REQUEST['codigo'] ?? ''));
+    if ($codigo !== '' && preg_match('/^[A-Za-z0-9\-]{1,7}$/', $codigo) !== 1) {
+        throw new Exception("El código admite solo letras, números y guion (máximo 7 caracteres).");
+    }
+    // Vacío = el SP genera el correlativo (al crear) o conserva el actual (al modificar).
+    $ent_eventos->setCodigo($codigo);
+
 
     $val = $bo_evento->creaeventos($ent_eventos);
     if (!$val) {

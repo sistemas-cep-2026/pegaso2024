@@ -20,28 +20,13 @@ $cod_ano = isset($_GET['anho']) && is_numeric($_GET['anho'])
 $ent_eventos->setCc_local($cc_local);
 $ent_eventos->setFecha($cod_ano);
 
-$data_totalev = $bo_eventos->canti_eventos_anho($ent_eventos);
-$data_even_total = $data_totalev[0]['total_eventos'] ?? 0;
-
 $data_nevento = $bo_eventos->canti_eventos_local($ent_eventos);
 $data_even_local = $data_nevento[0]['cant_eventos'] ?? 0;
-
-$porcentaje = $data_even_total > 0
-    ? round(($data_even_local / $data_even_total) * 100, 2)
-    : 0;
-$data_part_total = $bo_eventos->asistentes_anho($ent_eventos);
-$total_asi  = $data_part_total[0]['n_asistentes'] ?? 0;
-$total_pone = $data_part_total[0]['n_ponentes'] ?? 0;
-$total_orga = $data_part_total[0]['n_organizadores'] ?? 0;
 
 $data_local_total = $bo_eventos->asistentes_local($ent_eventos);
 $total_local_asi  = $data_local_total[0]['n_asistentes'] ?? 0;
 $total_local_pone = $data_local_total[0]['n_ponentes'] ?? 0;
 $total_local_orga = $data_local_total[0]['n_organizadores'] ?? 0;
-
-$porcentaje_asis   = $total_asi  > 0 ? round(($total_local_asi  / $total_asi)  * 100, 2) : 0;
-$porcentaje_ponent = $total_pone > 0 ? round(($total_local_pone / $total_pone) * 100, 2) : 0;
-$porcentaje_organ  = $total_orga > 0 ? round(($total_local_orga / $total_orga) * 100, 2) : 0;
 
 // colegiados (enfermeros) vs no colegiados, entre los asistentes del local/año seleccionado
 $data_coleg_otros = $bo_eventos->coleg_otros($ent_eventos);
@@ -126,11 +111,6 @@ $data_ano = $bo_eventos->listarAnhos();
                                     <h2 class="mt-4 ff-secondary fw-semibold">
                                         <span class="counter-value" data-target="<?= $data_even_local ?>">0</span> Eventos
                                     </h2>
-                                    <p class="mb-0 text-muted">
-                                        <span class="badge bg-light text-success mb-0">
-                                            <i class="ri-arrow-up-line"></i> <?= $porcentaje ?> %
-                                        </span> de eventos
-                                    </p>
                                 </div>
                                 <div class="avatar-sm flex-shrink-0">
                                     <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-4">
@@ -150,9 +130,6 @@ $data_ano = $bo_eventos->listarAnhos();
                                     <h2 class="mt-4 ff-secondary fw-semibold">
                                         <span class="counter-value" data-target="<?= $total_local_asi ?>">0</span>
                                     </h2>
-                                    <span class="badge bg-light text-success">
-                                        <?= $porcentaje_asis ?> %
-                                    </span>
                                 </div>
                                 <div class="avatar-sm flex-shrink-0">
                                     <span class="avatar-title bg-info-subtle text-info rounded-circle fs-4">
@@ -172,9 +149,6 @@ $data_ano = $bo_eventos->listarAnhos();
                                     <h2 class="mt-4 ff-secondary fw-semibold">
                                         <span class="counter-value" data-target="<?= $total_local_pone ?>">0</span>
                                     </h2>
-                                    <span class="badge bg-light text-success">
-                                        <?= $porcentaje_ponent ?> %
-                                    </span>
                                 </div>
                                 <div class="avatar-sm flex-shrink-0">
                                     <span class="avatar-title bg-warning-subtle text-warning rounded-circle fs-4">
@@ -194,9 +168,6 @@ $data_ano = $bo_eventos->listarAnhos();
                                     <h2 class="mt-4 ff-secondary fw-semibold">
                                         <span class="counter-value" data-target="<?= $total_local_orga ?>">0</span>
                                     </h2>
-                                    <span class="badge bg-light text-success">
-                                        <?= $porcentaje_organ ?> %
-                                    </span>
                                 </div>
                                 <div class="avatar-sm flex-shrink-0">
                                     <span class="avatar-title bg-success-subtle text-success rounded-circle fs-4">

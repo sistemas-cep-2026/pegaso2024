@@ -1,4 +1,5 @@
-//fn_buscarRegistro();
+// Al abrir la página se lista con los filtros por defecto (año y mes actuales, todo el personal).
+fn_buscarRegistro();
 
 $("#frmBuscarRegistro").validate();
 
@@ -22,8 +23,6 @@ function fn_controlAsistencia(id, cc_persona, opc) {
 }
 
 function fn_grabarRegistro() {
-    var $_ = this;
-    console.log($_);
     var str = $("#frmGrabarRegistro").serialize();
     ajax('rrhh/rep_asist_update', str)
         .then(function (data) {

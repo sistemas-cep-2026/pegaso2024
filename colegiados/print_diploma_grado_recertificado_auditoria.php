@@ -34,7 +34,8 @@ $visible = $_REQUEST["v"];
       $literal = $rowdetalle["literal"];
       $sexo = $rowdetalle["cod_sexo"];
 
-      $foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      //$foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      $foto = u_foto_colegiado($num_documento);
       ?>
       <tr>
         <td>

@@ -29,17 +29,17 @@ $visible = $_REQUEST["v"];
   ?>
     <table class="page" align="center">
       <?php
-        $nombre_completo_detalle = $rowdetalle["nombre"];
-        $fecha = $rowdetalle["fecha"];
-        $num_documento = $rowdetalle["num_documento"];
-        $cep1 = $rowdetalle["c_cmp"];
-        $c_reg_esp = $rowdetalle["c_reg_esp"];
-        $literal = $rowdetalle["literal"];
-        $sexo = $rowdetalle["cod_sexo"];
-        $residentado = $rowdetalle["residentado"];
-        $est_modalidad = $rowdetalle["semipresencial"];
-        $escolarizado = $rowdetalle["flag_escolarizado"];
-      
+      $nombre_completo_detalle = $rowdetalle["nombre"];
+      $fecha = $rowdetalle["fecha"];
+      $num_documento = $rowdetalle["num_documento"];
+      $cep1 = $rowdetalle["c_cmp"];
+      $c_reg_esp = $rowdetalle["c_reg_esp"];
+      $literal = $rowdetalle["literal"];
+      $sexo = $rowdetalle["cod_sexo"];
+      $residentado = $rowdetalle["residentado"];
+      $est_modalidad = $rowdetalle["semipresencial"];
+      $escolarizado = $rowdetalle["flag_escolarizado"];
+
       $text_residentado = $residentado == '*' ? ' - Modalidad Residentado' : '';
       $don = 'Do&ntilde;a';
       $lic = 'Licenciada';
@@ -51,7 +51,8 @@ $visible = $_REQUEST["v"];
         $enf = 'Enfermero';
         $incor = 'incorporado';
       }
-      $foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      //$foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      $foto = u_foto_colegiado($num_documento);
       ?>
       <tr>
         <td>
@@ -79,13 +80,13 @@ $visible = $_REQUEST["v"];
               <td colspan="5" align="center" class="titulo01"><strong><?= $literal; ?></strong></td>
             </tr>
             <!--<?php
-            if ($est_modalidad !== 'X') {
-            ?>
+                if ($est_modalidad !== 'X') {
+                ?>
               <tr>
                 <td colspan="5" align="center"><strong>Modalidad de estudios: <?= $tipos[$est_modalidad] ?></strong></td>
               </tr>
             <?php
-            }
+                }
             ?>
             <?php
             if ($escolarizado === '&') {
@@ -96,43 +97,43 @@ $visible = $_REQUEST["v"];
             <?php
             }
             ?>-->
-              <td colspan="5" align="center"> <span class="texto01">Siendo <?= $incor ?> en el Libro de Registros de <?= $enf ?>s:</br>
-                  <?= ucfirst(strtolower(grados_academicos($tipo))); ?>,
-                  con el registro N&deg;&nbsp;<?= $c_reg_esp; ?>. de fecha <?= $fecha; ?></span></td>
-            </tr>
-            <tr>
-              <td colspan="5" align="justify"><span class="texto01">
-                  Por tanto: Se expide el presente Diploma para que se le reconozca como tal.</span></td>
-            </tr>
-            <tr>
-              <td colspan="5" align="right" class="texto01">Dado y firmado en la ciudad de Lima, el <?= fechatexto(date('d/m/Y')) ?>.</td>
-            </tr>
-            <?php if ($visible == '1') { ?>
-              <tr align="center">
-                <td width="30%" valign="bottom"><span class="firma01">
-                    Dra. S.P. PETRONILA ELIZABETH ALVARADO CHÁVEZ</span></br>
-                  <span class="firma03">Decana</span></br>
-                </td>
-                <td width="20%"><img src="<?= url('images/logo_decanato.jpg'); ?>" width="110"></td>
-                <td width="15%" valign="bottom"><span class="texto01">&nbsp;&nbsp;&nbsp;Titular&nbsp;&nbsp;&nbsp;</span></td>
-                <td width="15%"><img src="<?= url('images/logo_secretaria.jpg'); ?>" width="110"></td>
-                <td width="25%" valign="bottom"><span class="firma01">
-                    Dra. SUSAN HAYDEE GONZALES SALDAÑA</span></br>
-                  <span class="firma03">Secretaria</span>
-                </td>
-              </tr>
-            <?php } else { ?>
-              <tr align="center">
-                <td valign="bottom"></td>
-                <td></td>
-                <td valign="bottom"></td>
-                <td></td>
-                <td valign="bottom"></td>
-              </tr>
-            <?php } ?>
-          </table>
-        </td>
+            <td colspan="5" align="center"> <span class="texto01">Siendo <?= $incor ?> en el Libro de Registros de <?= $enf ?>s:</br>
+                <?= ucfirst(strtolower(grados_academicos($tipo))); ?>,
+                con el registro N&deg;&nbsp;<?= $c_reg_esp; ?>. de fecha <?= $fecha; ?></span></td>
       </tr>
+      <tr>
+        <td colspan="5" align="justify"><span class="texto01">
+            Por tanto: Se expide el presente Diploma para que se le reconozca como tal.</span></td>
+      </tr>
+      <tr>
+        <td colspan="5" align="right" class="texto01">Dado y firmado en la ciudad de Lima, el <?= fechatexto(date('d/m/Y')) ?>.</td>
+      </tr>
+      <?php if ($visible == '1') { ?>
+        <tr align="center">
+          <td width="30%" valign="bottom"><span class="firma01">
+              Dra. S.P. PETRONILA ELIZABETH ALVARADO CHÁVEZ</span></br>
+            <span class="firma03">Decana</span></br>
+          </td>
+          <td width="20%"><img src="<?= url('images/logo_decanato.jpg'); ?>" width="110"></td>
+          <td width="15%" valign="bottom"><span class="texto01">&nbsp;&nbsp;&nbsp;Titular&nbsp;&nbsp;&nbsp;</span></td>
+          <td width="15%"><img src="<?= url('images/logo_secretaria.jpg'); ?>" width="110"></td>
+          <td width="25%" valign="bottom"><span class="firma01">
+              Dra. SUSAN HAYDEE GONZALES SALDAÑA</span></br>
+            <span class="firma03">Secretaria</span>
+          </td>
+        </tr>
+      <?php } else { ?>
+        <tr align="center">
+          <td valign="bottom"></td>
+          <td></td>
+          <td valign="bottom"></td>
+          <td></td>
+          <td valign="bottom"></td>
+        </tr>
+      <?php } ?>
+    </table>
+    </td>
+    </tr>
 
     </table>
 

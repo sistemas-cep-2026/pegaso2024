@@ -118,14 +118,21 @@ class bo_comp_liquidaciones_caja_chica
     {
         $sql = "select c.c_liquidacion_caja_chica,  rtrim(p.nombre)+ ' => ' +
         c.c_liquidacion_caja_chica + ' => ' +
-        dbo.fc_fecha_texto(c.fecha_operacion) + ' => ' +
-        CAST(c.monto AS VARCHAR) + ' => ' +
-        CAST(c.monto_apertura AS VARCHAR) AS caja_chica
-        FROM liquidaciones_caja_chica c inner join personas p 
-        on c.c_persona=p.c_persona
+        dbo.fc_fecha_texto(c.fecha_operacion) + ' ** MONTO=> ' +
+        CAST((c.monto  +c.monto_apertura) AS VARCHAR) +' ** RENDIDO=>'+
+		CAST(SUM(dc.total) AS VARCHAR) AS caja_chica
+        FROM liquidaciones_caja_chica c 
+		inner join personas p 
+		on c.c_persona=p.c_persona
+		left join documentos_de_compras dc on dc.c_liquidacion_caja_chica=c.c_liquidacion_caja_chica
+        
+         AND dc.flag='*'
         WHERE c.c_local = '{$obj->getC_local()}' 
-        AND  c.flag in ('*') and flag_bancos='&' and isnumeric(c_liquidacion_caja_chica)=1 order by c.fecha desc";
-        //echo $sql;
+        AND  c.flag in ('&') and flag_bancos='&' and isnumeric(c.c_liquidacion_caja_chica)=1 
+		GROUP BY c.c_liquidacion_caja_chica,P.nombre,C.fecha_operacion ,C.MONTO,C.monto_apertura,C.FECHA
+		order by c.fecha desc";
+
+      //  echo $sql;
         return $this->dao->consulta($sql);
     }
 

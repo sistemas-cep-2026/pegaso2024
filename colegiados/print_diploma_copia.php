@@ -20,19 +20,20 @@ $visible = $_REQUEST["v"];
 </head>
 
 <body>
-  <?php 
+  <?php
   $dato_personales = $bo_personas->diploma_data($tipo, $desde,  $hasta);
   foreach ($dato_personales as $rowdetalle) {
   ?>
     <table class="page">
-      <?php 
-        $nombre_completo_detalle = $rowdetalle["nombre"];
-        $fecha = $rowdetalle["fecha"];
-        $num_documento = $rowdetalle["num_documento"];
-        $sexo = $rowdetalle["cod_sexo"];
-        $cep = $rowdetalle["c_cmp"];
-      
-      $foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      <?php
+      $nombre_completo_detalle = $rowdetalle["nombre"];
+      $fecha = $rowdetalle["fecha"];
+      $num_documento = $rowdetalle["num_documento"];
+      $sexo = $rowdetalle["cod_sexo"];
+      $cep = $rowdetalle["c_cmp"];
+
+      //$foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      $foto = u_foto_colegiado($num_documento);
       ?>
       <tr>
         <td>

@@ -1,7 +1,7 @@
  <?php
-    $foto = $_REQUEST["foto"];
-    $dni = $_REQUEST["dni"];
-    $nombre = $_REQUEST["nombre"];
+    $foto = htmlspecialchars($_REQUEST["foto"] ?? '', ENT_QUOTES, 'UTF-8');
+    $dni = htmlspecialchars($_REQUEST["dni"] ?? '', ENT_QUOTES, 'UTF-8');
+    $nombre = htmlspecialchars($_REQUEST["nombre"] ?? '', ENT_QUOTES, 'UTF-8');
     ?>
  <div class="modal-header">
         <h5 class="modal-title">FOTO DE COLEGIADO <?= $dni ?> - <?= $nombre ?></h5>

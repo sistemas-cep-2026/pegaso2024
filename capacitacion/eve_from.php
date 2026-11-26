@@ -25,6 +25,7 @@ if ($opc == 'U') {
     $ent_eventos->setCc_evento($cc_evento);
     $dat_ac = $bo_eventos->listarID($ent_eventos);
     foreach ($dat_ac as $row) {
+        $ent_eventos->setCodigo(trim((string) ($row['codigo'] ?? '')));
         $ent_eventos->setNombre($row['nombre']);
         $ent_eventos->setCc_local($row['cc_local']);
         $ent_eventos->setTipo($row['tipo']);
@@ -85,7 +86,15 @@ if ($opc == 'U') {
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-3">
+                                        <div class="mb-3">
+                                            <label for="codigo" class="form-label">Código</label>
+                                            <input type="text" class="form-control" id="codigo" name="codigo" maxlength="7"
+                                                pattern="[A-Za-z0-9\-]{1,7}" title="Hasta 7 caracteres: letras, números o guion"
+                                                value="<?php echo htmlspecialchars((string) ($ent_eventos->getCodigo() ?? ''), ENT_QUOTES, 'UTF-8', false); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-9">
                                         <div class="mb-3">
                                             <label for="nombre" class="form-label">Nombre del evento</label>
                                             <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $ent_eventos->getNombre(); ?>" required>

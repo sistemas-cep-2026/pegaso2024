@@ -45,3 +45,6 @@ function fn_imprimir(cc_permisos) {
     "_blank"
   );
 }
+
+// Al abrir la página se lista con los filtros por defecto (Comisión de servicio, año y mes actuales).
+fn_listarReporte();

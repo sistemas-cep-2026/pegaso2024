@@ -34,6 +34,12 @@ class bo_seg_usuarios
         }
     }*/
 
+    /** Guarda el nombre de la nueva foto de perfil (seguridad/perfil_subir_foto.php). */
+    public function actualizarFoto(seg_usuarios $obj)
+    {
+        return $this->dao->actualizarFoto($obj);
+    }
+
     public function errores()
     {
         return $this->dao->errores();

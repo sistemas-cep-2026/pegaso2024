@@ -26,14 +26,15 @@ $visible = $_REQUEST["v"];
   ?>
     <table class="page">
       <?php
-      
-        $nombre_completo_detalle = $rowdetalle["nombre"];
-        $fecha = $rowdetalle["fecha"];
-        $num_documento = $rowdetalle["num_documento"];
-        $sexo = $rowdetalle["cod_sexo"];
-        $cep = $rowdetalle["c_cmp"];
-      
-      $foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+
+      $nombre_completo_detalle = $rowdetalle["nombre"];
+      $fecha = $rowdetalle["fecha"];
+      $num_documento = $rowdetalle["num_documento"];
+      $sexo = $rowdetalle["cod_sexo"];
+      $cep = $rowdetalle["c_cmp"];
+
+      //$foto = "https://cep.org.pe/fotos/" . $num_documento . ".jpg";
+      $foto = u_foto_colegiado($num_documento);
       ?>
       <tr>
         <td>

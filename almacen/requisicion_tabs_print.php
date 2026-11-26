@@ -6,60 +6,84 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
 s_validar_pagina();
 require_once(u_src() . "bo/bo_alm_requisicion.php");
 require_once(u_src() . "bo/bo_alm_items_requisicion.php");
-require_once u_src() . 'bo/bo_general.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 $bo_requisicion = new bo_alm_requisicion();
 $bo_requisicionitems = new bo_alm_items_requisicion();
-$bo_general = new bo_general();
-
-$ent_items_requisicion = new alm_items_requisicion();
 $ent_requisicion = new alm_requisicion();
+$ent_items_requisicion = new alm_items_requisicion();
 
-$cc_requisicion=s_crypt($_REQUEST['cc_requisicion'],'out');
+/** Corta con un mensaje simple (en vez de un PDF vacío o con avisos de PHP). */
+function req_error($mensaje)
+{
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    header('Content-Type: text/plain; charset=utf-8');
+    echo $mensaje;
+    exit;
+}
+
+// cc_requisicion llega cifrado; el BO lo pone en el SQL sin comillas, por eso se exige un número.
+$cc_requisicion = trim((string) s_crypt(isset($_REQUEST['cc_requisicion']) ? $_REQUEST['cc_requisicion'] : '', 'out'));
+if (!ctype_digit($cc_requisicion)) {
+    req_error('Requisición no válida.');
+}
 
 $ent_requisicion->setCc_requisicion($cc_requisicion);
 $ent_items_requisicion->setCc_requisicion($cc_requisicion);
 
-$data_guia=$bo_requisicion->cabecera($ent_requisicion);
-foreach ($data_guia as $cab) {
-    
-    $fecha=$cab['fecha'];
-    $observacion=$cab['observacion'];
-    $c_usuario=$cab['c_usuario'];
-    $c_area_adm=$cab['c_area_adm'];
-    $nombre_area_adm=$cab['nombre'];
-    $flag_text=$cab['flag_text']; 
-    $flag=$cab['flag'];
-    $nombre_usuario=$cab['nombre_usuario'];
-    $nombre_crea=$cab['nombre_crea'];
-    $c_usuario_crea=$cab['c_usuario_crea'];
-    
+$data_cab = $bo_requisicion->cabecera($ent_requisicion);
+if (empty($data_cab)) {
+    req_error('No se encontró la requisición N° ' . $cc_requisicion . '.');
 }
-$data_detalle=$bo_requisicionitems->ListarIdGuia($ent_items_requisicion);
-  
- ob_start();
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'requisicion_tabs_print_plantilla.php';
-$template = ob_get_clean();
+$cab = $data_cab[0];
+$req = [
+    'numero'          => $cc_requisicion,
+    'fecha'           => trim((string) $cab['fecha']),
+    'observacion'     => trim((string) $cab['observacion']),
+    'c_usuario'       => trim((string) $cab['c_usuario']),
+    'nombre_usuario'  => trim((string) $cab['nombre_usuario']),
+    'nombre_area_adm' => trim((string) $cab['nombre']),
+    'flag_text'       => trim((string) $cab['flag_text']),
+];
 
-// Configurar y usar Dompdf
-use Dompdf\Dompdf;
-use Dompdf\Options;
+$data_detalle = $bo_requisicionitems->ListarIdGuia($ent_items_requisicion);
+if (!is_array($data_detalle)) {
+    $data_detalle = [];
+}
+
+// Logo incrustado desde el disco: no depende de que el servidor se llame a sí mismo por URL.
+$logo_src = '';
+$logo_ruta = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'logo_print.jpg';
+if (is_readable($logo_ruta)) {
+    $logo_src = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logo_ruta));
+}
+
+$impreso = date('d/m/Y H:i') . ' - ' . s_usuario();
+
+ob_start();
+require __DIR__ . DIRECTORY_SEPARATOR . 'requisicion_tabs_print_plantilla.php';
+$template = ob_get_clean();
 
 $options = new Options();
 $options->set([
-    'isRemoteEnabled' => true,
-    'defaultFont' => 'Arial'
+    'isRemoteEnabled' => false,   // todo va incrustado (logo y estilos)
+    'defaultFont'     => 'Helvetica',
 ]);
 
 $dompdf = new Dompdf($options);
-$dompdf->loadHtml($template);
+$dompdf->loadHtml($template, 'UTF-8');
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
+// Pie de página: impreso por y número de página.
+$canvas = $dompdf->getCanvas();
+$fuente = $dompdf->getFontMetrics()->getFont('Helvetica', 'normal');
+$canvas->page_text(42, 810, 'Impreso: ' . $impreso, $fuente, 7, [0.4, 0.4, 0.4]);
+$canvas->page_text(500, 810, 'Página {PAGE_NUM} de {PAGE_COUNT}', $fuente, 7, [0.4, 0.4, 0.4]);
 
-// Generar y mostrar el PDF
-$dompdf->stream(
-    sprintf('%s %s-%s', $nombre_documento, $ruc_local, $full_documento),
-    ["Attachment" => false]
-); 
- 
+$dompdf->stream('Requisicion_' . $req['numero'] . '.pdf', ['Attachment' => false]);
+exit;

@@ -9,12 +9,11 @@ require_once(dirname(__DIR__) . "/util/config_file.php");
 
 try {
     if (isset($_GET['s'])) {
-        // El enlace firmado para la nube (PDF) se habilitará en la siguiente etapa.
-        throw new Exception("Acceso externo aún no habilitado.");
+        $nombre = u_file_api_verificar('certificado', 'u_file_certificado_nombre_valido');
+    } else {
+        s_validar_pagina();
+        $nombre = u_file_certificado_nombre_valido(s_crypt(isset($_GET['f']) ? (string) $_GET['f'] : '', 'out'));
     }
-
-    s_validar_pagina();
-    $nombre = u_file_certificado_nombre_valido(s_crypt(isset($_GET['f']) ? (string) $_GET['f'] : '', 'out'));
     if ($nombre === '') {
         throw new Exception("Archivo no especificado o enlace vencido.");
     }

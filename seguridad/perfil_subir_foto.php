@@ -21,11 +21,17 @@ try {
         throw new Exception("Parámetros requeridos faltantes.");
     }
 
+    // Solo se cambia la foto del usuario con sesión: se busca por su usuario (listarId filtra por u.usuario)
     $foto_anterior = '';
-    $ent_usuarios->setUsuario($cc_usuario);
+    $cc_usuario_sesion = '';
+    $ent_usuarios->setUsuario(s_usuario());
     $data_sua = $bo_usuarios->listarId($ent_usuarios);
     foreach ($data_sua as $row) {
+        $cc_usuario_sesion = trim((string) ($row['cc_usuario'] ?? ''));
         $foto_anterior = trim((string) ($row['foto'] ?? ''));
+    }
+    if ($cc_usuario_sesion === '' || (string) $cc_usuario !== $cc_usuario_sesion || !ctype_digit($cc_usuario_sesion)) {
+        throw new Exception("No puede cambiar la foto de otro usuario.");
     }
 
     if ($opc === 'UPLOAD') {
@@ -39,7 +45,7 @@ try {
         $ent_usuarios->setFoto($foto);
         $ent_usuarios->setCc_usuario($cc_usuario);
 
-        if (!$bo_usuarios->control($ent_usuarios, $opc)) {
+        if (!$bo_usuarios->actualizarFoto($ent_usuarios)) {
             u_file_eliminar('foto_perfil', $foto);
             throw new Exception($bo_usuarios->errores());
         }
@@ -62,7 +68,8 @@ try {
     }
 
     throw new Exception("Opción inválida.");
-} catch (Exception $e) {
+} catch (Throwable $e) {
+    error_log('perfil_subir_foto: ' . $e->getMessage());
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode([
         'ok'      => false,

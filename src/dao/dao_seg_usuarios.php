@@ -46,9 +46,15 @@ class dao_seg_usuarios
 
     public function actualizarFoto(seg_usuarios $obj)
     {
+        // cc_usuario es numérico y el nombre de la foto lo genera u_file_subir(); igual se sanean.
+        $cc_usuario = (int) $obj->getCc_usuario();
+        $foto = str_replace("'", "''", (string) $obj->getFoto());
+        if ($cc_usuario <= 0 || $foto === '') {
+            return false;
+        }
         $sql = "UPDATE seg_usuarios
-        SET foto = '{$obj->getFoto()}'
-        WHERE cc_usuario = {$obj->getCc_usuario()}";
+        SET foto = '" . $foto . "'
+        WHERE cc_usuario = " . $cc_usuario;
         return $this->conecta->sql_query($sql);
     }
 }
