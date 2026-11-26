@@ -13,7 +13,7 @@ $bo_personas = new bo_gen_personas();
 
 $c_persona = s_crypt($_REQUEST['cc_persona'], 'out');
 
-$data_es_cta = $bo_est_cta->ListarID($c_persona);
+$data_es_cta = $bo_est_cta->ListarIDPorAnho($c_persona); // una fila por año
 $data_es_cta_total = $bo_est_cta->ListarID_total($c_persona);
 
 ?>

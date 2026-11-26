@@ -19,6 +19,12 @@ class dao_fin_estado_de_cuenta
     {
         return $this->conecta->errores();
     }
+
+    /** Consulta con parámetros (?). */
+    public function consultaParams($sql, $params)
+    {
+        return $this->conecta->ArrayListaParams($sql, $params);
+    }
     
     
 

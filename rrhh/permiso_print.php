@@ -8,6 +8,8 @@ require_once(u_src() . "bo/bo_general.php");
 // from float to int" en PHP 8.1+. Esos avisos se imprimen ANTES del binario del PDF y
 // lo corrompen. Se silencian solo los deprecated, solo en este script.
 error_reporting(E_ALL & ~E_DEPRECATED);
+// Cualquier otro aviso de la librería va al log, no a la pantalla, para no corromper el PDF.
+ini_set('display_errors', '0');
 
 require_once('../tcpdf/tcpdf.php');
 s_validar_pagina();

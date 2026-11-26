@@ -845,8 +845,19 @@ function fechaPeriodoActual($anho, $mes)
 
 function essalud_y_recaudo($tipo, $valor)
 {
+    $texto = ''; // si el tipo o el valor no están previstos, no se muestra nada (antes: Undefined variable)
     switch ($tipo) {
         case "Bcp66":
+            switch ($valor) {
+                case "0":
+                    $texto = "*PEND.-CONCILIAR EECC*";
+                    break;
+                case "9":
+                    $texto = "*CONCILIADO*";
+                    break;
+            }
+            break;
+        case "bbva571": // cuenta recaudadora BBVA (caja/rep_recau_taps_listaBBVA.php)
             switch ($valor) {
                 case "0":
                     $texto = "*PEND.-CONCILIAR EECC*";

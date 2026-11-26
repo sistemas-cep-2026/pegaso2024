@@ -2,12 +2,23 @@ var dataSetColegiados = newBloodhound({
   url: 'comun/json_colegiado'
 });
 
+// Al elegir un colegiado de la lista se busca de inmediato (ya no hace falta pulsar Buscar)
 newTypeahead('nombre', dataSetColegiados).on("typeahead:selected", function (e, datum) {
-  $('input[name="c_persona"]').val(datum.c_persona)
+  $('input[name="c_persona"]').val(datum.c_persona);
+  fn_buscarRegistro();
+});
+
+// Si se vuelve a escribir, el colegiado elegido antes ya no vale
+$('#nombre').on('input', function () {
+  $('input[name="c_persona"]').val('');
 });
 
 
 function fn_buscarRegistro() {
+  if ($('input[name="c_persona"]').val() === '') {
+    swalError('Seleccione un colegiado de la lista.');
+    return;
+  }
   var str = $("#frmFormRegistro").serialize();
   obtenerDatos("div_estadocta_index", "caja/estcta_taps_buscar", str, function () {
     fn_EstadodeCuenta();

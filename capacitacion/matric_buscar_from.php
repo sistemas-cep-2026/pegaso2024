@@ -108,24 +108,50 @@ $cc_evento = s_crypt($_REQUEST['cc_evento'], 'out') ?? '';
         url: 'comun/json_personasotros'
     });
 
-    $(`#nombre`).typeahead(typeaheadOptions, {
-        name: 'nombres',
-        display: 'nombres',
-        limit: 15,
-        templates: templates,
-        source: function(query, sync, async) {
-            let tipo = $('#tipo_persona').val();
-            if (tipo === "C") {
-                dataSetColegiados.search(query, sync, async);
-            } else {
-                dataSetEmpresas.search(query, sync, async);
+    // El buscador se arma con la fuente del tipo elegido (colegiado u otros profesionales).
+    // Al cambiar el tipo se destruye y se vuelve a crear: antes quedaba con la búsqueda
+    // y la persona del tipo anterior y ya no respondía ("se congelaba").
+    function fn_iniciarBuscadorPersona() {
+        var fuente = ($('#tipo_persona').val() === 'C') ? dataSetColegiados : dataSetEmpresas;
+        $('#nombre').typeahead(typeaheadOptions, {
+            name: 'nombres',
+            display: 'nombres',
+            // Infinity: typeahead 0.11 no muestra resultados remotos cuando llegan tantos como el límite
+            // (json_colegiado devuelve 15 y con limit 15 la lista salía vacía). Igual que newTypeahead().
+            limit: Infinity,
+            templates: templates,
+            source: function(query, sync, async) {
+                fuente.search(query, sync, async);
             }
-        }
-    }).bind("typeahead:selected", function(_, datum) {
-        $("#c_persona").val(datum.c_persona);
+        }).bind('typeahead:selected', function(_, datum) {
+            $('#c_persona').val(datum.c_persona);
+        });
+    }
+
+    function fn_limpiarBuscadorPersona() {
+        $('#c_persona').val('');
+        $('#nombre').typeahead('val', '');
+    }
+
+    fn_iniciarBuscadorPersona();
+
+    $('#tipo_persona').on('change', function() {
+        fn_limpiarBuscadorPersona();
+        $('#nombre').typeahead('destroy');
+        fn_iniciarBuscadorPersona();
+        $('#nombre').trigger('focus');
+    });
+
+    // Si se escribe de nuevo después de elegir, la persona elegida ya no vale
+    $('#nombre').on('input', function() {
+        $('#c_persona').val('');
     });
 
     function fn_grabarMatricula() {
+        if ($('#c_persona').val() === '') {
+            swalError('Seleccione una persona de la lista de resultados.');
+            return;
+        }
         swalProcesando();
         var str = $("#frmRegistroMatricula").serialize();
         ajax('capacitacion/matric_buscar_update', str)

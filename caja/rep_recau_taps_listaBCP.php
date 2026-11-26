@@ -9,8 +9,15 @@ $bo_recaudobcp = new bo_recaud_bcp_proceso_detalle();
 
 $ent_recaudobcp = new recaud_bcp_proceso_detalle();
 
-$tipo = $_REQUEST['c_tipo'] ?? $_REQUEST['c_tipo'] ?? '';
-$var = $_REQUEST['periodo'] ?? $_REQUEST['periodo'] ?? '';
+$tipo = (string) ($_REQUEST['c_tipo'] ?? '');
+$var = trim((string) ($_REQUEST['periodo'] ?? ''));
+// Solo tipos conocidos y periodo "MM/AAAA" (antes se recortaba el texto sin validar)
+if (!in_array($tipo, ['H', 'D', 'R', 'S'], true)) {
+    exit(errors('Seleccione un tipo de reporte válido.'));
+}
+if ($tipo !== 'H' && !preg_match('/^(0[1-9]|1[0-2])\D(\d{4})$/', $var)) {
+    exit(errors('Seleccione un periodo válido.'));
+}
 
 $periodo = substr($var, 3, 4) . substr($var, 0, 2);
 if ($tipo == 'H') {
@@ -53,10 +60,10 @@ if (in_array($tipo, ['H', 'D'])) {
 	<div class="table-responsive">
 		 <table width="100%">
     <tr>
-      <td align="center">CUENTA RECAUDADORA BCP DETALLLE <?php if($tipo==='H'){ echo "DIA.";}else{ ECHO "MES.";} ?></strong></td>
+      <td align="center">CUENTA RECAUDADORA BCP DETALLE <?php if($tipo==='H'){ echo "DIA.";}else{ ECHO "MES.";} ?></td>
     </tr>
     <tr>
-      <td align="center">PERIODO=&gt; <?php echo $periodo ?> <?php echo essalud_y_recaudo($tipo_val, $estado); ?></strong></td>
+      <td align="center">PERIODO=&gt; <?php echo $periodo ?> <?php echo essalud_y_recaudo($tipo_val, $estado); ?></td>
     </tr>
   </table>
 		<table class="table table-hover table-sm" id="table-reportebcp">
@@ -125,10 +132,10 @@ if (in_array($tipo, ['H', 'D'])) {
 ?>
   <table width="100%">
     <tr>
-      <td align="center">CUENTA RECAUDADORA BCP (RESUMEN POR MES)</strong></td>
+      <td align="center">CUENTA RECAUDADORA BCP (RESUMEN POR MES)</td>
     </tr>
     <tr>
-      <td align="center">PERIODO=&gt; <?php echo $periodo ?> <?php echo essalud_y_recaudo($tipo_val, $estado); ?></strong></td>
+      <td align="center">PERIODO=&gt; <?php echo $periodo ?> <?php echo essalud_y_recaudo($tipo_val, $estado); ?></td>
     </tr>
   </table>
   <div style="font-size: 9px; color:#000">
@@ -147,7 +154,7 @@ if (in_array($tipo, ['H', 'D'])) {
 
 
 
-          <th> <strong>CR <?php echo $row["nombre1"] ?> </th>
+          <th> <strong>CR <?php echo $row["nombre1"] ?></strong></th>
           <th class="text-end">RECAUDADO</th>
           <th class="text-end">FIJO CN</th>
           <th class="text-end">(100 CN-&gt;CR)</th>
@@ -294,7 +301,7 @@ if (in_array($tipo, ['H', 'D'])) {
         <td align="right"><strong><?php echo decimal($t2, 2) ?></strong></td>
       </tr>
       <tr>
-        <td colspan="7" align="center">***************************</strong></td>
+        <td colspan="7" align="center">***************************</td>
       </tr>
     <?php } ?>
 
