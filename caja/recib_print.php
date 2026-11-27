@@ -86,7 +86,8 @@ use Dompdf\Options;
 $options = new Options();
 $options->set([
     'isRemoteEnabled' => true,
-    'defaultFont' => 'Arial'
+    'defaultFont' => 'Arial',
+    'chroot' => dirname(__DIR__) // permite leer css/, fonts/ e images/ del proyecto desde el disco
 ]);
 
 $dompdf = new Dompdf($options);

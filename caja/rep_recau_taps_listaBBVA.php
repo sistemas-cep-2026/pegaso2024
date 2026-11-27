@@ -213,7 +213,7 @@ if (in_array($tipo, ['H', 'D'])) {
                 $tfcn = ($tfcn + (770 * $row2["tt"]));
                 $fcn = (770 * $row2["tt"]);
                 $s100 = (0 * $row2["tt"]);
-                $vcn = $row2["nacional"] - (770 * $row2["tt"]);
+                $vcn = $row2["nacional"] ;
               }
             } else {
               $vcn = $row2["nacional"];

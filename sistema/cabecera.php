@@ -55,20 +55,6 @@ foreach ($data_sua as $row) {
                     foreach ($data_local as $loc) {
                         $cc_loca_text = $loc['nombre'];
                     } ?>
-                    <?php
-                    $idmodulos = substr($id, 0, 3);
-                    $ModulosPermitidos = ["700", "800", "900"];
-                    if (in_array($idmodulos, $ModulosPermitidos)) {
-                    ?>
-                        <a href="#" onclick="fn_periodo_comp_banco('')" class="d-inline-flex align-items-center text-decoration-none header-item rounded-pill overflow-hidden" title="Cambiar consejo / período">
-                            <span class="badge rounded-0 bg-success-subtle text-success fs-13 fw-medium d-inline-flex align-items-center gap-1 px-3 py-2 mb-0">
-                                <i class="bx bx-map-pin"></i> <?php echo htmlspecialchars($cc_loca_text); ?>
-                            </span>
-                            <span class="badge rounded-0 bg-primary-subtle text-primary fs-13 fw-medium d-inline-flex align-items-center gap-1 px-3 py-2 mb-0">
-                                <i class="bx bx-calendar"></i> <?php echo htmlspecialchars(s_periodo() . ' / ' . s_anho()); ?>
-                            </span>
-                        </a>
-                    <?php } ?>
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-cart-dropdown"
                         data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='bx bxs-grid-alt fs-22'></i>

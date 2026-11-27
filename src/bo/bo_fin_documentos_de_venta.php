@@ -97,6 +97,11 @@ class bo_fin_documentos_de_venta
     */
     public function listar(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = "SELECT dv.cc_ventas,dv.cod_documento,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,pe.c_cmp,pe.ruc,pe.nombre,pe.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
 FROM Documentos_de_venta dv left join personas pe on pe.c_persona=dv.c_persona
@@ -109,7 +114,7 @@ FROM Documentos_de_venta dv left join personas pe on pe.c_persona=dv.c_persona
             $sql .= " and dv.flag='{$obj->getFlag()}'";
         }
 
-        $sql .= " AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta()} 23:59:59'
+        $sql .= " AND dv.fecha >= '{$desde}' AND dv.fecha < '{$hasta}'
         ORDER BY dv.num_documento DESC";
 
         return $this->dao->consulta($sql);
@@ -117,21 +122,31 @@ FROM Documentos_de_venta dv left join personas pe on pe.c_persona=dv.c_persona
 
     public function reporte_listar(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = " SELECT dv.cc_ventas,dv.cod_documento ,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,p.c_cmp,p.ruc,p.nombre,p.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
 FROM Documentos_de_venta dv left join personas p on p.c_persona=dv.c_persona
 WHERE  dv.c_local='{$obj->getC_local()}'
-AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta()} 23:59:59'";
+AND dv.fecha >= '{$desde}' AND dv.fecha < '{$hasta}'";
         return $this->dao->consulta($sql);
     }
 
     public function reporte_listar_detalle(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = " SELECT dv.cc_ventas,dv.cod_documento,dv.num_documento,dbo.fc_fecha_texto(dv.fecha) fecha,p.c_cmp,p.ruc,p.nombre,p.num_documento,dv.usuario_registro,dv.total_original,dv.flag,
         dbo.fc_v1_parametro_valor('documentos_de_venta', 'flag', dv.flag) AS flag_text
 FROM Documentos_de_venta dv left join personas p on p.c_persona=dv.c_persona
 WHERE  dv.c_local='{$obj->getC_local()}'
-AND dv.fecha BETWEEN '{$obj->getCod_desde()} 00:00:00' AND '{$obj->getCod_hasta()} 23:59:59'";
+AND dv.fecha >= '{$desde}' AND dv.fecha < '{$hasta}'";
         //echo $sql;
         return $this->dao->consulta($sql);
     }
@@ -155,12 +170,17 @@ from items_planilla_de_cobranza i left join gen_bancos b on b.c_banco=i.c_banco_
 
     public function sumarListar(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = "SELECT dbo.fc_v1_parametro_valor('items_planilla_de_cobranza', 'cod_forma_de_pago', ipc.cod_forma_de_pago) AS cod_forma_de_pago_text,
     SUM(ipc.monto) AS total_monto
     FROM documentos_de_venta dv
     INNER JOIN items_planilla_de_cobranza ipc ON dv.cc_ventas = ipc.cc_ventas
     WHERE dv.c_local = '{$obj->getC_local()}'
-        AND dv.fecha BETWEEN '{$obj->getCod_desde()}' AND '{$obj->getCod_hasta()}'
+        AND dv.fecha >= '{$desde}' AND dv.fecha < '{$hasta}'
     GROUP BY ipc.cod_forma_de_pago";
         return $this->dao->consulta($sql);
     }
@@ -356,9 +376,36 @@ dbo.fc_v1_fecha_hora(fecha_pago),total,'V',num_movimiento,FECHA_PAGO ,'REC '+REC
         //echo $sql;
         return $this->dao->consulta($sql);
     }
+    /**
+     * Convierte una fecha 'dd/mm/aaaa' o 'aaaa-mm-dd' al formato ISO 'aaaammdd' para SQL Server.
+     * El formato ISO no depende del idioma de la sesión (SET DATEFORMAT), a diferencia de 'dd/mm/aaaa'.
+     * $sumarDias permite obtener el día siguiente para usar un límite superior abierto (fecha < día + 1).
+     * Devuelve null si la fecha no es válida.
+     */
+    private function fechaSQL($fecha, $sumarDias = 0)
+    {
+        $fecha = trim((string) $fecha);
+        if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $fecha, $m)) {
+            $d = (int) $m[1]; $mes = (int) $m[2]; $a = (int) $m[3];
+        } elseif (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $fecha, $m)) {
+            $a = (int) $m[1]; $mes = (int) $m[2]; $d = (int) $m[3];
+        } else {
+            return null;
+        }
+        if (!checkdate($mes, $d, $a)) {
+            return null;
+        }
+        return date('Ymd', mktime(0, 0, 0, $mes, $d + (int) $sumarDias, $a));
+    }
+
     /*reporte por conceptos**/
     public function Cab_ingresosConceptos(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = "select 
          rtrim(a.c_cuenta_ventas) as c_cuenta_ventas, pc.nombre nombre_pcge, 
 MAX(CASE WHEN d.C_PERSONA = '122406' THEN 'ESSALUD PLA' ELSE '' END) AS pla
@@ -367,8 +414,8 @@ INNER JOIN documentos_de_venta d WITH (NOLOCK)
 ON i.cod_documento = d.cod_documento and i.num_documento=d.num_documento
 INNER JOIN articulos a WITH (NOLOCK) ON i.c_articulo = a.c_articulo 
 INNER JOIN plan_de_cuentas_year pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ventas  and pc.version=5
-        WHERE d.fecha >= '{$obj->getCod_desde()} 00:00:00' 
-        AND d.fecha <= '{$obj->getCod_hasta()} 23:59:59'
+        WHERE d.fecha >= '{$desde}' 
+        AND d.fecha < '{$hasta}'
         AND d.c_local = '{$obj->getC_local()}'
         AND d.flag = '*'
         GROUP BY a.c_cuenta_ventas, pc.nombre
@@ -379,6 +426,11 @@ INNER JOIN plan_de_cuentas_year pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ven
 
     public function detalle_ingresosConceptos(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = "select RTRIM(i.c_articulo) AS c_articulo, LTRIM(i.nombre_pr) + CASE WHEN i.ano IS NULL OR i.ano = '' THEN '' ELSE ' - ' + i.ano END AS nombre, 
 SUM( CASE WHEN ISNULL(i.C_IGV, '&') = '*' THEN ROUND((i.precio * i.cantidad) / (d.factor_igv + 1), 2) WHEN 
 ISNULL(i.C_IGV, '&') = '&' THEN ROUND(i.venta * i.cantidad, 2) ELSE 0 END ) AS abono, SUM(i.precio * i.cantidad) AS total,
@@ -388,8 +440,8 @@ FROM items_documentos_de_venta i WITH (NOLOCK)
 INNER JOIN documentos_de_venta d WITH (NOLOCK) ON i.cod_documento = d.cod_documento and i.num_documento=d.num_documento
 INNER JOIN articulos a WITH (NOLOCK) ON i.c_articulo = a.c_articulo 
 INNER JOIN plan_de_cuentas pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ventas 
-        WHERE d.fecha >= '{$obj->getCod_desde()} 00:00:00' 
-        AND d.fecha <= '{$obj->getCod_hasta()} 23:59:59'
+        WHERE d.fecha >= '{$desde}' 
+        AND d.fecha < '{$hasta}'
         AND d.c_local = '{$obj->getC_local()}' 
         AND a.c_cuenta_ventas = '{$obj->getC_cuenta_ventas()}' 
         GROUP BY i.c_articulo, LTRIM(i.nombre_pr) + 
@@ -413,6 +465,11 @@ INNER JOIN plan_de_cuentas pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ventas
 
     public function detalle_ingresosConceptos_articulo(?fin_documentos_de_venta $obj = null)
     {
+        $desde = $this->fechaSQL($obj->getCod_desde());
+        $hasta = $this->fechaSQL($obj->getCod_hasta(), 1); // día siguiente: incluye todo el día final
+        if ($desde === null || $hasta === null) {
+            return [];
+        }
         $sql = "select i.cc_ventas,  d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) AS fecha_texto, p.c_cmp AS cep,
 RTRIM(p.nombre) AS nombre_cliente, RTRIM(c.cta_cte_deposito) + ' OP:' + RTRIM(c.num_referencia) + ' F:' + RTRIM(dbo.fc_fecha_texto(c.fecha_referencia)) AS banco, 
 SUM(CASE WHEN c.cod_forma_de_pago = 'V' THEN i.precio * i.cantidad ELSE 0 END) AS total_voucher, 
@@ -424,8 +481,8 @@ INNER JOIN articulos a WITH (NOLOCK) ON i.c_articulo = a.c_articulo
 INNER JOIN plan_de_cuentas pc WITH (NOLOCK) ON pc.c_cuenta = a.c_cuenta_ventas 
 inner join items_planilla_de_cobranza c on c.cod_documento=d.cod_documento and c.num_documento=d.num_documento
 inner join Personas p on p.c_persona=d.c_persona
-WHERE d.fecha >= '{$obj->getCod_desde()} 00:00:00' 
-        AND d.fecha <= '{$obj->getCod_hasta()} 23:59:59'
+WHERE d.fecha >= '{$desde}' 
+        AND d.fecha < '{$hasta}'
         AND d.c_local = '{$obj->getC_local()}' 
         AND i.c_articulo = '{$obj->getC_articulo()}' 
 group by i.cc_ventas, d.cod_documento, d.num_documento, dbo.fc_fecha_texto(d.fecha) , p.c_cmp,RTRIM(p.nombre) , 

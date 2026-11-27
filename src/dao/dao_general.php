@@ -14,4 +14,10 @@ class dao_general
 		return $this->conecta->ArrayLista($sql);
 	}
 
+	/** Consulta parametrizada (marcadores ?). */
+	public function consultaParams($sql, $params)
+	{
+		return $this->conecta->ArrayListaParams($sql, $params);
+	}
+
 }

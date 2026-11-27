@@ -1,16 +1,4 @@
 <?php
-/*
- * comun/api_foto.php
- * Entrega la foto del colegiado desde el repositorio (FOTOS_DIR, ej. \\192.168.88.9\fotos).
- * Busca <num_documento>.jpg y luego .png; si no hay foto devuelve images/sinfoto.jpg.
- *
- * Dos formas de llamarlo:
- *   1) Desde PEGASO (usuario con sesión), con el enlace que arma u_foto_colegiado($num_documento):
- *        comun/api_foto.php?f=<num_documento cifrado con s_crypt>
- *   2) Desde otros sistemas (portal del colegiado, buscador público) con enlace firmado y con vencimiento:
- *        comun/api_foto.php?c=<cliente>&id=<num_documento>&e=<vence unix>&s=<firma HMAC>
- *      El cliente debe estar en util/api_clientes.php con el tipo 'foto'.
- */
 ob_start();
 
 require_once(dirname(__DIR__) . "/util/seguridad.php");

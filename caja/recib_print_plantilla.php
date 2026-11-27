@@ -2,7 +2,21 @@
 
 <head>
     <title>COLEGIO DE ENFERMEROS DEL PERÚ</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo url('css/print_pdf.css'); ?>">
+    <?php
+    // Estilos y logo se leen del disco: Dompdf no siempre puede descargar por URL
+    // las propias páginas del servidor (en producción la URL pública no responde desde el mismo servidor).
+    $css_print = @file_get_contents(dirname(__DIR__) . '/css/print_pdf.css');
+    // Las fuentes Montserrat del CSS ("../fonts/...") se apuntan a la ruta del disco; requiere 'chroot' en recib_print.php.
+    $css_print = str_replace('url("../fonts/', 'url("' . str_replace('\\', '/', dirname(__DIR__)) . '/fonts/', (string) $css_print);
+    if ($css_print === '') {
+        $css_print = false;
+    }
+    $logo_file = dirname(__DIR__) . '/images/logo_print.jpg';
+    $logo_src = is_file($logo_file) ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logo_file)) : logo;
+    ?>
+    <style>
+        <?php echo $css_print !== false ? $css_print : ''; ?>
+    </style>
 </head>
 
 <body class="bg-dark my-0">
@@ -13,7 +27,7 @@
         <table class="table table-sm table-borderless">
             <tr>
                 <td class="align-middle col-1">
-                    <img src="<?php echo logo ?>" width="80" />
+                    <img src="<?php echo $logo_src ?>" width="80" />
                 </td>
                 <td class="align-middle col-7">
                     <b> <strong class="titulo-texto-14">COLEGIO DE ENFERMEROS DEL PERÚ</strong></b><br>

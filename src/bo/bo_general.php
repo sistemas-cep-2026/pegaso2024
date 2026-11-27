@@ -166,8 +166,37 @@ class bo_general
     WHERE pl.c_local='" . $cc_local . "' and pl.c_mes between 1 and 12
     and pl.flag_cierre_compras='&' order by pl.c_ano desc,
     pl.c_mes desc";
-        //echo $sql;
+        echo $sql;
         return $this->dao->consulta($sql);
+    }
+
+    /**
+     * Períodos ABIERTOS ('&') del consejo para el módulo indicado (prefijo de 3 dígitos de cc_modulo):
+     * 700 = Compras, 800 = Bancos, 900 = Contabilidad. '*' = cerrado (no se lista).
+     * Devuelve array vacío si el módulo no es uno de los tres.
+     */
+    public function listarPeriodosAbiertos($cc_local, $modulo)
+    {
+        $campos = array(
+            '700' => 'flag_cierre_compras',
+            '800' => 'flag_cierre_bancos',
+            '900' => 'flag_cierre_contabilidad',
+        );
+        $modulo = substr(trim((string) $modulo), 0, 3);
+        if (!isset($campos[$modulo])) {
+            return array();
+        }
+        $campo = $campos[$modulo]; // lista blanca: nunca viene del usuario
+
+        $sql = "SELECT pl.c_ano,
+            pl.c_mes,
+            pl.c_ano + pl.c_mes AS periodo
+            FROM periodos_local pl
+            INNER JOIN periodos pd ON pd.c_ano = pl.c_ano AND pd.c_mes = pl.c_mes
+            WHERE pl.c_local = ? AND pl.c_mes BETWEEN 1 AND 12
+            AND RTRIM(pl." . $campo . ") = '&'
+            ORDER BY pl.c_ano DESC, pl.c_mes DESC";
+        return $this->dao->consultaParams($sql, array(trim((string) $cc_local)));
     }
 
     public function univeridadID($c_universidad)

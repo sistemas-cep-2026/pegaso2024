@@ -2,34 +2,38 @@
 require_once(dirname(__DIR__) . "/util/seguridad.php");
 require_once(dirname(__DIR__) . "/util/util.php");
 s_validar_pagina();
+
+$data_anho = listarAnhos();
 ?>
 <div class="row">
     <div class="col-lg-12">
-        <div class="card" id="orderList">
-            
-            <div class="card-body border border-dashed border-end-0 border-start-0 border-bottom-0">
-                <ul class="nav nav-tabs nav-justified nav-border-top nav-border-top-primary mb-3" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#cerrar" onclick="fn_BuscarCerrar('<?php echo s_local_vinculado(); ?>');" aria-controls="rcerrar" role="tab" aria-selected="true">CERRAR PERIODOS</a>
-                    </li>
-                    
-
-
-
-
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="cerrar" aria-labelledby="reporte_documento-tab" role="tabpanel">
-                        <div id="divBuscarCerrar"></div>
-                    </div>
-                     
-                    
-
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h5 class="card-title mb-0"><i class="ri-lock-2-line align-middle me-1 text-primary"></i> Cerrar períodos</h5>
+                    <p class="text-muted fs-13 mb-0">Abre o cierra el período de cada módulo del consejo seleccionado.</p>
                 </div>
+            </div>
+            <div class="card-body">
+                <form action="javascript:fn_ListarCerrar();" id="frmBuscarCerrar" novalidate>
+                    <div class="row g-2 align-items-end justify-content-center mb-3">
+                        <div class="col-sm-3 col-md-2">
+                            <label for="cerrar_anho" class="form-label text-muted fs-13 mb-1">Año</label>
+                            <select name="anho" id="cerrar_anho" class="form-select" onchange="fn_ListarCerrar();">
+                                <?php foreach ($data_anho as $row) { ?>
+                                    <option value="<?php echo (int) $row['anho']; ?>" <?php echo ((int) $row['anho'] === (int) date('Y')) ? 'selected' : ''; ?>>
+                                        <?php echo (int) $row['anho']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <?php bt_filtrar(); ?>
+                        </div>
+                    </div>
+                </form>
+                <div id="divListaCerrar"></div>
             </div>
         </div>
     </div>
 </div>
-<?php $include_scripts = function () {
-    return importInputMask() . importTypeahead() . importDatatable();
-}; ?>

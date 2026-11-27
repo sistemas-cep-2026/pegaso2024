@@ -111,6 +111,11 @@ $path_general = BASE_MAIN_PATH;
     <div id="layout-wrapper">
         <?php include __DIR__ . DIRECTORY_SEPARATOR . 'sistema' . DIRECTORY_SEPARATOR . 'cabecera.php'; ?>
         <!-- ========== App Menu ========== -->
+        <?php
+        // Consejo / período (antes en la barra superior): pie del menú lateral, solo en estos módulos.
+        $ModulosPermitidos = ["700", "800", "900"];
+        $mostrar_periodo = in_array(substr((string) $id, 0, 3), $ModulosPermitidos);
+        ?>
         <div class="app-menu navbar-menu">
             <!-- LOGO -->
             <div class="navbar-brand-box">
@@ -156,6 +161,20 @@ $path_general = BASE_MAIN_PATH;
             </div>
 
             <div class="sidebar-background"></div>
+            <?php if ($mostrar_periodo) {
+                $txt_consejo = htmlspecialchars(isset($cc_loca_text) ? $cc_loca_text : '', ENT_QUOTES, 'UTF-8');
+                $txt_periodo = htmlspecialchars(s_periodo() . ' / ' . s_anho(), ENT_QUOTES, 'UTF-8'); ?>
+                <div class="position-absolute bottom-0 start-0 end-0 px-3 pt-2 pb-3 border-top border-white border-opacity-10">
+                    <a href="#" onclick="fn_periodo_comp_banco(''); return false;" class="d-block text-decoration-none"
+                        title="Cambiar consejo / período: <?php echo $txt_consejo . ' - ' . $txt_periodo; ?>">
+                        <div class="text-white-50 fs-11 text-uppercase fw-semibold mb-2">Consejo / Período</div>
+                        <div class="bg-light rounded p-2 fs-12">
+                            <div class="text-success fw-medium text-truncate"><i class="bx bx-map-pin me-1"></i><?php echo $txt_consejo; ?></div>
+                            <div class="text-primary fw-medium mt-1"><i class="bx bx-calendar me-1"></i><?php echo $txt_periodo; ?></div>
+                        </div>
+                    </a>
+                </div>
+            <?php } ?>
         </div>
         <div class="vertical-overlay"></div>
 
@@ -172,19 +191,21 @@ $path_general = BASE_MAIN_PATH;
                         </div>
                     </div>
                     <!-- end page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <?php
+                            echo "pagi: " . $pagina . "<br>";
+                            echo "JS: " . $url_js . "<br>";
+                            echo "cod:" . $id . "<br>";
+                            echo "user: " . s_usuario() . "<br>";
+                            echo "DB=>" . $_SESSION["SES_DB"];
+                            ?>
+                        </div>
+                    </div>
 
                 </div>
                 <!-- container-fluid -->
             </div>
-            <?php
-            echo "pagi: " . $pagina . "<br>";
-            echo "JS: " . $url_js . "<br>";
-            echo "cod:" . $id . "<br>";
-            echo "user: " . s_usuario() . "<br>";
-            echo "DB=>" . $_SESSION["SES_DB"];
-            ?>
-            <!-- End Page-content -->
-
             <footer class="footer">
                 <div class="container-fluid">
                     <?php include __DIR__ . DIRECTORY_SEPARATOR . 'sistema' . DIRECTORY_SEPARATOR . 'pie_pagina.php'; ?>
@@ -192,10 +213,8 @@ $path_general = BASE_MAIN_PATH;
             </footer>
         </div>
         <!-- end main content-->
-
     </div>
     <!-- END layout-wrapper -->
-
     <div class="offcanvas offcanvas-end" id="modalLateralRegistro"></div>
 
     <div class="modal fade" id="modalRegistroSm">

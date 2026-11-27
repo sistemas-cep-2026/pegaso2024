@@ -3,183 +3,80 @@ require_once(dirname(__DIR__) . "/util/seguridad.php");
 require_once(dirname(__DIR__) . "/util/util.php");
 s_validar_pagina();
 
-require_once(u_src() . "bo/bo_general.php");
 require_once(u_src() . "bo/bo_contabilidad_centralizar.php");
-
-$bo_general = new bo_general();
 $bo_centralizar = new bo_contabilidad_centralizar();
 
-$cc_local = $_REQUEST['cc_local'];
-$anho = $_REQUEST['anho'];
+// El consejo sale de la sesión (no del formulario): nadie puede ver ni cambiar otro consejo.
+$cc_local = s_local_vinculado();
+$anho = isset($_REQUEST['anho']) ? trim((string) $_REQUEST['anho']) : '';
 
+if (preg_match('/^[0-9A-Za-z]{1,3}$/', $cc_local) !== 1 || preg_match('/^[0-9]{4}$/', $anho) !== 1) {
+    echo errors('Seleccione un consejo y un año válidos.', 'warning');
+    return;
+}
 
-$data_compras = $bo_centralizar->ListarPeriodosCerrar($cc_local, $anho);
+$data_periodos = $bo_centralizar->ListarPeriodosCerrar($cc_local, $anho);
+$data_periodos = is_array($data_periodos) ? $data_periodos : array();
+usort($data_periodos, function ($a, $b) {
+    return strcmp(trim((string) $a['c_mes']), trim((string) $b['c_mes']));
+});
 
+if (empty($data_periodos)) {
+    echo errors('No hay períodos registrados para ' . htmlspecialchars($anho, ENT_QUOTES, 'UTF-8') . '.', 'info');
+    return;
+}
+
+$meses = u_meses_contable();
+// Columna => [letra que recibe sp_v1_periodos_local_actualizar, campo de periodos_local]
+$modulos = array(
+    'COMPRAS'      => array('C', 'flag_cierre_compras'),
+    'BANCOS'       => array('B', 'flag_cierre_bancos'),
+    'CONTABILIDAD' => array('P', 'flag_cierre_contabilidad'),
+);
 ?>
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <title>COLEGIO DE ENFERMEROS DEL PERÚ</title>
-
-    <link rel="stylesheet" href="../css/style_print.css">
-
-    <style>
-        html,
-        body {
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            box-sizing: border-box !important;
-        }
-
-        body {
-            font-family: Arial, sans-serif !important;
-            font-size: 16px !important;
-            background-color: #ffffff;
-            padding: 10px !important;
-        }
-
-        table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-size: 17px !important;
-            table-layout: fixed !important;
-        }
-
-        table td {
-            overflow-wrap: break-word;
-        }
-
-        /* ENCABEZADOS */
-        table tr:first-child td {
-            background-color: #f2f2f2 !important;
-            font-size: 18px !important;
-            font-weight: bold !important;
-            color: #222 !important;
-            padding: 12px !important;
-            text-align: center !important;
-        }
-
-        /* DATOS */
-        table tr:not(:first-child) td {
-            font-size: 17px !important;
-            font-weight: 500 !important;
-            color: #333 !important;
-            padding: 12px !important;
-            text-align: center !important;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        /* BOTÓN PROCESAR */
-        #btnProcesarCompras {
-            background-color: #4054a0 !important;
-            color: #ffffff !important;
-            border: none !important;
-            border-radius: 6px !important;
-            padding: 12px 28px !important;
-            font-size: 18px !important;
-            font-weight: bold !important;
-            cursor: pointer;
-        }
-
-        #btnProcesarCompras:hover {
-            background-color: #304080 !important;
-        }
-
-        #btnProcesarCompras:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-estado {
-            border: 1px solid transparent;
-            border-radius: 20px;
-            padding: 9px 18px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            min-width: 125px;
-        }
-
-        .btn-estado.cerrado {
-            background-color: #ff1100;
-            color: white;
-        }
-
-        .btn-estado.abierto {
-            background-color: #00fc43;
-            color: #495057;
-            border-color: #adb5bd;
-        }
-
-        .btn-estado:disabled {
-            opacity: 0.5;
-            cursor: wait;
-        }
-    </style>
-</head>
-
-<body>
-    <table>
-
-        <tbody>
-            <tr>
-                <td align="center">AÑO</td>
-                <td align="center">PERIODO</td>
-                <td align="center">PLANILLA</td>
-                <td align="center">COMPRAS</td>
-                <td align="center">BANCOS</td>
-                <td align="center">CONTABILIDAD</td>
-
+<div class="table-responsive">
+    <table class="table table-bordered table-nowrap align-middle mb-0">
+        <thead class="table-light">
+            <tr class="text-center">
+                <th scope="col">Año</th>
+                <th scope="col">Período</th>
+                <th scope="col">Planilla</th>
+                <?php foreach ($modulos as $titulo => $m) { ?>
+                    <th scope="col"><?php echo $titulo; ?></th>
+                <?php } ?>
             </tr>
-            <?php
-            $modulos = [
-                'C' => 'flag_cierre_compras',
-                'B' => 'flag_cierre_bancos',
-                'P' => 'flag_cierre_contabilidad'
-            ];
-
-            foreach ($data_compras as $row) {
+        </thead>
+        <tbody>
+            <?php foreach ($data_periodos as $row) {
+                $ano = htmlspecialchars(trim((string) $row['c_ano']), ENT_QUOTES, 'UTF-8');
+                $mes = str_pad(trim((string) $row['c_mes']), 2, '0', STR_PAD_LEFT);
+                $mes_txt = isset($meses[$mes]) ? $meses[$mes] : $mes;
             ?>
-                <tr>
-                    <td align="center"><?= htmlspecialchars($row['c_ano']) ?></td>
-                    <td align="center"><?= htmlspecialchars($row['c_mes']) ?></td>
-                    <td align="center">X</td>
-
-                    <?php foreach ($modulos as $modulo => $campo) {
-                        // Supuesto: 1 = cerrado, 0 = abierto
-                        $cerrado = (string)$row[$campo] === '*';
+                <tr class="text-center">
+                    <td><?php echo $ano; ?></td>
+                    <td class="text-start"><span class="fw-medium"><?php echo htmlspecialchars($mes, ENT_QUOTES, 'UTF-8'); ?></span> <span class="text-muted">- <?php echo htmlspecialchars($mes_txt, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                    <td class="text-muted">—</td>
+                    <?php foreach ($modulos as $titulo => $m) {
+                        // '*' = CERRADO, '&' = ABIERTO
+                        $cerrado = trim((string) $row[$m[1]]) === '*';
                     ?>
-                        <td align="center">
+                        <td>
                             <button type="button"
-                                class="btn-estado <?= $cerrado ? 'cerrado' : 'abierto' ?>"
-                                data-modulo="<?= $modulo ?>"
-                                data-anho="<?= htmlspecialchars($row['c_ano'], ENT_QUOTES, 'UTF-8') ?>"
-                                data-periodo="<?= htmlspecialchars($row['c_mes'], ENT_QUOTES, 'UTF-8') ?>"
-                                onclick="parent.fn_CambiarCierre(this)">
-
-                                <?= $cerrado ? '🔒 CERRADO' : '🔓 ABIERTO' ?>
+                                class="btn btn-label waves-effect waves-light btn-estado-cierre <?php echo $cerrado ? 'btn-success' : 'btn-warning'; ?>"
+                                data-modulo="<?php echo $m[0]; ?>"
+                                data-titulo="<?php echo $titulo; ?>"
+                                data-anho="<?php echo $ano; ?>"
+                                data-periodo="<?php echo htmlspecialchars(trim((string) $row['c_mes']), ENT_QUOTES, 'UTF-8'); ?>"
+                                data-cerrado="<?php echo $cerrado ? '1' : '0'; ?>"
+                                onclick="fn_CambiarCierre(this);">
+                                <i class="<?php echo $cerrado ? 'ri-check-double-line' : 'ri-error-warning-line'; ?> label-icon align-middle fs-16 me-2"></i>
+                                <?php echo $cerrado ? 'Cerrado' : 'Abierto'; ?>
                             </button>
                         </td>
                     <?php } ?>
                 </tr>
             <?php } ?>
-
-
         </tbody>
-
     </table>
-    <br>
-    <input type="hidden" id="centralizar_cc_local" value="<?php echo htmlspecialchars($cc_local, ENT_QUOTES, 'UTF-8'); ?>">
-    <input type="hidden" id="centralizar_anho" value="<?php echo htmlspecialchars($anho, ENT_QUOTES, 'UTF-8'); ?>">
-    <input type="hidden" id="centralizar_periodo" value="<?php echo htmlspecialchars($periodo, ENT_QUOTES, 'UTF-8'); ?>">
-
-
-    </button>
-
-</body>
-
-</html>
+</div>
+<input type="hidden" id="cerrar_cc_local" value="<?php echo htmlspecialchars($cc_local, ENT_QUOTES, 'UTF-8'); ?>">
